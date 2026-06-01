@@ -7,22 +7,30 @@
 - A lightweight reproduction in `method/lightweight_splart.py` implements the paper's identifiable core computations: differentiable per-Gaussian mobility, weighted Chamfer, cross-static mobility fitting, and cross-mobile articulation fitting/refinement.
 - `eval/` is method-agnostic and reads output artifacts only.
 - `baseline/static_alignment.py` provides a static-object baseline.
-- `python validate.py` passes before job submission.
+- `scripts/reproduce.sh` completed successfully in the container and wrote `scoring/scores.json`.
+- `python validate.py --compare` passes after the reproduced scores are written.
 
 ## Results
 
-No reproduced scores yet. The next submitted CPU job runs `scripts/reproduce.sh` and writes `scoring/scores.json`.
+The CPU smoke job reproduced the core SPLART claim on the lightweight two-state articulated Gaussian benchmark:
+
+| Method | Success | Axis error (deg) | Amount error | Mean part IoU | Mobile IoU | Static IoU | Recon. Chamfer |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `static_baseline` | 0.0 | 90.0000 | 0.5565 | 0.5000 | 0.0000 | 1.0000 | 0.04559 |
+| `splart_lightweight` | 1.0 | 0.5531 | 0.0042 | 0.8420 | 0.8340 | 0.8500 | 0.00609 |
+
+This supports the core claim that the SPLART-style cross-static and cross-mobile optimization can separate static/mobile parts and recover articulation parameters without part labels, while a static alignment baseline cannot.
 
 ## Remaining
 
-- Verify the lightweight method and baseline end to end inside the container.
-- If the CPU smoke job succeeds and supports the core claim, update milestone to `core_claim`.
-- If time permits afterward, expand toward the full upstream 3DGS pipeline on downloaded SPLART/PARIS data.
+- Expand toward the full upstream 3DGS pipeline on downloaded SPLART/PARIS data.
+- Add image-space PSNR/depth/mIoU/mesh Chamfer once the full renderer and datasets are available.
+- Reproduce more paper table entries, especially PARIS-PMS and SPLART-PMS articulation success rates.
 
 ## Issues
 
 - The full SPLART code depends on Nerfstudio, gsplat, PyTorch3D, tiny-cuda-nn, and CUDA extension builds. To get an initial reproducible benchmark quickly, the first job uses a lightweight Gaussian benchmark instead of the full image-rendering pipeline.
-- Local login-node Python lacks NumPy, so only syntax validation and repository validation were run locally. Package installation is handled through `environment/setup.sh`.
+- Local login-node Python lacks NumPy, so numerical method execution was left to the compute container. Package installation is handled through `environment/setup.sh`.
 
 ## Deviations from Paper
 

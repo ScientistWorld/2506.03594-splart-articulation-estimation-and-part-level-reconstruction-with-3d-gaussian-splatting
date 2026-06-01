@@ -27,8 +27,6 @@
 #   milestone: core_claim
 #   notes: "Reproduced the core claim. Environment packaged."
 
-action: submit
-gpus: 0
-test: true
-milestone: none
-notes: "CPU smoke job: run lightweight SPLART core reproduction, static baseline, evaluation, and validate scoring."
+action: done
+milestone: core_claim
+notes: "Reproduced the core SPLART mobility/articulation claim on the lightweight synthetic Gaussian benchmark; SPLART-style method succeeds while the static baseline fails."

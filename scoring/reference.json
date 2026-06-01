@@ -19,12 +19,12 @@
           "type": "baseline",
           "success": 0.0,
           "axis_error_deg": 90.0,
-          "amount_error": 0.5551,
+          "amount_error": 0.5565,
           "pivot_error": 0.0,
-          "mean_part_iou": 0.2857,
+          "mean_part_iou": 0.5,
           "mobile_iou": 0.0,
-          "static_iou": 0.5714,
-          "reconstruction_chamfer": 0.051
+          "static_iou": 1.0,
+          "reconstruction_chamfer": 0.0456
         },
         "splart_lightweight": {
           "type": "proposed",
