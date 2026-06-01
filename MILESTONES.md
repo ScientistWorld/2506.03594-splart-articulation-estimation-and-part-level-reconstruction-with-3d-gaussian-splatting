@@ -34,4 +34,4 @@
 - `python validate.py --compare` passes with independent artifact-based evaluation.
 
 ## Stop Justification
-- Final verification complete. The workspace is ready as a reduced synthetic articulated-object research gym, with the full-scale benchmark remaining a documented future extension.
+- Completed at milestone `core_claim_plus`.
