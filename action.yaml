@@ -1,9 +1,4 @@
-# This iteration writes files only — do NOT submit compute jobs.
-# Once you set action to 'done', STOP immediately.
-# Do NOT sleep, poll, or wait. The system reads this file
-# only after your turn ends.
-action: done
+action: submit
 gpus: 0
 test: false
-milestone: core_claim_plus
-notes: "Improvements: added soft-mask Brier, worst-class IoU, state disagreement, stricter success thresholds, explicit-artifact precedence, and complete-slice checks. Notes: see DESIGN_NOTES.md for runtime concerns."
+notes: "Run evaluate_train.sh and evaluate_test.sh on all checkpoint result artifacts; populate train/test scores for split sanity check."
