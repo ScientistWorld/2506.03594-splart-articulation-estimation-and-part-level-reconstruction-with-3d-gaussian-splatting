@@ -17,4 +17,6 @@ set -e
 
 cd /home/user
 
-# TODO: run baseline
+python data/articulated_gaussians.py
+python baseline/static_alignment.py --output checkpoints/static_baseline/results.json
+bash scripts/evaluate.sh checkpoints/static_baseline/results.json

@@ -2,20 +2,13 @@
 
 **Current: none**
 
-<!-- Milestone levels (update "Current" above as you progress):
-  none             — just started, no meaningful progress yet
-  method_runs      — the paper's method executes end-to-end without errors
-  core_claim       — minimum experiment supports the paper's central claim
-  core_claim_plus  — core claim reproduced on additional settings
-  secondary_claims — secondary results or contributions reproduced
-  majority         — more than half of reported results reproduced
-  near_complete    — most results reproduced, only minor gaps remain
-  full             — all reported results reproduced
--->
-
 ## Progress Log
 
-<!-- Write your progress here -->
+### [2026-06-01 16:34] - none
+- Read the SPLART paper and identified the core multi-stage algorithm: per-state 3DGS reconstruction, per-Gaussian mobility, cross-static mobility estimation, and cross-mobile articulation optimization.
+- Vendored the official SPLART code release into `method/splart_upstream`.
+- Implemented a lightweight Gaussian-mean reproduction of the core SPLART mobility and articulation optimization for a first CPU smoke job.
+- Added method-agnostic evaluation, a static baseline, scripts, environment setup, and scoring reference structure.
 
 ## Stop Justification
-- Completed at milestone `none`.
+- Not stopped. A CPU test job is being submitted to verify the runnable reproduction end to end.

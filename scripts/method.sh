@@ -10,5 +10,15 @@ set -e
 
 cd /home/user
 
-# TODO: run the paper's method
-# TODO: call scripts/evaluate.sh to score
+python data/articulated_gaussians.py
+python method/lightweight_splart.py \
+  --data-dir data/synthetic_splart \
+  --output checkpoints/lightweight_splart/results.json \
+  --seed "${SEED:-0}" \
+  --device "${DEVICE:-cpu}"
+
+if [ -e checkpoints/static_baseline/results.json ]; then
+  bash scripts/evaluate.sh checkpoints/lightweight_splart/results.json checkpoints/static_baseline/results.json
+else
+  bash scripts/evaluate.sh checkpoints/lightweight_splart/results.json
+fi

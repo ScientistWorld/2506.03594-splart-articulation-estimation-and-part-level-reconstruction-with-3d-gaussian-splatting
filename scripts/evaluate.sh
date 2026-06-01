@@ -26,5 +26,8 @@ cd /home/user
 
 mkdir -p scoring
 
-# TODO: implement evaluation using code in eval/
-# Must write scoring/scores.json at the end
+if [ "$#" -eq 0 ]; then
+  set -- checkpoints/lightweight_splart/results.json checkpoints/static_baseline/results.json
+fi
+
+python eval/evaluate_synthetic.py "$@" --output scoring/scores.json

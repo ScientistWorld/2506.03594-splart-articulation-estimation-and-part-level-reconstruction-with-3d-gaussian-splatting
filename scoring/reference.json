@@ -1,0 +1,43 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "description": "Lightweight two-state articulated Gaussian benchmark for the core SPLART claim: recover articulation and part mobility without labels.",
+      "weight": 1.0,
+      "primary_metric": "success",
+      "metrics": {
+        "success": {"higher_is_better": true, "coefficient": 1.0},
+        "axis_error_deg": {"higher_is_better": false, "coefficient": -0.6},
+        "amount_error": {"higher_is_better": false, "coefficient": -0.4},
+        "pivot_error": {"higher_is_better": false, "coefficient": -0.2},
+        "mean_part_iou": {"higher_is_better": true, "coefficient": 0.6},
+        "mobile_iou": {"higher_is_better": true, "coefficient": 0.4},
+        "static_iou": {"higher_is_better": true, "coefficient": 0.2},
+        "reconstruction_chamfer": {"higher_is_better": false, "coefficient": -0.5}
+      },
+      "results": {
+        "static_baseline": {
+          "type": "baseline",
+          "success": 0.0,
+          "axis_error_deg": 90.0,
+          "amount_error": 0.5551,
+          "pivot_error": 0.0,
+          "mean_part_iou": 0.2857,
+          "mobile_iou": 0.0,
+          "static_iou": 0.5714,
+          "reconstruction_chamfer": 0.051
+        },
+        "splart_lightweight": {
+          "type": "proposed",
+          "success": 1.0,
+          "axis_error_deg": 5.0,
+          "amount_error": 0.08,
+          "pivot_error": 0.05,
+          "mean_part_iou": 0.75,
+          "mobile_iou": 0.75,
+          "static_iou": 0.75,
+          "reconstruction_chamfer": 0.01
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,13 @@
 # Evaluation
 
-How success is measured. Describe only the metrics, targets, and evaluation procedure — do NOT describe the paper's method or how they achieved these results. Think of this as a general evaluation protocal for other scientists trying to solve the same problem, where they should not see this paper's solution.
-
 ## Metrics
 
-<!-- What metrics are used? How are they computed? What does higher/lower mean? -->
+Articulation quality is measured by axis angular error in degrees, motion amount error, and pivot-line error for revolute scenes. Part decomposition is measured with static, mobile, and mean part IoU. Geometry consistency is measured with weighted Chamfer distance between the reconstructed articulated Gaussian sets and the observed state sets. The benchmark also reports a success rate: a scene succeeds when the axis error is below 5 degrees, mean part IoU is above 0.75, and reconstruction Chamfer is below 0.01.
 
 ## Baselines and Targets
 
-<!-- What performance levels exist as reference points? Include the paper's reported numbers as targets, and any standard baselines. A scientist agent should know what "good" looks like. -->
+The included baseline treats all points as static and estimates no meaningful articulation. The target is to recover both the moving part and articulation parameters from two-state observations, with high success and low geometric error.
 
 ## Evaluation Protocol
 
-<!-- How should evaluation be run? What data split, what conditions? Any important details about how to compare fairly (e.g., fixed seeds, specific test sets, averaging over runs). -->
+Run `scripts/reproduce.sh` to generate the benchmark data, run the baseline, run the proposed method, and write `scoring/scores.json`. Standalone evaluation is available through `scripts/evaluate.sh`, which reads method output artifacts and never imports from `method/`. Future methods must emit the same JSON artifact format with per-scene metrics.
