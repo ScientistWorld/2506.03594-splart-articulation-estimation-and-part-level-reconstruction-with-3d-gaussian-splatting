@@ -1,5 +1,5 @@
-action: submit
+action: done
 gpus: 0
-test: true
+test: false
 milestone: core_claim_plus
-notes: "CPU test-node verification: rerun scripts/reproduce.sh, validate reference/scores, and train/test evaluators after documentation/reference wording fixes."
+notes: "Final verification passed; reduced synthetic articulated-object gym is ready with documented limitations."

@@ -18,6 +18,6 @@ Tests whether the inferred decomposition actually separates static and mobile pa
 - **Metric**: mean_part_iou (higher is better)
 - **Run**: `bash scripts/evaluate.sh <artifact.json>`
 
-## Paper Targets Not Yet Runnable
+## Context Targets Not Yet Runnable
 
-The reference file also records paper-reported PARIS-PMS and SPLART-PMS aggregate articulation metrics. They are included as anchors for future expansion, but the current reusable evaluator scores the lightweight benchmark only.
+The reference file also records aggregate articulation metrics from larger external benchmarks. They are included as context for future expansion, but the current reusable evaluator scores only the compact benchmark packaged in this workspace.

@@ -28,5 +28,10 @@
 - Clarified documentation so paper-reported success is described as articulation-threshold success, while the synthetic gym's success gate is explicitly stricter and includes decomposition and geometry constraints.
 - Local reference validation and syntax checks pass; submitting another CPU container verification job to rerun the end-to-end pipeline after the documentation fixes.
 
+### [2026-06-01 18:55] - core_claim_plus
+- Final verification confirmed the workspace remains at `core_claim_plus`.
+- Cleaned strict method-agnostic evaluation wording and final target documentation.
+- `python validate.py --compare` passes with independent artifact-based evaluation.
+
 ## Stop Justification
-- Not stopped; a CPU verification job is being submitted to re-run the packaged reproduction path.
+- Final verification complete. The workspace is ready as a reduced synthetic articulated-object research gym, with the full-scale benchmark remaining a documented future extension.
