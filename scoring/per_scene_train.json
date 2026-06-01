@@ -1,0 +1,69 @@
+{
+  "slice": "train",
+  "scenes": [
+    "revolute_hinge",
+    "prismatic_diagonal"
+  ],
+  "synthetic_articulated_gaussians": {
+    "splart_lightweight": {
+      "prismatic_diagonal": {
+        "slice": "train",
+        "axis_error_deg": 0.15713089891321458,
+        "amount_error": 0.0034226490048993876,
+        "pivot_error": 0.0,
+        "mobile_iou": 1.0,
+        "static_iou": 1.0,
+        "mean_part_iou": 1.0,
+        "worst_part_iou": 1.0,
+        "mobility_brier": 0.0009041332368375942,
+        "state_mobility_disagreement": 0.01195464935673434,
+        "reconstruction_chamfer": 0.0006801729475457239,
+        "success": 1.0
+      },
+      "revolute_hinge": {
+        "slice": "train",
+        "axis_error_deg": 0.8497739364146513,
+        "amount_error": 0.01482844352722168,
+        "pivot_error": 0.0008580366230212316,
+        "mobile_iou": 0.9833333333333333,
+        "static_iou": 0.9876543209876543,
+        "mean_part_iou": 0.9854938271604938,
+        "worst_part_iou": 0.9833333333333333,
+        "mobility_brier": 0.004857378108032106,
+        "state_mobility_disagreement": 0.009735120018012822,
+        "reconstruction_chamfer": 0.0004082055995246584,
+        "success": 1.0
+      }
+    },
+    "static_baseline": {
+      "prismatic_diagonal": {
+        "slice": "train",
+        "axis_error_deg": 54.679671455690396,
+        "amount_error": 0.3400000035762787,
+        "pivot_error": 0.0,
+        "mobile_iou": 0.0,
+        "static_iou": 0.5714285714285714,
+        "mean_part_iou": 0.2857142857142857,
+        "worst_part_iou": 0.0,
+        "mobility_brier": 0.42857142857142855,
+        "state_mobility_disagreement": 0.0,
+        "reconstruction_chamfer": 0.011926913768181885,
+        "success": 0.0
+      },
+      "revolute_hinge": {
+        "slice": "train",
+        "axis_error_deg": 87.13759460334657,
+        "amount_error": 0.7330383062362671,
+        "pivot_error": 0.0706665814520446,
+        "mobile_iou": 0.0,
+        "static_iou": 0.5714285714285714,
+        "mean_part_iou": 0.2857142857142857,
+        "worst_part_iou": 0.0,
+        "mobility_brier": 0.42857142857142855,
+        "state_mobility_disagreement": 0.0,
+        "reconstruction_chamfer": 0.006191184756483,
+        "success": 0.0
+      }
+    }
+  }
+}
