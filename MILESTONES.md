@@ -16,4 +16,4 @@
 - The static baseline scored `success=0.0`, `axis_error_deg=90.0`, `mobile_iou=0.0`, and `reconstruction_chamfer=0.04559`, confirming the benchmark distinguishes articulation recovery from static alignment.
 
 ## Stop Justification
-- Stopped at `core_claim`: the packaged environment runs end to end and demonstrates the paper's central claim on a lightweight synthetic Gaussian benchmark. The full photometric 3DGS/PARIS-PMS reproduction remains future work.
+- Completed at milestone `core_claim`.
