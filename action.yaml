@@ -2,4 +2,4 @@ action: done
 gpus: 0
 test: false
 milestone: core_claim_plus
-notes: "Primary metric changed from saturated binary success to continuous quality_score; validate.py passes; core claim remains supported by actual lightweight SPLART run beating static baseline on articulation, decomposition, and reconstruction."
+notes: "Made download/run scripts fresh-clone path independent; download.sh now succeeds without external artifacts and validate.py --reference-only passes."

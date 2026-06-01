@@ -8,7 +8,6 @@
 # Assumes:
 #   - Container is built (environment/container.sif)
 #   - Data and models are downloaded (via scripts/download.sh)
-#   - Working directory is /home/user
 #
 # This is the "gold standard" reproduction — 
 # You do not need to run this, but keep this in good shape
@@ -16,7 +15,9 @@
 
 set -e
 
-cd /home/user
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 bash scripts/baseline.sh
 bash scripts/method.sh

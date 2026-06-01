@@ -15,7 +15,9 @@
 
 set -e
 
-cd /home/user
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 python data/articulated_gaussians.py
 python baseline/static_alignment.py --output checkpoints/static_baseline/results.json
