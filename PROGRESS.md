@@ -35,6 +35,7 @@ The audited scores remain above the stricter success threshold: `splart_lightwei
 
 - The full SPLART code depends on Nerfstudio, gsplat, PyTorch3D, tiny-cuda-nn, and CUDA extension builds. To get an initial reproducible benchmark quickly, the first job uses a lightweight Gaussian benchmark instead of the full image-rendering pipeline.
 - Local login-node Python lacks NumPy, so numerical method execution was left to the compute container. Package installation is handled through `environment/setup.sh`.
+- A continuation CPU verification run stalled after the baseline when using the original lightweight optimizer budget on a one-CPU test node. The method now keeps the same stages but uses fewer default Adam steps, a smaller randomized-try budget, `torch.set_num_threads(1)`, and flushed per-scene progress messages.
 
 ## Deviations from Paper
 

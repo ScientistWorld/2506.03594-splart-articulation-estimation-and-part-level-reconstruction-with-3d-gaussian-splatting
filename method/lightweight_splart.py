@@ -73,10 +73,19 @@ def cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, axis, pivot, a
     return torch.cat([static_x, mobile_x], dim=0), torch.cat([static_w, mobile_w], dim=0)
 
 
-def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
+def optimize_scene(
+    path: Path,
+    seed: int,
+    device: str = "cpu",
+    mobility_steps: int = 120,
+    tries: int = 4,
+    coarse_steps: int = 160,
+    refine_steps: int = 260,
+) -> dict:
     torch.manual_seed(seed)
     data = np.load(path)
     articulation_type = str(data["articulation_type"])
+    print(f"[splart] {path.stem}: start {articulation_type}", flush=True)
     x0 = torch.tensor(data["state0"], dtype=torch.float32, device=device)
     x1 = torch.tensor(data["state1"], dtype=torch.float32, device=device)
     opacity = torch.tensor(data["opacities"], dtype=torch.float32, device=device)
@@ -85,7 +94,7 @@ def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
     logits0 = torch.zeros(n, device=device, requires_grad=True)
     logits1 = torch.zeros(n, device=device, requires_grad=True)
     opt = torch.optim.Adam([logits0, logits1], lr=0.25)
-    for _ in range(500):
+    for _ in range(mobility_steps):
         m0 = torch.sigmoid(logits0)
         m1 = torch.sigmoid(logits1)
         cs0_x, cs0_w = cross_static_sets(x0, x1, opacity, m0, m1, 0)
@@ -101,7 +110,6 @@ def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
         init_m1 = torch.sigmoid(logits1).clamp(0.02, 0.98)
 
     best = None
-    tries = 8
     for t in range(tries):
         axis = torch.randn(3, device=device, requires_grad=True)
         amount0 = torch.tensor(0.35 if articulation_type == "prismatic" else 0.7, device=device)
@@ -113,7 +121,7 @@ def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
         else:
             pivot = torch.zeros(3, device=device)
         opt_t = torch.optim.Adam(params, lr=0.04)
-        for _ in range(600):
+        for _ in range(coarse_steps):
             ax = F.normalize(axis, dim=0)
             cd_mobile = weighted_chamfer(
                 x0, opacity * init_m0, transform(x1, articulation_type, ax, pivot, -amount), opacity * init_m1
@@ -140,7 +148,7 @@ def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
     else:
         pivot = torch.zeros(3, device=device)
     opt = torch.optim.Adam(params, lr=0.015)
-    for _ in range(900):
+    for _ in range(refine_steps):
         m0 = torch.sigmoid(logits0)
         m1 = torch.sigmoid(logits1)
         ax = F.normalize(axis, dim=0)
@@ -187,6 +195,11 @@ def optimize_scene(path: Path, seed: int, device: str = "cpu") -> dict:
             weighted_chamfer(cm0_x, cm0_w, x0, opacity) + weighted_chamfer(cm1_x, cm1_w, x1, opacity)
         ).item()
 
+    print(
+        f"[splart] {path.stem}: axis_err={axis_err:.4f} amount_err={amount_err:.4f} "
+        f"mean_iou={(iou_mobile + iou_static) / 2:.4f} recon_cd={recon_cd:.6f}",
+        flush=True,
+    )
     return {
         "scene": path.stem,
         "articulation_type": articulation_type,
@@ -211,10 +224,26 @@ def main():
     parser.add_argument("--output", default="checkpoints/lightweight_splart/results.json")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--mobility-steps", type=int, default=120)
+    parser.add_argument("--tries", type=int, default=4)
+    parser.add_argument("--coarse-steps", type=int, default=160)
+    parser.add_argument("--refine-steps", type=int, default=260)
     args = parser.parse_args()
+    torch.set_num_threads(1)
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    results = [optimize_scene(p, args.seed + i, args.device) for i, p in enumerate(sorted(Path(args.data_dir).glob("*.npz")))]
+    results = [
+        optimize_scene(
+            p,
+            args.seed + i,
+            args.device,
+            mobility_steps=args.mobility_steps,
+            tries=args.tries,
+            coarse_steps=args.coarse_steps,
+            refine_steps=args.refine_steps,
+        )
+        for i, p in enumerate(sorted(Path(args.data_dir).glob("*.npz")))
+    ]
     out.write_text(json.dumps({"method": "splart_lightweight", "results": results}, indent=2))
     print(json.dumps({"wrote": str(out), "num_scenes": len(results)}, indent=2))
 

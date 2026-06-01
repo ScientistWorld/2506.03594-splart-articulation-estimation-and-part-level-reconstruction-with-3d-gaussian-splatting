@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: core_claim
-notes: "CPU verification job after evaluator audit: regenerate data, run static baseline and SPLART lightweight method, evaluate stricter success criteria, and validate reference/scores."
+notes: "Retry CPU verification with reduced lightweight optimizer budget and progress logging after prior one-CPU test stalled."
