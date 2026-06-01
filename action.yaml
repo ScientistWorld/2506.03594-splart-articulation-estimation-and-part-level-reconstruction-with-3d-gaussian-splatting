@@ -1,4 +1,5 @@
-action: done
+action: submit
 gpus: 0
 test: false
-notes: "Two-scene synthetic split; 22 train metric values and 22 test metric values across two methods; train/test method sets match and geometric metrics differ, with a caveat that SPLART part IoU is saturated on held-out test."
+milestone: core_claim_plus
+notes: "Run full lightweight SPLART reproduction plus validation and train/test scoring; verifies core claim with actual method execution."
