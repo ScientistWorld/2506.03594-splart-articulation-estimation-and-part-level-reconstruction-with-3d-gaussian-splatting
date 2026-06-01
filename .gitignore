@@ -66,6 +66,7 @@ docker_*.tar.xz
 **/*.tar.xz
 
 # Swarm/worker artifacts
+jobs/
 trajectory/
 .empty_*/
 outputs/
@@ -80,6 +81,7 @@ shared/
 
 # Credentials — never commit
 .git-credentials
+.git-shims/
 .env
 .envrc
 .claude/

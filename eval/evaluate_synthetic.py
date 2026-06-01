@@ -86,6 +86,15 @@ def _part_iou(pred: np.ndarray, labels: np.ndarray) -> tuple[float, float, float
     return mobile_iou, static_iou, (mobile_iou + static_iou) / 2.0
 
 
+def _mobility_scores(values: object, expected_len: int, name: str) -> np.ndarray:
+    scores = np.asarray(values, dtype=np.float64)
+    if scores.shape != (expected_len,):
+        raise ValueError(f"{name} must have shape ({expected_len},), got {scores.shape}")
+    if not np.isfinite(scores).all():
+        raise ValueError(f"{name} contains non-finite values")
+    return np.clip(scores, 0.0, 1.0)
+
+
 def _quality_score(
     axis_error_deg: float,
     amount_error: float,
@@ -125,10 +134,14 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         pivot_gt = np.asarray(data["pivot"], dtype=np.float64)
         pivot_error = float(np.linalg.norm(np.cross(pivot - pivot_gt, gt_axis)))
 
-    m0 = np.asarray(prediction["mobility_state0"], dtype=np.float64)
-    m1 = np.asarray(prediction["mobility_state1"], dtype=np.float64)
+    labels = np.asarray(data["labels"], dtype=np.int64)
+    m0 = _mobility_scores(prediction["mobility_state0"], len(labels), "mobility_state0")
+    m1 = _mobility_scores(prediction["mobility_state1"], len(labels), "mobility_state1")
     mobility = (m0 + m1) / 2.0
-    mobile_iou, static_iou, mean_part_iou = _part_iou(mobility >= 0.5, np.asarray(data["labels"], dtype=np.int64))
+    mobile_iou, static_iou, mean_part_iou = _part_iou(mobility >= 0.5, labels)
+    worst_part_iou = min(mobile_iou, static_iou)
+    mobility_brier = float(np.mean((mobility - labels.astype(np.float64)) ** 2))
+    state_mobility_disagreement = float(np.mean(np.abs(m0 - m1)))
 
     x0 = np.asarray(data["state0"], dtype=np.float64)
     x1 = np.asarray(data["state1"], dtype=np.float64)
@@ -143,6 +156,8 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         and amount_error < 0.05
         and pivot_error < 0.05
         and mean_part_iou > 0.75
+        and worst_part_iou > 0.70
+        and mobility_brier < 0.08
         and reconstruction_chamfer < 0.01
     )
     quality_score = _quality_score(
@@ -159,10 +174,17 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         "mobile_iou": mobile_iou,
         "static_iou": static_iou,
         "mean_part_iou": mean_part_iou,
+        "worst_part_iou": worst_part_iou,
+        "mobility_brier": mobility_brier,
+        "state_mobility_disagreement": state_mobility_disagreement,
         "quality_score": quality_score,
         "reconstruction_chamfer": reconstruction_chamfer,
         "success": float(success),
     }
+
+
+def _discover_artifacts(root: Path) -> list[Path]:
+    return sorted(path for path in root.glob("*/results.json") if path.is_file())
 
 
 def aggregate(paths: list[Path], data_dir: Path) -> tuple[dict, dict]:
@@ -194,12 +216,16 @@ def aggregate(paths: list[Path], data_dir: Path) -> tuple[dict, dict]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("artifacts", nargs="*", default=["checkpoints/lightweight_splart/results.json"])
+    parser.add_argument("artifacts", nargs="*")
     parser.add_argument("--data-dir", default="data/synthetic_splart")
+    parser.add_argument("--discover-root", default="checkpoints")
     parser.add_argument("--output", default="scoring/scores.json")
     parser.add_argument("--per-scene-output", default="scoring/per_scene.json")
     args = parser.parse_args()
-    scores, per_scene = aggregate([Path(p) for p in args.artifacts], Path(args.data_dir))
+    artifacts = [Path(p) for p in args.artifacts] if args.artifacts else _discover_artifacts(Path(args.discover_root))
+    if not artifacts:
+        raise FileNotFoundError(f"No result artifacts found under {args.discover_root}")
+    scores, per_scene = aggregate(artifacts, Path(args.data_dir))
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     Path(args.output).write_text(json.dumps(scores, indent=2))
     Path(args.per_scene_output).parent.mkdir(parents=True, exist_ok=True)

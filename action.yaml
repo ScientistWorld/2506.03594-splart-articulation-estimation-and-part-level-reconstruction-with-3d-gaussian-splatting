@@ -1,5 +1,5 @@
-action: done
+action: submit
 gpus: 0
-test: false
+test: true
 milestone: core_claim_plus
-notes: "Made download/run scripts fresh-clone path independent; download.sh now succeeds without external artifacts and validate.py --reference-only passes."
+notes: "CPU verification job to regenerate scores.json with the added mobility constraint metrics and re-run full validation."

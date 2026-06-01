@@ -77,7 +77,10 @@
           "mean_part_iou": 0.5,
           "mobile_iou": 0.0,
           "static_iou": 1.0,
-          "reconstruction_chamfer": 0.0456
+          "reconstruction_chamfer": 0.0456,
+          "worst_part_iou": 0.0,
+          "mobility_brier": 0.4286,
+          "state_mobility_disagreement": 0.0
         },
         "splart_lightweight": {
           "type": "proposed",
@@ -89,7 +92,10 @@
           "mean_part_iou": 0.75,
           "mobile_iou": 0.75,
           "static_iou": 0.75,
-          "reconstruction_chamfer": 0.01
+          "reconstruction_chamfer": 0.01,
+          "worst_part_iou": 0.70,
+          "mobility_brier": 0.08,
+          "state_mobility_disagreement": 0.05
         }
       }
     },

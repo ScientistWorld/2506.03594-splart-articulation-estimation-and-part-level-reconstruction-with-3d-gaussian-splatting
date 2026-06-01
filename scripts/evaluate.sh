@@ -28,8 +28,4 @@ cd "$REPO_ROOT"
 
 mkdir -p scoring
 
-if [ "$#" -eq 0 ]; then
-  set -- checkpoints/lightweight_splart/results.json checkpoints/static_baseline/results.json
-fi
-
 python eval/evaluate_synthetic.py "$@" --output scoring/scores.json
