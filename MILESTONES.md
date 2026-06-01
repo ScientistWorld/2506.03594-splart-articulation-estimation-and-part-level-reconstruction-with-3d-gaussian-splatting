@@ -21,4 +21,4 @@
 - Re-ran the full reproducible pipeline in job `16b3c3d5-445`; it completed with exit code 0, regenerated baseline and method artifacts, and passed `validate.py --compare`.
 
 ## Stop Justification
-- Stopping at `core_claim`: the stricter audited benchmark now runs end-to-end in the compute container and demonstrates SPLART-style mobility/articulation recovery over the static baseline. Higher milestones require substantially expanding into the full CUDA 3DGS image-rendering pipeline and PARIS/SPLART-PMS datasets.
+- Completed at milestone `core_claim`.
