@@ -94,6 +94,15 @@ def _part_iou(pred: np.ndarray, labels: np.ndarray) -> tuple[float, float, float
     return mobile_iou, static_iou, (mobile_iou + static_iou) / 2.0
 
 
+def _mobility_scores(values: object, expected_len: int, name: str) -> np.ndarray:
+    scores = np.asarray(values, dtype=np.float64)
+    if scores.shape != (expected_len,):
+        raise ValueError(f"{name} must have shape ({expected_len},), got {scores.shape}")
+    if not np.isfinite(scores).all():
+        raise ValueError(f"{name} contains non-finite values")
+    return np.clip(scores, 0.0, 1.0)
+
+
 def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, float]:
     articulation_type = str(data["articulation_type"])
     axis = _normalize(np.asarray(prediction["axis"], dtype=np.float64))
@@ -115,13 +124,17 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         pivot_gt = np.asarray(data["pivot"], dtype=np.float64)
         pivot_error = float(np.linalg.norm(np.cross(pivot - pivot_gt, gt_axis)))
 
-    m0 = np.asarray(prediction["mobility_state0"], dtype=np.float64)
-    m1 = np.asarray(prediction["mobility_state1"], dtype=np.float64)
-    mobility = (m0 + m1) / 2.0
-    mobile_iou, static_iou, mean_part_iou = _part_iou(mobility >= 0.5, np.asarray(data["labels"], dtype=np.int64))
-
     x0 = np.asarray(data["state0"], dtype=np.float64)
     x1 = np.asarray(data["state1"], dtype=np.float64)
+    labels = np.asarray(data["labels"], dtype=np.int64)
+    m0 = _mobility_scores(prediction["mobility_state0"], len(labels), "mobility_state0")
+    m1 = _mobility_scores(prediction["mobility_state1"], len(labels), "mobility_state1")
+    mobility = (m0 + m1) / 2.0
+    mobile_iou, static_iou, mean_part_iou = _part_iou(mobility >= 0.5, labels)
+    worst_part_iou = min(mobile_iou, static_iou)
+    mobility_brier = float(np.mean((mobility - labels.astype(np.float64)) ** 2))
+    state_mobility_disagreement = float(np.mean(np.abs(m0 - m1)))
+
     opacity = np.asarray(data["opacities"], dtype=np.float64)
     cm0_x, cm0_w = _cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, axis, pivot, amount, 0)
     cm1_x, cm1_w = _cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, axis, pivot, amount, 1)
@@ -133,6 +146,8 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         and amount_error < 0.05
         and pivot_error < 0.05
         and mean_part_iou > 0.75
+        and worst_part_iou > 0.70
+        and mobility_brier < 0.08
         and reconstruction_chamfer < 0.01
     )
     return {
@@ -142,6 +157,9 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         "mobile_iou": mobile_iou,
         "static_iou": static_iou,
         "mean_part_iou": mean_part_iou,
+        "worst_part_iou": worst_part_iou,
+        "mobility_brier": mobility_brier,
+        "state_mobility_disagreement": state_mobility_disagreement,
         "reconstruction_chamfer": reconstruction_chamfer,
         "success": float(success),
     }
@@ -173,6 +191,8 @@ def aggregate(paths: list[Path], data_dir: Path) -> tuple[dict, dict]:
             raise FileNotFoundError(f"Artifact not found: {path}")
         artifact = json.loads(path.read_text())
         method = artifact["method"]
+        if method not in seen_scenes:
+            seen_scenes[method] = set()
         for prediction in artifact["results"]:
             scene = prediction["scene"]
             if scene not in scene_set:
