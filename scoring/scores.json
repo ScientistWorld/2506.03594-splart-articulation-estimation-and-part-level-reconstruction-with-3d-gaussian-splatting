@@ -2,6 +2,16 @@
   "experiments": {
     "synthetic_articulated_gaussians": {
       "results": {
+        "splart_lightweight": {
+          "amount_error": 0.005198866128921509,
+          "axis_error_deg": 0.43978454172611237,
+          "mean_part_iou": 0.9512993666169896,
+          "mobile_iou": 0.9463487332339791,
+          "pivot_error": 0.00142580084502697,
+          "reconstruction_chamfer": 0.0034436237765476108,
+          "static_iou": 0.95625,
+          "success": 1.0
+        },
         "static_baseline": {
           "amount_error": 0.5565191507339478,
           "axis_error_deg": 90.0,
