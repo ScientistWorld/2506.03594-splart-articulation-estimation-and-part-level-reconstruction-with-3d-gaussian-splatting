@@ -4,5 +4,5 @@
 action: submit
 gpus: 0
 test: true
-milestone: method_runs
-notes: "CPU rerun after adding cross-state mobility consistency: regenerate four synthetic scenes, run static baseline and staged method, evaluate independently, and check whether mean part IoU reaches the core-claim success target."
+milestone: core_claim
+notes: "CPU follow-up after reaching core_claim: rerun with a larger lightweight SPLART optimizer budget and per-scene diagnostics to try for 4/4 success on the expanded benchmark."
