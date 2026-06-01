@@ -1,10 +1,12 @@
 """Lightweight reproduction of SPLART's core optimization.
 
-This module implements the paper's distinctive computation on Gaussian means:
-per-Gaussian mobility variables, cross-static weighted Chamfer consistency for
-part separation, and cross-mobile articulation fitting/refinement. It omits the
-full CUDA 3DGS photometric renderer used by the official implementation in
-method/splart_upstream, making it suitable for a quick benchmark smoke run.
+This module implements the paper's distinctive staged computation at small
+scale: per-state Gaussian references, per-Gaussian mobility variables,
+cross-static weighted Chamfer and rendering consistency for part separation,
+and cross-mobile geometric/rendering consistency for articulation fitting. It
+uses a compact orthographic Gaussian density renderer instead of the official
+CUDA 3DGS renderer in method/splart_upstream, making the benchmark suitable for
+a quick CPU smoke run while preserving the optimization structure.
 """
 
 from __future__ import annotations
@@ -25,6 +27,51 @@ def weighted_chamfer(x, wx, y, wy):
     wx = wx / wx.sum()
     wy = wy / wy.sum()
     return (wx * d.min(dim=1).values).sum() + (wy * d.min(dim=0).values).sum()
+
+
+def camera_matrices(device: str) -> torch.Tensor:
+    """Fixed posed views for the lightweight rendering losses."""
+    mats = []
+    elev = torch.tensor(0.45, device=device)
+    ce, se = torch.cos(elev), torch.sin(elev)
+    rx = torch.stack(
+        [
+            torch.tensor([1.0, 0.0, 0.0], device=device),
+            torch.stack([torch.tensor(0.0, device=device), ce, -se]),
+            torch.stack([torch.tensor(0.0, device=device), se, ce]),
+        ]
+    )
+    for angle in torch.linspace(0, 2 * torch.pi, steps=5, device=device)[:-1]:
+        c, s = torch.cos(angle), torch.sin(angle)
+        rz = torch.stack(
+            [
+                torch.stack([c, -s, torch.tensor(0.0, device=device)]),
+                torch.stack([s, c, torch.tensor(0.0, device=device)]),
+                torch.tensor([0.0, 0.0, 1.0], device=device),
+            ]
+        )
+        mats.append(rx @ rz)
+    return torch.stack(mats)
+
+
+def render_density(points, weights, cameras, image_size: int = 32, sigma: float = 0.045):
+    """Differentiable orthographic Gaussian splatting proxy.
+
+    The paper's full implementation optimizes photometric losses with 3DGS.
+    Here the target signal is a multi-view density image, which is sufficient to
+    exercise the same cross-static/cross-mobile rendering formulations.
+    """
+    coords_1d = torch.linspace(-1.0, 1.0, image_size, device=points.device)
+    yy, xx = torch.meshgrid(coords_1d, coords_1d, indexing="ij")
+    grid = torch.stack([xx, yy], dim=-1)
+    images = []
+    weights = weights.clamp_min(0.0)
+    for cam in cameras:
+        proj = (points @ cam.T)[:, :2] / 1.15
+        d2 = (grid[None, :, :, :] - proj[:, None, None, :]).square().sum(dim=-1)
+        img = (weights[:, None, None] * torch.exp(-d2 / (2 * sigma * sigma))).sum(dim=0)
+        images.append(img / img.amax().clamp_min(1e-6))
+    return torch.stack(images)
 
 
 def axis_angle_matrix(axis, angle):
@@ -78,6 +125,7 @@ def optimize_scene(
     seed: int,
     device: str = "cpu",
     mobility_steps: int = 120,
+    render_steps: int = 60,
     tries: int = 4,
     coarse_steps: int = 160,
     refine_steps: int = 260,
@@ -90,6 +138,9 @@ def optimize_scene(
     x1 = torch.tensor(data["state1"], dtype=torch.float32, device=device)
     opacity = torch.tensor(data["opacities"], dtype=torch.float32, device=device)
     n = x0.shape[0]
+    cameras = camera_matrices(device)
+    target0 = render_density(x0, opacity, cameras)
+    target1 = render_density(x1, opacity, cameras)
 
     logits0 = torch.zeros(n, device=device, requires_grad=True)
     logits1 = torch.zeros(n, device=device, requires_grad=True)
@@ -100,6 +151,19 @@ def optimize_scene(
         cs0_x, cs0_w = cross_static_sets(x0, x1, opacity, m0, m1, 0)
         cs1_x, cs1_w = cross_static_sets(x0, x1, opacity, m0, m1, 1)
         loss = weighted_chamfer(cs0_x, cs0_w, x0, opacity) + weighted_chamfer(cs1_x, cs1_w, x1, opacity)
+        loss = loss + 2e-4 * (m0.mean() + m1.mean())
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+
+    opt = torch.optim.Adam([logits0, logits1], lr=0.08)
+    for _ in range(render_steps):
+        m0 = torch.sigmoid(logits0)
+        m1 = torch.sigmoid(logits1)
+        cs0_x, cs0_w = cross_static_sets(x0, x1, opacity, m0, m1, 0)
+        cs1_x, cs1_w = cross_static_sets(x0, x1, opacity, m0, m1, 1)
+        loss = F.mse_loss(render_density(cs0_x, cs0_w, cameras), target0)
+        loss = loss + F.mse_loss(render_density(cs1_x, cs1_w, cameras), target1)
         loss = loss + 2e-4 * (m0.mean() + m1.mean())
         opt.zero_grad()
         loss.backward()
@@ -155,49 +219,20 @@ def optimize_scene(
         cm0_x, cm0_w = cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, ax, pivot, amount, 0)
         cm1_x, cm1_w = cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, ax, pivot, amount, 1)
         loss = weighted_chamfer(cm0_x, cm0_w, x0, opacity) + weighted_chamfer(cm1_x, cm1_w, x1, opacity)
+        loss = loss + 0.25 * F.mse_loss(render_density(cm0_x, cm0_w, cameras), target0)
+        loss = loss + 0.25 * F.mse_loss(render_density(cm1_x, cm1_w, cameras), target1)
         opt.zero_grad()
         loss.backward()
         opt.step()
 
     with torch.no_grad():
         ax = F.normalize(axis, dim=0)
-        if torch.dot(ax, torch.tensor(data["axis"], dtype=torch.float32, device=device)) < 0:
-            ax = -ax
-            amount = -amount
-        m = ((torch.sigmoid(logits0) + torch.sigmoid(logits1)) / 2).cpu().numpy()
-        labels = data["labels"].astype(bool)
-        pred = m >= 0.5
-        tp = np.logical_and(pred, labels).sum()
-        fp = np.logical_and(pred, ~labels).sum()
-        fn = np.logical_and(~pred, labels).sum()
-        iou_mobile = float(tp / max(tp + fp + fn, 1))
-        static = ~labels
-        pred_static = ~pred
-        tp_s = np.logical_and(pred_static, static).sum()
-        fp_s = np.logical_and(pred_static, ~static).sum()
-        fn_s = np.logical_and(~pred_static, static).sum()
-        iou_static = float(tp_s / max(tp_s + fp_s + fn_s, 1))
-        gt_axis = torch.tensor(data["axis"], dtype=torch.float32, device=device)
-        axis_err = torch.rad2deg(torch.acos(torch.clamp(torch.dot(ax, gt_axis), -1, 1))).item()
-        amount_err = abs(float(amount.cpu()) - float(data["amount"]))
-        if articulation_type == "revolute":
-            pivot_gt = torch.tensor(data["pivot"], dtype=torch.float32, device=device)
-            pivot_err = torch.linalg.norm(torch.linalg.cross(pivot - pivot_gt, gt_axis)).item()
-        else:
-            pivot_err = 0.0
-        cm0_x, cm0_w = cross_mobile_sets(
-            x0, x1, opacity, torch.tensor(m, device=device), torch.tensor(m, device=device), articulation_type, ax, pivot, amount, 0
-        )
-        cm1_x, cm1_w = cross_mobile_sets(
-            x0, x1, opacity, torch.tensor(m, device=device), torch.tensor(m, device=device), articulation_type, ax, pivot, amount, 1
-        )
-        recon_cd = (
-            weighted_chamfer(cm0_x, cm0_w, x0, opacity) + weighted_chamfer(cm1_x, cm1_w, x1, opacity)
-        ).item()
+        mobility0 = torch.sigmoid(logits0).cpu().numpy()
+        mobility1 = torch.sigmoid(logits1).cpu().numpy()
+        final_loss = float(loss.detach().cpu())
 
     print(
-        f"[splart] {path.stem}: axis_err={axis_err:.4f} amount_err={amount_err:.4f} "
-        f"mean_iou={(iou_mobile + iou_static) / 2:.4f} recon_cd={recon_cd:.6f}",
+        f"[splart] {path.stem}: final_self_supervised_loss={final_loss:.6f}",
         flush=True,
     )
     return {
@@ -206,15 +241,9 @@ def optimize_scene(
         "axis": ax.cpu().tolist(),
         "pivot": pivot.detach().cpu().tolist(),
         "amount": float(amount.detach().cpu()),
-        "metrics": {
-            "axis_error_deg": axis_err,
-            "amount_error": amount_err,
-            "pivot_error": pivot_err,
-            "mobile_iou": iou_mobile,
-            "static_iou": iou_static,
-            "mean_part_iou": (iou_mobile + iou_static) / 2,
-            "reconstruction_chamfer": recon_cd,
-        },
+        "mobility_state0": mobility0.tolist(),
+        "mobility_state1": mobility1.tolist(),
+        "self_supervised_loss": final_loss,
     }
 
 
@@ -225,6 +254,7 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--mobility-steps", type=int, default=120)
+    parser.add_argument("--render-steps", type=int, default=60)
     parser.add_argument("--tries", type=int, default=4)
     parser.add_argument("--coarse-steps", type=int, default=160)
     parser.add_argument("--refine-steps", type=int, default=260)
@@ -238,6 +268,7 @@ def main():
             args.seed + i,
             args.device,
             mobility_steps=args.mobility_steps,
+            render_steps=args.render_steps,
             tries=args.tries,
             coarse_steps=args.coarse_steps,
             refine_steps=args.refine_steps,

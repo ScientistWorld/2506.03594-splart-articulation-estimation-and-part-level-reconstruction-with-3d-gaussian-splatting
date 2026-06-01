@@ -19,11 +19,14 @@ class SceneSpec:
     name: str
     articulation_type: str
     seed: int
+    variant: str
 
 
 DEFAULT_SCENES = (
-    SceneSpec("revolute_hinge", "revolute", 13),
-    SceneSpec("prismatic_slider", "prismatic", 29),
+    SceneSpec("revolute_hinge", "revolute", 13, "basic"),
+    SceneSpec("revolute_tilted_axis", "revolute", 17, "tilted"),
+    SceneSpec("prismatic_slider", "prismatic", 29, "basic"),
+    SceneSpec("prismatic_diagonal", "prismatic", 31, "diagonal"),
 )
 
 
@@ -63,19 +66,36 @@ def generate_scene(spec: SceneSpec) -> dict:
     n_static = 80
     n_mobile = 60
 
-    static = rng.normal(loc=(-0.25, 0.0, 0.0), scale=(0.18, 0.16, 0.12), size=(n_static, 3)).astype(np.float32)
-    mobile_base = rng.normal(loc=(0.35, 0.05, 0.0), scale=(0.15, 0.13, 0.10), size=(n_mobile, 3)).astype(np.float32)
+    static_loc = np.array([-0.25, 0.0, 0.0], dtype=np.float32)
+    mobile_loc = np.array([0.35, 0.05, 0.0], dtype=np.float32)
+    static_scale = np.array([0.18, 0.16, 0.12], dtype=np.float32)
+    mobile_scale = np.array([0.15, 0.13, 0.10], dtype=np.float32)
 
     if spec.articulation_type == "revolute":
-        axis = np.array([0.05, 0.0, 1.0], dtype=np.float32)
-        axis /= np.linalg.norm(axis)
-        pivot = np.array([0.05, -0.05, 0.0], dtype=np.float32)
-        amount = np.float32(np.deg2rad(42.0))
+        if spec.variant == "tilted":
+            axis = np.array([0.30, -0.20, 0.93], dtype=np.float32)
+            pivot = np.array([-0.03, 0.08, 0.02], dtype=np.float32)
+            amount = np.float32(np.deg2rad(55.0))
+            static_loc = np.array([-0.34, 0.12, -0.02], dtype=np.float32)
+            mobile_loc = np.array([0.32, -0.12, 0.08], dtype=np.float32)
+        else:
+            axis = np.array([0.05, 0.0, 1.0], dtype=np.float32)
+            pivot = np.array([0.05, -0.05, 0.0], dtype=np.float32)
+            amount = np.float32(np.deg2rad(42.0))
     else:
-        axis = np.array([1.0, 0.15, 0.05], dtype=np.float32)
-        axis /= np.linalg.norm(axis)
+        if spec.variant == "diagonal":
+            axis = np.array([-0.55, 0.75, 0.20], dtype=np.float32)
+            amount = np.float32(0.34)
+            static_loc = np.array([-0.32, -0.08, 0.02], dtype=np.float32)
+            mobile_loc = np.array([0.35, 0.11, -0.05], dtype=np.float32)
+        else:
+            axis = np.array([1.0, 0.15, 0.05], dtype=np.float32)
+            amount = np.float32(0.38)
         pivot = np.zeros(3, dtype=np.float32)
-        amount = np.float32(0.38)
+
+    axis /= np.linalg.norm(axis)
+    static = rng.normal(loc=static_loc, scale=static_scale, size=(n_static, 3)).astype(np.float32)
+    mobile_base = rng.normal(loc=mobile_loc, scale=mobile_scale, size=(n_mobile, 3)).astype(np.float32)
 
     mobile_moved = transform_points(mobile_base, spec.articulation_type, axis, pivot, float(amount))
     noise0 = rng.normal(scale=0.006, size=(n_static + n_mobile, 3)).astype(np.float32)
@@ -107,6 +127,8 @@ def generate_scene(spec: SceneSpec) -> dict:
 def write_default_dataset(out_dir: str | Path) -> None:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    for stale in out.glob("*.npz"):
+        stale.unlink()
     for spec in DEFAULT_SCENES:
         scene = generate_scene(spec)
         np.savez_compressed(out / f"{spec.name}.npz", **scene)
