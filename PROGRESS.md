@@ -10,6 +10,7 @@
 - `scripts/reproduce.sh` completed successfully in the container and wrote `scoring/scores.json`.
 - `python validate.py --compare` passes after the reproduced scores are written.
 - `scoring/reference.json` now includes the paper's reported overall quantitative anchors from PARIS-PMS Table 1 and SPLART-PMS Table 4, in addition to the runnable lightweight benchmark target.
+- Continuation audit tightened the synthetic success criterion to require low articulation amount and pivot errors as well as low axis error, part IoU, and reconstruction Chamfer.
 
 ## Results
 
@@ -21,6 +22,8 @@ The CPU smoke job reproduced the core SPLART claim on the lightweight two-state 
 | `splart_lightweight` | 1.0 | 0.5531 | 0.0042 | 0.8420 | 0.8340 | 0.8500 | 0.00609 |
 
 This supports the core claim that the SPLART-style cross-static and cross-mobile optimization can separate static/mobile parts and recover articulation parameters without part labels, while a static alignment baseline cannot.
+
+The audited scores remain above the stricter success threshold: `splart_lightweight` has amount error 0.0042 and pivot error 0.0080, both below the 0.05 cutoff; the static baseline remains unsuccessful.
 
 ## Remaining
 

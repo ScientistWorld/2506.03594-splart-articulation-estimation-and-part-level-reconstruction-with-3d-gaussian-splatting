@@ -1,7 +1,7 @@
 {
   "experiments": {
     "synthetic_articulated_gaussians": {
-      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. Thresholds follow the paper's success criteria: low articulation error, correct part decomposition, and geometric consistency.",
+      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. Thresholds follow the paper's success criteria: low articulation axis/amount/pivot error, correct part decomposition, and geometric consistency.",
       "weight": 0.5,
       "primary_metric": "success",
       "metrics": {

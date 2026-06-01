@@ -7,8 +7,6 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-import numpy as np
-
 
 def aggregate(paths: list[Path]) -> dict:
     grouped = defaultdict(list)
@@ -21,6 +19,8 @@ def aggregate(paths: list[Path]) -> dict:
             metrics = scene["metrics"]
             success = (
                 metrics["axis_error_deg"] < 5.0
+                and metrics["amount_error"] < 0.05
+                and metrics["pivot_error"] < 0.05
                 and metrics["mean_part_iou"] > 0.75
                 and metrics["reconstruction_chamfer"] < 0.01
             )
@@ -30,7 +30,7 @@ def aggregate(paths: list[Path]) -> dict:
     for method, rows in grouped.items():
         keys = sorted(rows[0])
         out["experiments"]["synthetic_articulated_gaussians"]["results"][method] = {
-            key: float(np.mean([row[key] for row in rows])) for key in keys
+            key: float(sum(row[key] for row in rows) / len(rows)) for key in keys
         }
     return out
 

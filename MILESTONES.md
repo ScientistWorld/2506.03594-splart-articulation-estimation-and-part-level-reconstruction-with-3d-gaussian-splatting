@@ -12,5 +12,9 @@
 - Reproduced the core claim on a two-state articulated Gaussian benchmark with both revolute and prismatic scenes.
 - SPLART-style optimization recovered low articulation error, non-trivial static/mobile segmentation, and lower reconstruction Chamfer than a static-object baseline.
 
+### [2026-06-01 17:30] - core_claim
+- Audited the implementation and confirmed it implements SPLART's identifiable optimization rather than a generic surrogate.
+- Tightened evaluation success to include articulation amount and pivot errors; existing reproduced scores still satisfy the core-claim threshold.
+
 ## Stop Justification
-- Not stopped; submitting a verification job for the current core-claim workspace.
+- Not stopped; submitting a verification job after the evaluator tightening.
