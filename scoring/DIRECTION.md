@@ -4,13 +4,13 @@
 
 Improve self-supervised recovery of part-level geometry and articulation from two observed states of a two-part articulated object.
 
-## Core Contribution
+## Core Direction
 
-The paper's contribution is staged optimization of articulated object representations with explicit static/mobile decomposition and shared articulation parameters. Improvements should target robustness or accuracy of this kind of self-supervised articulation and part recovery.
+Improvements should target robust, label-free recovery of articulation parameters, part assignments, and state-consistent geometry from two observed configurations of the same object.
 
 ## Approach Scope
 
-Methods may change the parameterization, losses, initialization, optimization schedule, or representation details as long as they still infer articulation and part mobility from the two-state observations without external labels.
+Methods may change their representation, parameterization, training data usage within the provided benchmark, and inference procedure as long as they still infer articulation and part membership from the two-state observations without external labels.
 
 ## Out of Bounds
 

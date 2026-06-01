@@ -4,25 +4,31 @@
       "results": {
         "splart_lightweight": {
           "amount_error": 0.013682276369081004,
-          "axis_error_deg": 0.6454799872034862,
+          "axis_error_deg": 0.6454799872034863,
           "mean_part_iou": 0.9963734567901235,
           "mobile_iou": 0.9958333333333333,
+          "mobility_brier": 0.0018098297575973553,
           "pivot_error": 0.004980899559289383,
-          "reconstruction_chamfer": 0.0005430803272864543,
+          "quality_score": 0.9062922353278031,
+          "reconstruction_chamfer": 0.0005430803272864542,
+          "state_mobility_disagreement": 0.010437731893294507,
           "static_iou": 0.9969135802469136,
           "success": 1.0,
-          "quality_score": 0.8987846074634345
+          "worst_part_iou": 0.9958333333333333
         },
         "static_baseline": {
           "amount_error": 0.6032423451542854,
           "axis_error_deg": 55.82460228126231,
           "mean_part_iou": 0.2857142857142857,
           "mobile_iou": 0.0,
+          "mobility_brier": 0.42857142857142855,
           "pivot_error": 0.039545330313981254,
+          "quality_score": 0.22925235609993996,
           "reconstruction_chamfer": 0.010075597078097388,
+          "state_mobility_disagreement": 0.0,
           "static_iou": 0.5714285714285714,
           "success": 0.0,
-          "quality_score": 0.1942146220393937
+          "worst_part_iou": 0.0
         }
       }
     }

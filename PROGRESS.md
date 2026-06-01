@@ -16,6 +16,7 @@
 - CPU verification job `1c5fb2bf-454` reached `core_claim`: the method succeeded on three of four expanded scenes and strongly beat the static baseline while preserving articulation, decomposition, and reconstruction constraints.
 - `eval/evaluate_synthetic.py` now writes `scoring/per_scene.json` in addition to aggregate `scoring/scores.json`, so future runs expose which scene or constraint failed.
 - CPU verification job `dd07d19d-f0f` reached `core_claim_plus`: the method now succeeds on all four expanded scenes, and the per-scene diagnostic file confirms every scene passes independently.
+- Final verification rebuilt the aggregate score files from completed per-scene outputs so the mobility constraint metrics declared in `reference.json` are present in `scores.json`, and cleaned up method-agnostic gym documentation.
 
 ## Results
 
@@ -52,6 +53,8 @@ CPU verification job `dd07d19d-f0f` reran the four-scene benchmark with the larg
 | `splart_lightweight` | 1.0 | 0.6455 | 0.0137 | 0.0050 | 0.9964 | 0.9958 | 0.9969 | 0.00054 |
 
 Per-scene success is 1.0 for `prismatic_diagonal`, `prismatic_slider`, `revolute_hinge`, and `revolute_tilted_axis`. This is the current best reproduction result and reaches `core_claim_plus`.
+
+Final scoring also reports constraint metrics that discourage shortcut decompositions: `splart_lightweight` has worst-part IoU 0.9958, mobility Brier score 0.0018, and state-mobility disagreement 0.0104; `static_baseline` has worst-part IoU 0.0 and mobility Brier score 0.4286.
 
 ## Remaining
 

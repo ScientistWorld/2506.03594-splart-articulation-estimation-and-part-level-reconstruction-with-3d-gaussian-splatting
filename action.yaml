@@ -1,5 +1,5 @@
-action: submit
+action: done
 gpus: 0
-test: true
+test: false
 milestone: core_claim_plus
-notes: "CPU verification job to regenerate scores.json with the added mobility constraint metrics and re-run full validation."
+notes: "Final verification passed; aggregate scores include constraint metrics and the reduced synthetic SPLART gym is ready."

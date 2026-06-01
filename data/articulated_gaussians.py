@@ -1,9 +1,9 @@
-"""Synthetic articulated Gaussian benchmark data.
+"""Synthetic articulated-object benchmark data.
 
 The generated scenes provide two observed articulation states with ground-truth
 static/mobile labels and articulation parameters. This is a lightweight
 substitute for the paper datasets, but it preserves the two-rigid-part,
-two-state articulated object problem used by SPLART.
+two-state articulated object problem.
 """
 
 from __future__ import annotations

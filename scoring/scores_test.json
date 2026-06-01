@@ -9,12 +9,12 @@
           "mobile_iou": 1.0,
           "mobility_brier": 0.0007389038427598604,
           "pivot_error": 0.00953278080706815,
+          "quality_score": 0.8792895284440538,
           "reconstruction_chamfer": 0.0005419713810377173,
           "state_mobility_disagreement": 0.010030579099215434,
           "static_iou": 1.0,
           "success": 1.0,
-          "worst_part_iou": 1.0,
-          "quality_score": 0.8684881149101793
+          "worst_part_iou": 1.0
         },
         "static_baseline": {
           "amount_error": 0.669965535402298,
@@ -23,12 +23,12 @@
           "mobile_iou": 0.0,
           "mobility_brier": 0.42857142857142855,
           "pivot_error": 0.04375736990194021,
+          "quality_score": 0.23057596432495547,
           "reconstruction_chamfer": 0.011092144893862333,
           "state_mobility_disagreement": 0.0,
           "static_iou": 0.5714285714285714,
           "success": 0.0,
-          "worst_part_iou": 0.0,
-          "quality_score": 0.18349397191118472
+          "worst_part_iou": 0.0
         }
       }
     }
