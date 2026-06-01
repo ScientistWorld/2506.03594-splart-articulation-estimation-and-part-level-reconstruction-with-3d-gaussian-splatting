@@ -2,7 +2,9 @@
 
 ## Metrics
 
-Articulation quality is measured by axis angular error in degrees, motion amount error, and pivot-line error for revolute scenes. Part decomposition is measured with static, mobile, and mean part IoU, plus soft-label calibration and state-consistency checks. Geometry consistency is measured with weighted Chamfer distance between the reconstructed two-state object representation and the observed state sets. The benchmark also reports a success rate: a scene succeeds when the axis error is below 5 degrees, motion amount error is below 0.05, pivot-line error is below 0.05 for revolute scenes, mean part IoU is above 0.75, worst part IoU is above 0.70, mobility calibration is below 0.08, and reconstruction Chamfer is below 0.01.
+The paper reports articulation quality with axis angular error, pivot-line error for revolute joints, rotation-angle error for revolute joints, translation-distance error for prismatic joints, and an articulation success rate. Paper success is based on articulation thresholds: axis error below 5 degrees, pivot-line error below 0.05 for revolute scenes, rotation error below 10 degrees for revolute scenes, and translation error below 0.05 for prismatic scenes.
+
+The paper also evaluates reconstruction and rendering with static/mobile/whole mesh Chamfer distance, PSNR, depth MAE, and part-segmentation mIoU. The lightweight benchmark in this workspace keeps the same two-state articulated-object goal but uses Gaussian point sets instead of full RGB 3DGS scenes. Its stricter success gate includes the paper-like articulation thresholds plus part IoU, mobility calibration, state-consistency, and weighted Chamfer checks so a method cannot pass by fitting motion while ignoring the static/mobile decomposition.
 
 ## Baselines and Targets
 

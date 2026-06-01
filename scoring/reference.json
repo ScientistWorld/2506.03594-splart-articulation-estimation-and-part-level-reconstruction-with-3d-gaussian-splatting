@@ -1,7 +1,7 @@
 {
   "experiments": {
     "synthetic_articulated_gaussians": {
-      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. Thresholds follow the paper's success criteria: low articulation axis/amount/pivot error, correct part decomposition, and geometric consistency.",
+      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. The success gate combines paper-like articulation thresholds with additional part-decomposition and geometric-consistency constraints for this reduced benchmark.",
       "notes": "This is the runnable reduced-scale benchmark. The proposed-method entries are target thresholds and anchors for the synthetic benchmark, not paper-reported table values; paper-reported full-scale values are preserved in separate reference-only experiments below.",
       "weight": 0.5,
       "primary_metric": "quality_score",
@@ -14,7 +14,7 @@
         "success": {
           "higher_is_better": true,
           "coefficient": 0.7,
-          "description": "Binary success under the benchmark thresholds for articulation, part decomposition, and geometry."
+          "description": "Binary success under the runnable synthetic benchmark thresholds for articulation, part decomposition, mobility calibration, and geometry."
         },
         "axis_error_deg": {
           "higher_is_better": false,
@@ -108,7 +108,7 @@
         "success": {
           "higher_is_better": true,
           "coefficient": 1.0,
-          "description": "Binary success under the benchmark thresholds for articulation, part decomposition, and geometry."
+          "description": "Paper articulation success rate: axis error below 5 degrees, plus pivot and rotation thresholds for revolute joints or translation threshold for prismatic joints."
         },
         "axis_error_x1e2_deg": {
           "higher_is_better": false,
@@ -190,7 +190,7 @@
         "success": {
           "higher_is_better": true,
           "coefficient": 1.0,
-          "description": "Binary success under the benchmark thresholds for articulation, part decomposition, and geometry."
+          "description": "Paper articulation success rate: axis error below 5 degrees, plus pivot and rotation thresholds for revolute joints or translation threshold for prismatic joints."
         },
         "axis_error_x1e2_deg": {
           "higher_is_better": false,

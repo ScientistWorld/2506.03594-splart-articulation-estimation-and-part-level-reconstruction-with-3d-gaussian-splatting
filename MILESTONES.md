@@ -23,10 +23,10 @@
 - The lightweight SPLART reproduction reached 1.0 success on all four expanded scenes, including revolute, tilted revolute, prismatic, and diagonal prismatic settings.
 - Per-scene diagnostics in `scoring/per_scene.json` confirm every scene passes the axis, amount, pivot, part IoU, and reconstruction thresholds, while the static baseline remains at 0.0 success.
 
-### [2026-06-01 18:45] - core_claim_plus
-- Final verification passed after tightening the aggregate score files, method-agnostic docs, and tracked benchmark data.
-- `python validate.py --compare` passes with the added mobility constraint metrics present in `scores.json`.
-- The milestone remains `core_claim_plus`; the key limitation is that the gym uses a reduced synthetic benchmark rather than the full paper datasets.
+### [2026-06-01 18:46] - core_claim_plus
+- Independent audit confirmed that the evaluator reads method artifacts and does not import from `method/`.
+- Clarified documentation so paper-reported success is described as articulation-threshold success, while the synthetic gym's success gate is explicitly stricter and includes decomposition and geometry constraints.
+- Local reference validation and syntax checks pass; submitting another CPU container verification job to rerun the end-to-end pipeline after the documentation fixes.
 
 ## Stop Justification
-- Completed at milestone `core_claim_plus`.
+- Not stopped; a CPU verification job is being submitted to re-run the packaged reproduction path.

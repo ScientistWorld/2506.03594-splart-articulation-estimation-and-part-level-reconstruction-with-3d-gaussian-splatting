@@ -17,6 +17,7 @@
 - `eval/evaluate_synthetic.py` now writes `scoring/per_scene.json` in addition to aggregate `scoring/scores.json`, so future runs expose which scene or constraint failed.
 - CPU verification job `dd07d19d-f0f` reached `core_claim_plus`: the method now succeeds on all four expanded scenes, and the per-scene diagnostic file confirms every scene passes independently.
 - Final verification rebuilt the aggregate score files from completed per-scene outputs so the mobility constraint metrics declared in `reference.json` are present in `scores.json`, and cleaned up method-agnostic gym documentation.
+- Follow-up audit confirmed the artifact-based scoring separation and flagged wording that conflated the paper's articulation-only success definition with this gym's stricter synthetic success gate. `briefing/evaluation.md` and `scoring/reference.json` now distinguish those definitions explicitly.
 
 ## Results
 
@@ -67,6 +68,7 @@ Final scoring also reports constraint metrics that discourage shortcut decomposi
 - The full SPLART code depends on Nerfstudio, gsplat, PyTorch3D, tiny-cuda-nn, and CUDA extension builds. To get an initial reproducible benchmark quickly, the first job uses a lightweight Gaussian benchmark instead of the full image-rendering pipeline.
 - Local login-node Python lacks NumPy, so numerical method execution was left to the compute container. Package installation is handled through `environment/setup.sh`.
 - A continuation CPU verification run stalled after the baseline when using the original lightweight optimizer budget on a one-CPU test node. The method now keeps the same stages but uses fewer default Adam steps, a smaller randomized-try budget, `torch.set_num_threads(1)`, and flushed per-scene progress messages. The follow-up job completed successfully.
+- The current reproduction is defensible as `core_claim_plus` for the reduced synthetic SPLART gym, not as a full reproduction of the paper's RGB 3DGS experiments. The official upstream implementation is vendored, but the full datasets and CUDA 3DGS training path remain future work.
 
 ## Deviations from Paper
 
