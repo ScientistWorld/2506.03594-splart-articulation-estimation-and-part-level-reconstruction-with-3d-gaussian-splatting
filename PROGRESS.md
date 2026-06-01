@@ -14,16 +14,16 @@
 
 ## Results
 
-The CPU smoke job reproduced the core SPLART claim on the lightweight two-state articulated Gaussian benchmark:
+The latest CPU verification job (`16b3c3d5-445`) reproduced the core SPLART claim on the lightweight two-state articulated Gaussian benchmark in about one minute:
 
 | Method | Success | Axis error (deg) | Amount error | Mean part IoU | Mobile IoU | Static IoU | Recon. Chamfer |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `static_baseline` | 0.0 | 90.0000 | 0.5565 | 0.5000 | 0.0000 | 1.0000 | 0.04559 |
-| `splart_lightweight` | 1.0 | 0.5531 | 0.0042 | 0.8420 | 0.8340 | 0.8500 | 0.00609 |
+| `splart_lightweight` | 1.0 | 0.4398 | 0.0052 | 0.9513 | 0.9463 | 0.9563 | 0.00344 |
 
 This supports the core claim that the SPLART-style cross-static and cross-mobile optimization can separate static/mobile parts and recover articulation parameters without part labels, while a static alignment baseline cannot.
 
-The audited scores remain above the stricter success threshold: `splart_lightweight` has amount error 0.0042 and pivot error 0.0080, both below the 0.05 cutoff; the static baseline remains unsuccessful.
+The audited scores remain above the stricter success threshold: `splart_lightweight` has amount error 0.0052 and pivot error 0.0014, both below the 0.05 cutoff; the static baseline remains unsuccessful. Both `python validate.py --reference-only` and `python validate.py --compare` passed in the compute container.
 
 ## Remaining
 
@@ -35,7 +35,7 @@ The audited scores remain above the stricter success threshold: `splart_lightwei
 
 - The full SPLART code depends on Nerfstudio, gsplat, PyTorch3D, tiny-cuda-nn, and CUDA extension builds. To get an initial reproducible benchmark quickly, the first job uses a lightweight Gaussian benchmark instead of the full image-rendering pipeline.
 - Local login-node Python lacks NumPy, so numerical method execution was left to the compute container. Package installation is handled through `environment/setup.sh`.
-- A continuation CPU verification run stalled after the baseline when using the original lightweight optimizer budget on a one-CPU test node. The method now keeps the same stages but uses fewer default Adam steps, a smaller randomized-try budget, `torch.set_num_threads(1)`, and flushed per-scene progress messages.
+- A continuation CPU verification run stalled after the baseline when using the original lightweight optimizer budget on a one-CPU test node. The method now keeps the same stages but uses fewer default Adam steps, a smaller randomized-try budget, `torch.set_num_threads(1)`, and flushed per-scene progress messages. The follow-up job completed successfully.
 
 ## Deviations from Paper
 
