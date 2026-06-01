@@ -1,8 +1,6 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
-gpus: 0
-test: true
-milestone: core_claim
-notes: "CPU follow-up after reaching core_claim: rerun with a larger lightweight SPLART optimizer budget and per-scene diagnostics to try for 4/4 success on the expanded benchmark."
+action: done
+milestone: core_claim_plus
+notes: "Reached 1.0 success on the four-scene lightweight SPLART benchmark with independent evaluation, per-scene diagnostics, and a static baseline comparison. Full paper-scale 3DGS dataset reproduction remains documented as future expansion."

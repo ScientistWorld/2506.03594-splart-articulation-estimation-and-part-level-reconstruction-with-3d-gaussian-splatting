@@ -24,4 +24,4 @@
 - Per-scene diagnostics in `scoring/per_scene.json` confirm every scene passes the axis, amount, pivot, part IoU, and reconstruction thresholds, while the static baseline remains at 0.0 success.
 
 ## Stop Justification
-- Stopping at `core_claim_plus`: the reduced-scale SPLART method now succeeds across multiple articulation settings with independent evaluation, packaged scripts, and reusable diagnostics. Full PARIS-PMS/SPLART-PMS reproduction remains outside this lightweight CPU benchmark because it requires the full CUDA 3DGS/Nerfstudio pipeline and original image datasets.
+- Completed at milestone `core_claim_plus`.
