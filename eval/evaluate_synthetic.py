@@ -141,9 +141,10 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
     }
 
 
-def aggregate(paths: list[Path], data_dir: Path) -> dict:
+def aggregate(paths: list[Path], data_dir: Path) -> tuple[dict, dict]:
     scenes = {path.stem: path for path in data_dir.glob("*.npz")}
     grouped = defaultdict(list)
+    per_scene = defaultdict(dict)
     for path in paths:
         if not path.exists():
             continue
@@ -154,7 +155,9 @@ def aggregate(paths: list[Path], data_dir: Path) -> dict:
             if scene not in scenes:
                 raise KeyError(f"Artifact {path} references unknown scene '{scene}'")
             with np.load(scenes[scene]) as data:
-                grouped[method].append(_score_scene(prediction, data))
+                score = _score_scene(prediction, data)
+                grouped[method].append(score)
+                per_scene[method][scene] = score
 
     out = {"experiments": {"synthetic_articulated_gaussians": {"results": {}}}}
     for method, rows in grouped.items():
@@ -162,7 +165,7 @@ def aggregate(paths: list[Path], data_dir: Path) -> dict:
         out["experiments"]["synthetic_articulated_gaussians"]["results"][method] = {
             key: float(sum(row[key] for row in rows) / len(rows)) for key in keys
         }
-    return out
+    return out, {"synthetic_articulated_gaussians": dict(per_scene)}
 
 
 def main():
@@ -170,10 +173,13 @@ def main():
     parser.add_argument("artifacts", nargs="*", default=["checkpoints/lightweight_splart/results.json"])
     parser.add_argument("--data-dir", default="data/synthetic_splart")
     parser.add_argument("--output", default="scoring/scores.json")
+    parser.add_argument("--per-scene-output", default="scoring/per_scene.json")
     args = parser.parse_args()
-    scores = aggregate([Path(p) for p in args.artifacts], Path(args.data_dir))
+    scores, per_scene = aggregate([Path(p) for p in args.artifacts], Path(args.data_dir))
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     Path(args.output).write_text(json.dumps(scores, indent=2))
+    Path(args.per_scene_output).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.per_scene_output).write_text(json.dumps(per_scene, indent=2))
     print(json.dumps(scores, indent=2))
 
 

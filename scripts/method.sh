@@ -15,7 +15,12 @@ python method/lightweight_splart.py \
   --data-dir data/synthetic_splart \
   --output checkpoints/lightweight_splart/results.json \
   --seed "${SEED:-0}" \
-  --device "${DEVICE:-cpu}"
+  --device "${DEVICE:-cpu}" \
+  --mobility-steps "${MOBILITY_STEPS:-160}" \
+  --render-steps "${RENDER_STEPS:-80}" \
+  --tries "${TRIES:-8}" \
+  --coarse-steps "${COARSE_STEPS:-220}" \
+  --refine-steps "${REFINE_STEPS:-420}"
 
 if [ -e checkpoints/static_baseline/results.json ]; then
   bash scripts/evaluate.sh checkpoints/lightweight_splart/results.json checkpoints/static_baseline/results.json

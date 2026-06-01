@@ -13,6 +13,8 @@
 - Continuation audit tightened the synthetic success criterion to require low articulation amount and pivot errors as well as low axis error, part IoU, and reconstruction Chamfer.
 - Current iteration expands the synthetic benchmark from two to four scenes and removes metric self-reporting from method and baseline artifacts.
 - CPU verification job `13f3315a-b7e` completed under the stricter evaluator. It showed strong articulation and reconstruction recovery but exposed a mobility-label degeneracy, so `method/lightweight_splart.py` now regularizes mobility probabilities to agree across the two observed states.
+- CPU verification job `1c5fb2bf-454` reached `core_claim`: the method succeeded on three of four expanded scenes and strongly beat the static baseline while preserving articulation, decomposition, and reconstruction constraints.
+- `eval/evaluate_synthetic.py` now writes `scoring/per_scene.json` in addition to aggregate `scoring/scores.json`, so future runs expose which scene or constraint failed.
 
 ## Results
 
@@ -32,9 +34,18 @@ The latest completed CPU verification job (`13f3315a-b7e`) ran the stricter four
 
 The method clearly improves over the static baseline and meets the articulation and geometric thresholds, but it misses the strict success target because mean part IoU is below 0.75. This is not yet `core_claim`. The next submitted job reruns the same benchmark after adding mobility consistency across states.
 
+CPU verification job `1c5fb2bf-454` reran the same four-scene benchmark after the mobility consistency fix:
+
+| Method | Success | Axis error (deg) | Amount error | Pivot error | Mean part IoU | Mobile IoU | Static IoU | Recon. Chamfer |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `static_baseline` | 0.0 | 55.8246 | 0.6032 | 0.0395 | 0.2857 | 0.0000 | 0.5714 | 0.01008 |
+| `splart_lightweight` | 0.75 | 0.7175 | 0.0227 | 0.0102 | 0.9964 | 0.9958 | 0.9969 | 0.00086 |
+
+This supports the core claim for the reduced-scale benchmark: SPLART-style cross-static/cross-mobile optimization recovers mobile/static decomposition and articulation parameters from two-state observations, while a static baseline cannot. One of the four scenes still misses at least one strict threshold, so the next run uses a larger optimizer budget and records per-scene diagnostics.
+
 ## Remaining
 
-- Verify the mobility-consistency fix on the expanded four-scene benchmark with the independent evaluator.
+- Verify whether the larger optimizer budget reaches full 4/4 success on the expanded four-scene benchmark.
 - Expand toward the full upstream 3DGS pipeline on downloaded SPLART/PARIS data.
 - Add image-space PSNR/depth/mIoU/mesh Chamfer once the full renderer and datasets are available.
 - Reproduce more paper table entries, especially PARIS-PMS and SPLART-PMS articulation success rates.
