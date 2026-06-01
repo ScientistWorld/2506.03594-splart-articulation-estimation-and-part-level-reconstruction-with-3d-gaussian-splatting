@@ -25,3 +25,12 @@
 - I did not run the Python evaluators or compute new numbers, per the design-only instruction. The runner should verify that existing `checkpoints/lightweight_splart/results.json` remains comfortably below the stricter `mobility_brier < 0.08` and `worst_part_iou > 0.70` success thresholds on both slices.
 - The split still has only two scenes per slice. The new metrics triangulate more behavior from each scene, but the next runner should watch for saturation by the lightweight method and for high variance from any method that specializes by articulation type.
 - `scoring/reference.json` now defines train/test metrics that the split evaluators compute. The legacy top-level `scripts/evaluate.sh` still uses `eval/evaluate_synthetic.py`; this pass did not modify that off-scope path.
+
+## Runtime Pass
+
+- Submitted CPU job `6cb2c8b2-e30` with `scripts/run.sh` running `scripts/evaluate_train.sh` followed by `scripts/evaluate_test.sh`; exit code was 0.
+- Generated `scoring/scores_train.json`, `scoring/scores_test.json`, `scoring/per_scene_train.json`, and `scoring/per_scene_test.json` from the checkpoint artifacts rather than hand-filled values.
+- Train and test method sets match exactly: `splart_lightweight` and `static_baseline`.
+- The score files are not byte-identical. Train uses `revolute_hinge` and `prismatic_diagonal`; test uses `revolute_tilted_axis` and `prismatic_slider`. Articulation and reconstruction metrics move between slices.
+- `splart_lightweight` succeeds on both slices and remains comfortably inside the stricter thresholds. Its continuous metrics leave room for improvement: train/test axis error is `0.5035/0.7875` degrees, amount error is `0.0091/0.0182`, pivot error is `0.0004/0.0095`, and mobility Brier is `0.0029/0.0007`.
+- Segmentation IoU for `splart_lightweight` is near-perfect and reaches `1.0` on the test slice. This is a caveat for the part-IoU metrics, but the split still has non-saturated geometric and soft-mask quantities, while the static baseline remains separated on mobile IoU, Brier score, and success.

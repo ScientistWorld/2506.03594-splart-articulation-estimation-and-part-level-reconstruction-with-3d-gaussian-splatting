@@ -1,4 +1,4 @@
-action: submit
+action: done
 gpus: 0
 test: false
-notes: "Run evaluate_train.sh and evaluate_test.sh on all checkpoint result artifacts; populate train/test scores for split sanity check."
+notes: "Two-scene synthetic split; 22 train metric values and 22 test metric values across two methods; train/test method sets match and geometric metrics differ, with a caveat that SPLART part IoU is saturated on held-out test."
