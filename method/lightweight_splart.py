@@ -6,7 +6,11 @@ cross-static weighted Chamfer and rendering consistency for part separation,
 and cross-mobile geometric/rendering consistency for articulation fitting. It
 uses a compact orthographic Gaussian density renderer instead of the official
 CUDA 3DGS renderer in method/splart_upstream, making the benchmark suitable for
-a quick CPU smoke run while preserving the optimization structure.
+a quick CPU smoke run while preserving the optimization structure. The two
+states share object identity in this benchmark, so the mobility probabilities
+are regularized to agree across states; this prevents the cross-static objective
+from using complementary masks that reconstruct well but do not represent a
+single static/mobile decomposition.
 """
 
 from __future__ import annotations
@@ -129,6 +133,7 @@ def optimize_scene(
     tries: int = 4,
     coarse_steps: int = 160,
     refine_steps: int = 260,
+    consistency_weight: float = 0.03,
 ) -> dict:
     torch.manual_seed(seed)
     data = np.load(path)
@@ -152,6 +157,7 @@ def optimize_scene(
         cs1_x, cs1_w = cross_static_sets(x0, x1, opacity, m0, m1, 1)
         loss = weighted_chamfer(cs0_x, cs0_w, x0, opacity) + weighted_chamfer(cs1_x, cs1_w, x1, opacity)
         loss = loss + 2e-4 * (m0.mean() + m1.mean())
+        loss = loss + consistency_weight * F.mse_loss(m0, m1)
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -165,6 +171,7 @@ def optimize_scene(
         loss = F.mse_loss(render_density(cs0_x, cs0_w, cameras), target0)
         loss = loss + F.mse_loss(render_density(cs1_x, cs1_w, cameras), target1)
         loss = loss + 2e-4 * (m0.mean() + m1.mean())
+        loss = loss + consistency_weight * F.mse_loss(m0, m1)
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -221,6 +228,7 @@ def optimize_scene(
         loss = weighted_chamfer(cm0_x, cm0_w, x0, opacity) + weighted_chamfer(cm1_x, cm1_w, x1, opacity)
         loss = loss + 0.25 * F.mse_loss(render_density(cm0_x, cm0_w, cameras), target0)
         loss = loss + 0.25 * F.mse_loss(render_density(cm1_x, cm1_w, cameras), target1)
+        loss = loss + consistency_weight * F.mse_loss(m0, m1)
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -258,6 +266,7 @@ def main():
     parser.add_argument("--tries", type=int, default=4)
     parser.add_argument("--coarse-steps", type=int, default=160)
     parser.add_argument("--refine-steps", type=int, default=260)
+    parser.add_argument("--consistency-weight", type=float, default=0.03)
     args = parser.parse_args()
     torch.set_num_threads(1)
     out = Path(args.output)
@@ -272,6 +281,7 @@ def main():
             tries=args.tries,
             coarse_steps=args.coarse_steps,
             refine_steps=args.refine_steps,
+            consistency_weight=args.consistency_weight,
         )
         for i, p in enumerate(sorted(Path(args.data_dir).glob("*.npz")))
     ]

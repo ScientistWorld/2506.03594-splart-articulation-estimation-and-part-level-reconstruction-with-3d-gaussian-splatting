@@ -11,7 +11,8 @@
 - `python validate.py --compare` passes after the reproduced scores are written.
 - `scoring/reference.json` now includes the paper's reported overall quantitative anchors from PARIS-PMS Table 1 and SPLART-PMS Table 4, in addition to the runnable lightweight benchmark target.
 - Continuation audit tightened the synthetic success criterion to require low articulation amount and pivot errors as well as low axis error, part IoU, and reconstruction Chamfer.
-- Current iteration expands the synthetic benchmark from two to four scenes and removes metric self-reporting from method and baseline artifacts. The next submitted CPU job will regenerate scores under this stricter evaluator.
+- Current iteration expands the synthetic benchmark from two to four scenes and removes metric self-reporting from method and baseline artifacts.
+- CPU verification job `13f3315a-b7e` completed under the stricter evaluator. It showed strong articulation and reconstruction recovery but exposed a mobility-label degeneracy, so `method/lightweight_splart.py` now regularizes mobility probabilities to agree across the two observed states.
 
 ## Results
 
@@ -22,13 +23,18 @@ The latest completed CPU verification job (`16b3c3d5-445`) reproduced the earlie
 | `static_baseline` | 0.0 | 90.0000 | 0.5565 | 0.5000 | 0.0000 | 1.0000 | 0.04559 |
 | `splart_lightweight` | 1.0 | 0.4398 | 0.0052 | 0.9513 | 0.9463 | 0.9563 | 0.00344 |
 
-This supports the reduced-scale Gaussian benchmark claim that SPLART-style cross-static and cross-mobile optimization can separate static/mobile parts and recover articulation parameters without part labels, while a static alignment baseline cannot. A stricter four-scene rerun with independent evaluation is pending.
+The latest completed CPU verification job (`13f3315a-b7e`) ran the stricter four-scene lightweight two-state articulated Gaussian benchmark:
 
-The audited scores remain above the stricter success threshold: `splart_lightweight` has amount error 0.0052 and pivot error 0.0014, both below the 0.05 cutoff; the static baseline remains unsuccessful. Both `python validate.py --reference-only` and `python validate.py --compare` passed in the compute container.
+| Method | Success | Axis error (deg) | Amount error | Pivot error | Mean part IoU | Mobile IoU | Static IoU | Recon. Chamfer |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `static_baseline` | 0.0 | 55.8246 | 0.6032 | 0.0395 | 0.2857 | 0.0000 | 0.5714 | 0.01008 |
+| `splart_lightweight` | 0.0 | 0.6696 | 0.0237 | 0.0140 | 0.7002 | 0.7089 | 0.6915 | 0.00079 |
+
+The method clearly improves over the static baseline and meets the articulation and geometric thresholds, but it misses the strict success target because mean part IoU is below 0.75. This is not yet `core_claim`. The next submitted job reruns the same benchmark after adding mobility consistency across states.
 
 ## Remaining
 
-- Verify the expanded four-scene benchmark with the independent evaluator.
+- Verify the mobility-consistency fix on the expanded four-scene benchmark with the independent evaluator.
 - Expand toward the full upstream 3DGS pipeline on downloaded SPLART/PARIS data.
 - Add image-space PSNR/depth/mIoU/mesh Chamfer once the full renderer and datasets are available.
 - Reproduce more paper table entries, especially PARIS-PMS and SPLART-PMS articulation success rates.
