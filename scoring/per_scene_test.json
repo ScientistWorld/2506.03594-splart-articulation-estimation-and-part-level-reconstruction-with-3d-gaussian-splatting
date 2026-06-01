@@ -18,7 +18,8 @@
         "mobility_brier": 0.0007754056010449087,
         "state_mobility_disagreement": 0.010506964921452372,
         "reconstruction_chamfer": 0.0005249282039174459,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.9710119087192609
       },
       "revolute_tilted_axis": {
         "slice": "test",
@@ -32,7 +33,8 @@
         "mobility_brier": 0.0007024020844748122,
         "state_mobility_disagreement": 0.009554193276978496,
         "reconstruction_chamfer": 0.0005590145581579886,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.7875671481688469
       }
     },
     "static_baseline": {
@@ -48,7 +50,8 @@
         "mobility_brier": 0.42857142857142855,
         "state_mobility_disagreement": 0.0,
         "reconstruction_chamfer": 0.00921901990966894,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.3226428299340431
       },
       "revolute_tilted_axis": {
         "slice": "test",
@@ -62,7 +65,8 @@
         "mobility_brier": 0.42857142857142855,
         "state_mobility_disagreement": 0.0,
         "reconstruction_chamfer": 0.012965269878055727,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.13850909871586783
       }
     }
   }

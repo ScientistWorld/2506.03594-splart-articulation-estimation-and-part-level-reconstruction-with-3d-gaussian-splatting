@@ -3,11 +3,16 @@
     "synthetic_articulated_gaussians": {
       "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. Thresholds follow the paper's success criteria: low articulation axis/amount/pivot error, correct part decomposition, and geometric consistency.",
       "weight": 0.5,
-      "primary_metric": "success",
+      "primary_metric": "quality_score",
       "metrics": {
-        "success": {
+        "quality_score": {
           "higher_is_better": true,
           "coefficient": 1.0,
+          "description": "Continuous joint score combining articulation-axis error, motion-amount error, pivot error, part IoU, and reconstruction Chamfer; used as the train/test ranking metric because binary success saturates on the current reproduction."
+        },
+        "success": {
+          "higher_is_better": true,
+          "coefficient": 0.7,
           "description": "Binary success under the benchmark thresholds for articulation, part decomposition, and geometry."
         },
         "axis_error_deg": {
@@ -64,6 +69,7 @@
       "results": {
         "static_baseline": {
           "type": "baseline",
+          "quality_score": 0.1942,
           "success": 0.0,
           "axis_error_deg": 90.0,
           "amount_error": 0.5565,
@@ -75,6 +81,7 @@
         },
         "splart_lightweight": {
           "type": "proposed",
+          "quality_score": 0.8988,
           "success": 1.0,
           "axis_error_deg": 5.0,
           "amount_error": 0.05,

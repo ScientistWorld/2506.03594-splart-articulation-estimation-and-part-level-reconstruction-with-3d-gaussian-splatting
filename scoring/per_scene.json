@@ -9,7 +9,8 @@
         "static_iou": 1.0,
         "mean_part_iou": 1.0,
         "reconstruction_chamfer": 0.0006801729475457239,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.9691697435435191
       },
       "prismatic_slider": {
         "axis_error_deg": 0.2825844184159154,
@@ -19,7 +20,8 @@
         "static_iou": 1.0,
         "mean_part_iou": 1.0,
         "reconstruction_chamfer": 0.0005249282039174459,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.9710119087192609
       },
       "revolute_hinge": {
         "axis_error_deg": 0.8497739364146513,
@@ -29,7 +31,8 @@
         "static_iou": 0.9876543209876543,
         "mean_part_iou": 0.9854938271604938,
         "reconstruction_chamfer": 0.0004082055995246584,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.8974201408795857
       },
       "revolute_tilted_axis": {
         "axis_error_deg": 1.2924306950701638,
@@ -39,7 +42,8 @@
         "static_iou": 1.0,
         "mean_part_iou": 1.0,
         "reconstruction_chamfer": 0.0005590145581579886,
-        "success": 1.0
+        "success": 1.0,
+        "quality_score": 0.7875671481688469
       }
     },
     "static_baseline": {
@@ -51,7 +55,8 @@
         "static_iou": 0.5714285714285714,
         "mean_part_iou": 0.2857142857142857,
         "reconstruction_chamfer": 0.011926913768181885,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.26716631674917063
       },
       "prismatic_slider": {
         "axis_error_deg": 8.984877131691304,
@@ -61,7 +66,8 @@
         "static_iou": 0.5714285714285714,
         "mean_part_iou": 0.2857142857142857,
         "reconstruction_chamfer": 0.00921901990966894,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.3226428299340431
       },
       "revolute_hinge": {
         "axis_error_deg": 87.13759460334657,
@@ -71,7 +77,8 @@
         "static_iou": 0.5714285714285714,
         "mean_part_iou": 0.2857142857142857,
         "reconstruction_chamfer": 0.006191184756483,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.1886911790006783
       },
       "revolute_tilted_axis": {
         "axis_error_deg": 72.49626593432097,
@@ -81,7 +88,8 @@
         "static_iou": 0.5714285714285714,
         "mean_part_iou": 0.2857142857142857,
         "reconstruction_chamfer": 0.012965269878055727,
-        "success": 0.0
+        "success": 0.0,
+        "quality_score": 0.13850909871586783
       }
     }
   }

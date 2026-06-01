@@ -103,6 +103,22 @@ def _mobility_scores(values: object, expected_len: int, name: str) -> np.ndarray
     return np.clip(scores, 0.0, 1.0)
 
 
+def _quality_score(
+    axis_error_deg: float,
+    amount_error: float,
+    pivot_error: float,
+    mean_part_iou: float,
+    reconstruction_chamfer: float,
+) -> float:
+    return float(
+        0.25 * np.exp(-axis_error_deg / 5.0)
+        + 0.20 * np.exp(-amount_error / 0.05)
+        + 0.15 * np.exp(-pivot_error / 0.05)
+        + 0.25 * mean_part_iou
+        + 0.15 * np.exp(-reconstruction_chamfer / 0.01)
+    )
+
+
 def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, float]:
     articulation_type = str(data["articulation_type"])
     axis = _normalize(np.asarray(prediction["axis"], dtype=np.float64))
@@ -150,6 +166,13 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         and mobility_brier < 0.08
         and reconstruction_chamfer < 0.01
     )
+    quality_score = _quality_score(
+        axis_error_deg,
+        amount_error,
+        pivot_error,
+        mean_part_iou,
+        reconstruction_chamfer,
+    )
     return {
         "axis_error_deg": axis_error_deg,
         "amount_error": amount_error,
@@ -159,6 +182,7 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         "mean_part_iou": mean_part_iou,
         "worst_part_iou": worst_part_iou,
         "mobility_brier": mobility_brier,
+        "quality_score": quality_score,
         "state_mobility_disagreement": state_mobility_disagreement,
         "reconstruction_chamfer": reconstruction_chamfer,
         "success": float(success),

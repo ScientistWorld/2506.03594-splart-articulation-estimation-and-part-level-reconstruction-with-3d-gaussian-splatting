@@ -10,7 +10,8 @@
           "pivot_error": 0.004980899559289383,
           "reconstruction_chamfer": 0.0005430803272864543,
           "static_iou": 0.9969135802469136,
-          "success": 1.0
+          "success": 1.0,
+          "quality_score": 0.8987846074634345
         },
         "static_baseline": {
           "amount_error": 0.6032423451542854,
@@ -20,7 +21,8 @@
           "pivot_error": 0.039545330313981254,
           "reconstruction_chamfer": 0.010075597078097388,
           "static_iou": 0.5714285714285714,
-          "success": 0.0
+          "success": 0.0,
+          "quality_score": 0.1942146220393937
         }
       }
     }

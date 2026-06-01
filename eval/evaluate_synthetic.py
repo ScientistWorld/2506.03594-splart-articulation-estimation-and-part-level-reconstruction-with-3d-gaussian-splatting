@@ -86,6 +86,22 @@ def _part_iou(pred: np.ndarray, labels: np.ndarray) -> tuple[float, float, float
     return mobile_iou, static_iou, (mobile_iou + static_iou) / 2.0
 
 
+def _quality_score(
+    axis_error_deg: float,
+    amount_error: float,
+    pivot_error: float,
+    mean_part_iou: float,
+    reconstruction_chamfer: float,
+) -> float:
+    return float(
+        0.25 * np.exp(-axis_error_deg / 5.0)
+        + 0.20 * np.exp(-amount_error / 0.05)
+        + 0.15 * np.exp(-pivot_error / 0.05)
+        + 0.25 * mean_part_iou
+        + 0.15 * np.exp(-reconstruction_chamfer / 0.01)
+    )
+
+
 def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, float]:
     articulation_type = str(data["articulation_type"])
     axis = _normalize(np.asarray(prediction["axis"], dtype=np.float64))
@@ -129,6 +145,13 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         and mean_part_iou > 0.75
         and reconstruction_chamfer < 0.01
     )
+    quality_score = _quality_score(
+        axis_error_deg,
+        amount_error,
+        pivot_error,
+        mean_part_iou,
+        reconstruction_chamfer,
+    )
     return {
         "axis_error_deg": axis_error_deg,
         "amount_error": amount_error,
@@ -136,6 +159,7 @@ def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, floa
         "mobile_iou": mobile_iou,
         "static_iou": static_iou,
         "mean_part_iou": mean_part_iou,
+        "quality_score": quality_score,
         "reconstruction_chamfer": reconstruction_chamfer,
         "success": float(success),
     }

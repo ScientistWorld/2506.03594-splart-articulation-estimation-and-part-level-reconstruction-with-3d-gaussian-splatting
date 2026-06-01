@@ -1,5 +1,5 @@
-action: submit
+action: done
 gpus: 0
 test: false
 milestone: core_claim_plus
-notes: "Run full lightweight SPLART reproduction plus validation and train/test scoring; verifies core claim with actual method execution."
+notes: "Primary metric changed from saturated binary success to continuous quality_score; validate.py passes; core claim remains supported by actual lightweight SPLART run beating static baseline on articulation, decomposition, and reconstruction."

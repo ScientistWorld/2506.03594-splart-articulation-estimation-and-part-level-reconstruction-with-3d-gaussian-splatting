@@ -3,7 +3,7 @@
 ## Primary: synthetic_articulated_gaussians
 
 Tests whether a method can infer articulation and part mobility from two-state observations.
-- **Metric**: success (higher is better)
+- **Metric**: quality_score (higher is better)
 - **Run**: `bash scripts/reproduce.sh` or `bash scripts/evaluate.sh <artifact.json>`
 
 ## Constraint: synthetic_articulated_gaussians
