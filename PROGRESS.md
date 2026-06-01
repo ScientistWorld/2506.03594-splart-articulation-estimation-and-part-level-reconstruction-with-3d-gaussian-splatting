@@ -15,6 +15,7 @@
 - CPU verification job `13f3315a-b7e` completed under the stricter evaluator. It showed strong articulation and reconstruction recovery but exposed a mobility-label degeneracy, so `method/lightweight_splart.py` now regularizes mobility probabilities to agree across the two observed states.
 - CPU verification job `1c5fb2bf-454` reached `core_claim`: the method succeeded on three of four expanded scenes and strongly beat the static baseline while preserving articulation, decomposition, and reconstruction constraints.
 - `eval/evaluate_synthetic.py` now writes `scoring/per_scene.json` in addition to aggregate `scoring/scores.json`, so future runs expose which scene or constraint failed.
+- CPU verification job `dd07d19d-f0f` reached `core_claim_plus`: the method now succeeds on all four expanded scenes, and the per-scene diagnostic file confirms every scene passes independently.
 
 ## Results
 
@@ -43,9 +44,17 @@ CPU verification job `1c5fb2bf-454` reran the same four-scene benchmark after th
 
 This supports the core claim for the reduced-scale benchmark: SPLART-style cross-static/cross-mobile optimization recovers mobile/static decomposition and articulation parameters from two-state observations, while a static baseline cannot. One of the four scenes still misses at least one strict threshold, so the next run uses a larger optimizer budget and records per-scene diagnostics.
 
+CPU verification job `dd07d19d-f0f` reran the four-scene benchmark with the larger default optimizer budget and per-scene diagnostics:
+
+| Method | Success | Axis error (deg) | Amount error | Pivot error | Mean part IoU | Mobile IoU | Static IoU | Recon. Chamfer |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `static_baseline` | 0.0 | 55.8246 | 0.6032 | 0.0395 | 0.2857 | 0.0000 | 0.5714 | 0.01008 |
+| `splart_lightweight` | 1.0 | 0.6455 | 0.0137 | 0.0050 | 0.9964 | 0.9958 | 0.9969 | 0.00054 |
+
+Per-scene success is 1.0 for `prismatic_diagonal`, `prismatic_slider`, `revolute_hinge`, and `revolute_tilted_axis`. This is the current best reproduction result and reaches `core_claim_plus`.
+
 ## Remaining
 
-- Verify whether the larger optimizer budget reaches full 4/4 success on the expanded four-scene benchmark.
 - Expand toward the full upstream 3DGS pipeline on downloaded SPLART/PARIS data.
 - Add image-space PSNR/depth/mIoU/mesh Chamfer once the full renderer and datasets are available.
 - Reproduce more paper table entries, especially PARIS-PMS and SPLART-PMS articulation success rates.

@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: core_claim**
+**Current: core_claim_plus**
 
 ## Progress Log
 
@@ -18,5 +18,10 @@
 - The method reached 0.75 success across four procedural articulated Gaussian scenes, versus 0.0 for the static baseline, with low axis, amount, pivot, and reconstruction errors.
 - Added per-scene diagnostic scoring and increased the default optimizer budget for the next run to target the remaining failed scene.
 
+### [2026-06-01 18:10] - core_claim_plus
+- CPU verification job `dd07d19d-f0f` completed successfully with independent evaluation and validation.
+- The lightweight SPLART reproduction reached 1.0 success on all four expanded scenes, including revolute, tilted revolute, prismatic, and diagonal prismatic settings.
+- Per-scene diagnostics in `scoring/per_scene.json` confirm every scene passes the axis, amount, pivot, part IoU, and reconstruction thresholds, while the static baseline remains at 0.0 success.
+
 ## Stop Justification
-- Not stopped. Continuing beyond `core_claim` to try to convert the remaining failed scene and make the benchmark more diagnostic.
+- Stopping at `core_claim_plus`: the reduced-scale SPLART method now succeeds across multiple articulation settings with independent evaluation, packaged scripts, and reusable diagnostics. Full PARIS-PMS/SPLART-PMS reproduction remains outside this lightweight CPU benchmark because it requires the full CUDA 3DGS/Nerfstudio pipeline and original image datasets.
