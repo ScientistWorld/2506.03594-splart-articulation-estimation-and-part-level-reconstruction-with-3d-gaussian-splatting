@@ -53,15 +53,15 @@ The primary claim is that staged self-supervision over mobile Gaussian component
 
 ## Metrics
 
-Articulation quality is measured by axis angular error in degrees, motion amount error, and pivot-line error for revolute scenes. Part decomposition is measured with static, mobile, and mean part IoU. Geometry consistency is measured with weighted Chamfer distance between the reconstructed articulated Gaussian sets and the observed state sets. The benchmark also reports a success rate: a scene succeeds when the axis error is below 5 degrees, motion amount error is below 0.05, pivot-line error is below 0.05 for revolute scenes, mean part IoU is above 0.75, and reconstruction Chamfer is below 0.01.
+Articulation quality is measured by axis angular error in degrees, motion amount error, and pivot-line error for revolute scenes. Part decomposition is measured with static, mobile, and mean part IoU, plus soft-label calibration and state-consistency checks. Geometry consistency is measured with weighted Chamfer distance between the reconstructed two-state object representation and the observed state sets. The benchmark also reports a success rate: a scene succeeds when the axis error is below 5 degrees, motion amount error is below 0.05, pivot-line error is below 0.05 for revolute scenes, mean part IoU is above 0.75, worst part IoU is above 0.70, mobility calibration is below 0.08, and reconstruction Chamfer is below 0.01.
 
 ## Baselines and Targets
 
-The included baseline treats all points as static and estimates no meaningful articulation. The target is to recover both the moving part and articulation parameters from two-state observations, with high success and low geometric error.
+The included baseline treats all elements as static and estimates no meaningful articulation. The target is to recover both the moving part and articulation parameters from two-state observations, with high success and low geometric error.
 
 ## Evaluation Protocol
 
-Run `scripts/reproduce.sh` to generate the benchmark data, run the baseline, run the proposed method, and write `scoring/scores.json`. Standalone evaluation is available through `scripts/evaluate.sh`, which reads prediction artifacts and never imports from `method/`. Future methods must emit the same JSON artifact format with per-scene predicted axis, pivot, motion amount, and per-state mobility values; all ground-truth-aware metrics are computed inside `eval/`.
+Run `scripts/reproduce.sh` to generate the benchmark data, run the baseline, run the reference reproduction, and write `scoring/scores.json`. Standalone evaluation is available through `scripts/evaluate.sh`, which reads prediction artifacts and never imports from `method/`. Future methods must emit the same JSON artifact format with per-scene predicted axis, pivot, motion amount, and per-state part-mobility values; all ground-truth-aware metrics are computed inside `eval/`.
 
 ---
 
@@ -256,6 +256,39 @@ Run `scripts/reproduce.sh` to generate the benchmark data, run the baseline, run
 - CPU verification job `dd07d19d-f0f` completed successfully with independent evaluation and validation.
 - The lightweight SPLART reproduction reached 1.0 success on all four expanded scenes, including revolute, tilted revolute, prismatic, and diagonal prismatic settings.
 - Per-scene diagnostics in `scoring/per_scene.json` confirm every scene passes the axis, amount, pivot, part IoU, and reconstruction thresholds, while the static baseline remains at 0.0 success.
+
+</details>
+
+### Iteration 8: gpt-5.5 (verifier)
+- **Milestone**: `core_claim_plus` | **Status**: done
+- **Working time**: 8m | **GPU**: 0.0h
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-06-01 17:38] - method_runs
+- Existing lightweight SPLART benchmark runs the staged Gaussian mobility and articulation optimizer end to end.
+- Current iteration hardened the benchmark by adding rendering losses, expanding scene coverage, and moving all metric computation into `eval/`.
+
+### [2026-06-01 17:50] - method_runs
+- CPU verification job `13f3315a-b7e` completed on the four-scene independent benchmark and validated the workspace structure.
+- The method recovered motion parameters and reconstruction geometry, but `success` remained 0.0 because mean part IoU was 0.700, below the 0.750 target.
+- Added a same-object mobility consistency regularizer to prevent complementary state masks from satisfying the cross-static loss without a single static/mobile decomposition.
+
+### [2026-06-01 17:59] - core_claim
+- CPU verification job `1c5fb2bf-454` completed successfully with independent evaluation and validation.
+- The method reached 0.75 success across four procedural articulated Gaussian scenes, versus 0.0 for the static baseline, with low axis, amount, pivot, and reconstruction errors.
+- Added per-scene diagnostic scoring and increased the default optimizer budget for the next run to target the remaining failed scene.
+
+### [2026-06-01 18:10] - core_claim_plus
+- CPU verification job `dd07d19d-f0f` completed successfully with independent evaluation and validation.
+- The lightweight SPLART reproduction reached 1.0 success on all four expanded scenes, including revolute, tilted revolute, prismatic, and diagonal prismatic settings.
+- Per-scene diagnostics in `scoring/per_scene.json` confirm every scene passes the axis, amount, pivot, part IoU, and reconstruction thresholds, while the static baseline remains at 0.0 success.
+
+### [2026-06-01 18:45] - core_claim_plus
+- Final verification passed after tightening the aggregate score files, method-agnostic docs, and tracked benchmark data.
+- `python validate.py --compare` passes with the added mobility constraint metrics present in `scores.json`.
+- The milestone remains `core_claim_plus`; the key limitation is that the gym uses a reduced synthetic benchmark rather than the full paper datasets.
 
 </details>
 
