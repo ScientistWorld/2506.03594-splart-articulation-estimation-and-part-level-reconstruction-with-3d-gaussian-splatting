@@ -3,14 +3,14 @@
     "synthetic_articulated_gaussians": {
       "results": {
         "splart_lightweight": {
-          "amount_error": 0.023724986078907315,
-          "axis_error_deg": 0.6695797726328261,
-          "mean_part_iou": 0.7001863114408404,
-          "mobile_iou": 0.708898857449582,
-          "pivot_error": 0.014041036516010652,
-          "reconstruction_chamfer": 0.0007893053617842091,
-          "static_iou": 0.6914737654320988,
-          "success": 0.0
+          "amount_error": 0.022681786789893278,
+          "axis_error_deg": 0.717531390885181,
+          "mean_part_iou": 0.9963734567901235,
+          "mobile_iou": 0.9958333333333333,
+          "pivot_error": 0.010183004306467866,
+          "reconstruction_chamfer": 0.0008631309945076889,
+          "static_iou": 0.9969135802469136,
+          "success": 0.75
         },
         "static_baseline": {
           "amount_error": 0.6032423451542854,

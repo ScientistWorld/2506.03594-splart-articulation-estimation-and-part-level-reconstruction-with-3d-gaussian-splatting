@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: method_runs
-notes: "CPU test job for the hardened lightweight SPLART benchmark: regenerate four synthetic scenes, run static baseline and staged method with rendering losses, evaluate predictions independently, and validate scores."
+notes: "CPU rerun after adding cross-state mobility consistency: regenerate four synthetic scenes, run static baseline and staged method, evaluate independently, and check whether mean part IoU reaches the core-claim success target."
