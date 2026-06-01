@@ -9,6 +9,7 @@
 - `baseline/static_alignment.py` provides a static-object baseline.
 - `scripts/reproduce.sh` completed successfully in the container and wrote `scoring/scores.json`.
 - `python validate.py --compare` passes after the reproduced scores are written.
+- `scoring/reference.json` now includes the paper's reported overall quantitative anchors from PARIS-PMS Table 1 and SPLART-PMS Table 4, in addition to the runnable lightweight benchmark target.
 
 ## Results
 

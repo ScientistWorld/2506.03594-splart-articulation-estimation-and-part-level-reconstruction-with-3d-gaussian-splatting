@@ -1,8 +1,8 @@
 {
   "experiments": {
     "synthetic_articulated_gaussians": {
-      "description": "Lightweight two-state articulated Gaussian benchmark for the core SPLART claim: recover articulation and part mobility without labels.",
-      "weight": 1.0,
+      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. Thresholds follow the paper's success criteria: low articulation error, correct part decomposition, and geometric consistency.",
+      "weight": 0.5,
       "primary_metric": "success",
       "metrics": {
         "success": {"higher_is_better": true, "coefficient": 1.0},
@@ -36,6 +36,126 @@
           "mobile_iou": 0.75,
           "static_iou": 0.75,
           "reconstruction_chamfer": 0.01
+        }
+      }
+    },
+    "paper_paris_pms_articulation_reconstruction": {
+      "description": "Paper Table 1, PARIS-PMS overall articulation and mesh reconstruction metrics.",
+      "weight": 0.25,
+      "primary_metric": "success",
+      "metrics": {
+        "success": {"higher_is_better": true, "coefficient": 1.0},
+        "axis_error_x1e2_deg": {"higher_is_better": false, "coefficient": -0.5},
+        "pivot_error_x1e3": {"higher_is_better": false, "coefficient": -0.2},
+        "rotation_error_x1e2_deg": {"higher_is_better": false, "coefficient": -0.3},
+        "translation_error_x1e3": {"higher_is_better": false, "coefficient": -0.3},
+        "static_cd_x1e3": {"higher_is_better": false, "coefficient": -0.3},
+        "mobile_cd_x1e3": {"higher_is_better": false, "coefficient": -0.3},
+        "whole_cd_x1e3": {"higher_is_better": false, "coefficient": -0.3}
+      },
+      "results": {
+        "PARIS": {
+          "type": "baseline",
+          "success": 0.42,
+          "axis_error_x1e2_deg": 103.12,
+          "pivot_error_x1e3": 5.27,
+          "rotation_error_x1e2_deg": 127.80,
+          "translation_error_x1e3": 4.28,
+          "static_cd_x1e3": 4.63,
+          "mobile_cd_x1e3": 85.11,
+          "whole_cd_x1e3": 12.09
+        },
+        "DTA": {
+          "type": "baseline",
+          "success": 0.99,
+          "axis_error_x1e2_deg": 13.11,
+          "pivot_error_x1e3": 1.86,
+          "rotation_error_x1e2_deg": 19.41,
+          "translation_error_x1e3": 1.15,
+          "static_cd_x1e3": 4.16,
+          "mobile_cd_x1e3": 1.83,
+          "whole_cd_x1e3": 1.83
+        },
+        "SPLART": {
+          "type": "proposed",
+          "success": 0.99,
+          "axis_error_x1e2_deg": 3.44,
+          "pivot_error_x1e3": 0.40,
+          "rotation_error_x1e2_deg": 4.85,
+          "translation_error_x1e3": 0.33,
+          "static_cd_x1e3": 4.47,
+          "mobile_cd_x1e3": 4.20,
+          "whole_cd_x1e3": 3.61
+        }
+      }
+    },
+    "paper_splart_pms_articulation": {
+      "description": "Paper Table 4, SPLART-PMS overall articulation metrics and ablations.",
+      "weight": 0.25,
+      "primary_metric": "success",
+      "metrics": {
+        "success": {"higher_is_better": true, "coefficient": 1.0},
+        "axis_error_x1e2_deg": {"higher_is_better": false, "coefficient": -0.5},
+        "pivot_error_x1e3": {"higher_is_better": false, "coefficient": -0.2},
+        "rotation_error_x1e2_deg": {"higher_is_better": false, "coefficient": -0.3},
+        "translation_error_x1e3": {"higher_is_better": false, "coefficient": -0.3}
+      },
+      "results": {
+        "PARIS": {
+          "type": "baseline",
+          "success": 0.277,
+          "axis_error_x1e2_deg": 103.88,
+          "pivot_error_x1e3": 9.36,
+          "rotation_error_x1e2_deg": 270.37,
+          "translation_error_x1e3": 14.96
+        },
+        "DTA": {
+          "type": "baseline",
+          "success": 0.591,
+          "axis_error_x1e2_deg": 77.76,
+          "pivot_error_x1e3": 1.28,
+          "rotation_error_x1e2_deg": 40.80,
+          "translation_error_x1e3": 9.25
+        },
+        "SPLART-2a": {
+          "type": "proposed",
+          "success": 0.837,
+          "axis_error_x1e2_deg": 13.85,
+          "pivot_error_x1e3": 2.53,
+          "rotation_error_x1e2_deg": 52.06,
+          "translation_error_x1e3": 1.50
+        },
+        "SPLART-2b": {
+          "type": "proposed",
+          "success": 0.747,
+          "axis_error_x1e2_deg": 9.34,
+          "pivot_error_x1e3": 3.92,
+          "rotation_error_x1e2_deg": 131.99,
+          "translation_error_x1e3": 0.73
+        },
+        "SPLART-3a": {
+          "type": "proposed",
+          "success": 0.064,
+          "axis_error_x1e2_deg": 85.53,
+          "pivot_error_x1e3": 2.83,
+          "rotation_error_x1e2_deg": 427.10,
+          "translation_error_x1e3": 2.26
+        },
+        "SPLART-3b": {
+          "type": "proposed",
+          "success": 0.809,
+          "axis_error_x1e2_deg": 73.62,
+          "pivot_error_x1e3": 5.11,
+          "rotation_error_x1e2_deg": 206.98,
+          "translation_error_x1e3": 9.43
+        },
+        "SPLART": {
+          "type": "proposed",
+          "success": 0.855,
+          "axis_error_x1e2_deg": 23.02,
+          "pivot_error_x1e3": 3.93,
+          "rotation_error_x1e2_deg": 78.31,
+          "translation_error_x1e3": 1.04
         }
       }
     }

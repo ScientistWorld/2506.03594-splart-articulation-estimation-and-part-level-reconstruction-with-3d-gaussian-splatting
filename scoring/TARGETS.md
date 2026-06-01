@@ -17,3 +17,7 @@ Tests whether success comes while preserving geometric consistency with the obse
 Tests whether the inferred decomposition actually separates static and mobile parts rather than only fitting a transform.
 - **Metric**: mean_part_iou (higher is better)
 - **Run**: `bash scripts/evaluate.sh <artifact.json>`
+
+## Paper Targets Not Yet Runnable
+
+The reference file also records paper-reported PARIS-PMS and SPLART-PMS aggregate articulation metrics. They are included as anchors for future expansion, but the current reusable evaluator scores the lightweight benchmark only.

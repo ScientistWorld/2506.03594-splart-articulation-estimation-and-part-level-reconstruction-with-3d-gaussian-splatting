@@ -14,4 +14,5 @@ set -e
 cd /home/user
 
 bash scripts/reproduce.sh
+python validate.py --reference-only
 python validate.py --compare
