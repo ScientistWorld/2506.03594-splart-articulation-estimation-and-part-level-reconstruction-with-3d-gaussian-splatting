@@ -3,23 +3,23 @@
     "synthetic_articulated_gaussians": {
       "results": {
         "splart_lightweight": {
-          "amount_error": 0.005198866128921509,
-          "axis_error_deg": 0.43978454172611237,
-          "mean_part_iou": 0.9512993666169896,
-          "mobile_iou": 0.9463487332339791,
-          "pivot_error": 0.00142580084502697,
-          "reconstruction_chamfer": 0.0034436237765476108,
-          "static_iou": 0.95625,
-          "success": 1.0
+          "amount_error": 0.023724986078907315,
+          "axis_error_deg": 0.6695797726328261,
+          "mean_part_iou": 0.7001863114408404,
+          "mobile_iou": 0.708898857449582,
+          "pivot_error": 0.014041036516010652,
+          "reconstruction_chamfer": 0.0007893053617842091,
+          "static_iou": 0.6914737654320988,
+          "success": 0.0
         },
         "static_baseline": {
-          "amount_error": 0.5565191507339478,
-          "axis_error_deg": 90.0,
-          "mean_part_iou": 0.5,
+          "amount_error": 0.6032423451542854,
+          "axis_error_deg": 55.82460228126231,
+          "mean_part_iou": 0.2857142857142857,
           "mobile_iou": 0.0,
-          "pivot_error": 0.0,
-          "reconstruction_chamfer": 0.04558957926928997,
-          "static_iou": 1.0,
+          "pivot_error": 0.039545330313981254,
+          "reconstruction_chamfer": 0.010075597078097388,
+          "static_iou": 0.5714285714285714,
           "success": 0.0
         }
       }
