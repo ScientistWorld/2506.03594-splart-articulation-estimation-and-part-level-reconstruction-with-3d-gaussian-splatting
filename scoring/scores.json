@@ -1,0 +1,28 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "splart_lightweight": {
+          "amount_error": 0.004242077469825745,
+          "axis_error_deg": 0.5530901700258255,
+          "mean_part_iou": 0.841988416988417,
+          "mobile_iou": 0.833976833976834,
+          "pivot_error": 0.007965794764459133,
+          "reconstruction_chamfer": 0.006085793720558286,
+          "static_iou": 0.85,
+          "success": 1.0
+        },
+        "static_baseline": {
+          "amount_error": 0.5565191507339478,
+          "axis_error_deg": 90.0,
+          "mean_part_iou": 0.5,
+          "mobile_iou": 0.0,
+          "pivot_error": 0.0,
+          "reconstruction_chamfer": 0.04558957926928997,
+          "static_iou": 1.0,
+          "success": 0.0
+        }
+      }
+    }
+  }
+}
