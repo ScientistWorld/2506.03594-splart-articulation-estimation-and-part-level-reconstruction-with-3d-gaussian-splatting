@@ -1,0 +1,194 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "ablation_no2a": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "ablation_no2b": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "ablation_no3a": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "ablation_no3b": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "better_color_geom": {
+          "success_rate": 0.8888888888888888,
+          "axis_error_deg": 0.7760852029253638,
+          "pivot_error": 0.0024990655617961157,
+          "rotation_error_deg": 2.239699330742245,
+          "translation_error": 0.001399959615260125
+        },
+        "icp_bruteforce": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "paper_lambda_geom": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "search_more": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "splart_seed1": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "splart_seed2": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "weaker_short": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "ablation_no2a": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "ablation_no2b": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "ablation_no3a": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "ablation_no3b": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "better_color_geom": {
+          "psnr": 35.92394537219025,
+          "depth_mae": 0.135965554971978,
+          "part_miou": 0.7481647286435693,
+          "cd_static": 0.07661789401434058,
+          "cd_mobile": 0.11524935100871102,
+          "cd_whole": 0.06960770191789684
+        },
+        "icp_bruteforce": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "paper_lambda_geom": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "search_more": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "splart_seed1": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "splart_seed2": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "weaker_short": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "train",
+    "num_scenes": 18,
+    "status": {
+      "ablation_no2a": "failed: no predictions for this slice",
+      "ablation_no2b": "failed: no predictions for this slice",
+      "ablation_no3a": "failed: no predictions for this slice",
+      "ablation_no3b": "failed: no predictions for this slice",
+      "better_color_geom": "ok",
+      "icp_bruteforce": "failed: no predictions for this slice",
+      "paper_lambda_geom": "failed: no predictions for this slice",
+      "search_more": "failed: no predictions for this slice",
+      "splart_seed1": "failed: no predictions for this slice",
+      "splart_seed2": "failed: no predictions for this slice",
+      "weaker_short": "failed: no predictions for this slice"
+    }
+  }
+}

@@ -2,19 +2,23 @@
 
 ## Data
 
-Use the generated scenes in `data/synthetic_splart` with the generator in `data/articulated_gaussians.py`. Do not add extra scenes, labels, external 3D assets, or additional supervision when reporting the benchmark score.
+- Use only the provided observations: `data/scenes/{train,test}/inputs`. Each scene must be solved from its own two-state observations plus the known joint type.
+- Train answers (`data/scenes/train/gt`) may be used for development and tuning, never as inputs at prediction time for any scene.
+- Do not use external 3D assets, part annotations, pretrained articulation models or extra rendered views. Do not try to recover the hidden test answers (e.g. by reverse-engineering the scene generator or its seeds); a separate review checks submissions for this.
+
+## Output
+
+- Write `checkpoints/<method>/predictions/<scene>.npz` for every train and test scene in the format of `briefing/evaluation.md`. Every directory under `checkpoints/` is scored, so remove abandoned ones.
+- The representation must stay renderable by the evaluator's splatting model (static and mobile Gaussian sets plus one joint).
 
 ## Evaluation
 
-Report scores only through `scripts/evaluate.sh`, which reads output artifacts. Do not modify `eval/` or `scoring/reference.json` to improve results.
-
-## Problem Formulation
-
-The method must solve the two-part, two-state articulation problem with known articulation type. It must output per-scene metrics for motion, part decomposition, and reconstruction consistency in the expected artifact format.
+- Scores come only from `scripts/evaluate_train.sh` / `scripts/evaluate.sh` (train) and the hidden test evaluator. Do not modify `eval/`, `data/scenes/`, `data/articulated_objects.py` or `scoring/reference.json`.
+- Thresholds, held-out cameras and articulation states, the test size and the rendering model are fixed by the evaluator.
 
 ## Compliance Checklist
 
-- [ ] Uses only the provided generated scenes for scored results
-- [ ] Does not train or tune on hidden ground-truth labels except through final evaluation
-- [ ] Writes method outputs as artifacts consumed by `scripts/evaluate.sh`
-- [ ] Keeps the benchmark's two-state articulated object setting fixed
+- [ ] Each scene's prediction is computed only from that scene's inputs and the joint type
+- [ ] No ground-truth file is read at prediction time
+- [ ] One prediction file per scene, numeric arrays only, within the documented ranges
+- [ ] No stale method directories left in `checkpoints/`

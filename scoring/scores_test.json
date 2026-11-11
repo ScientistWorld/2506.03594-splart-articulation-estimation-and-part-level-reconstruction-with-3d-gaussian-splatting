@@ -9,19 +9,12 @@
           "rotation_error_deg": 8.859340028780764,
           "translation_error": 0.0494146495489568
         },
-        "lightweight_splart": {
-          "success_rate": 0.0,
-          "axis_error_deg": 5.0,
-          "pivot_error": 0.05,
-          "rotation_error_deg": 10.0,
-          "translation_error": 0.05
-        },
         "splart": {
-          "success_rate": 0.38461538461538464,
-          "axis_error_deg": 2.630694656847154,
-          "pivot_error": 0.009939592732019128,
-          "rotation_error_deg": 6.037392071125407,
-          "translation_error": 0.03667922297387433
+          "success_rate": 0.7692307692307693,
+          "axis_error_deg": 1.424580572684956,
+          "pivot_error": 0.0005629845250953395,
+          "rotation_error_deg": 3.291007128882778,
+          "translation_error": 0.007268898441581447
         },
         "static_baseline": {
           "success_rate": 0.0,
@@ -42,21 +35,13 @@
           "cd_mobile": 0.19634275644931629,
           "cd_whole": 0.19409418599993372
         },
-        "lightweight_splart": {
-          "psnr": 10.0,
-          "depth_mae": 1.0,
-          "part_miou": 0.0,
-          "cd_static": 0.2,
-          "cd_mobile": 0.2,
-          "cd_whole": 0.2
-        },
         "splart": {
-          "psnr": 22.292552257164306,
-          "depth_mae": 0.6252020665901461,
-          "part_miou": 0.3472750101634582,
-          "cd_static": 0.1487583633927047,
-          "cd_mobile": 0.16202673972219714,
-          "cd_whole": 0.14464754829181714
+          "psnr": 31.00295883097958,
+          "depth_mae": 0.2523876242621745,
+          "part_miou": 0.6543780904887957,
+          "cd_static": 0.09689045987417304,
+          "cd_mobile": 0.12725426688604774,
+          "cd_whole": 0.08846260184143175
         },
         "static_baseline": {
           "psnr": 10.0,
@@ -74,7 +59,6 @@
     "num_scenes": 26,
     "status": {
       "icp_baseline": "ok",
-      "lightweight_splart": "failed: no predictions for this slice",
       "splart": "ok",
       "static_baseline": "ok"
     }

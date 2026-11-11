@@ -1,0 +1,19 @@
+{
+ "gpus": 4,
+ "workers": 24,
+ "elapsed_s": 9079.49483036995,
+ "completion": {
+  "splart": "44/44",
+  "splart_seed1": "26/26",
+  "better_color_geom": "26/26",
+  "search_more": "26/26",
+  "splart_seed2": "26/26",
+  "weaker_short": "26/26",
+  "ablation_no3a": "26/26",
+  "ablation_no2a": "26/26",
+  "ablation_no3b": "26/26",
+  "ablation_no2b": "26/26",
+  "paper_lambda_geom": "26/26",
+  "better_color_geom_train": "18/18"
+ }
+}

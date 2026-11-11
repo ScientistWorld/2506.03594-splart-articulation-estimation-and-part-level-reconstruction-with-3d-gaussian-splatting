@@ -1,0 +1,50 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "icp_baseline": {
+          "success_rate": 0.16666666666666666,
+          "axis_error_deg": 4.636009753395961,
+          "pivot_error": 0.028740708862664895,
+          "rotation_error_deg": 7.268588680664304,
+          "translation_error": 0.05
+        },
+        "static_baseline": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.832136784545318,
+          "pivot_error": 0.031681897514801244,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "icp_baseline": {
+          "psnr": 12.61840322721004,
+          "depth_mae": 0.86769089346821,
+          "part_miou": 0.12030088736158502,
+          "cd_static": 0.1771566018825023,
+          "cd_mobile": 0.17856562043062205,
+          "cd_whole": 0.17337236978875767
+        },
+        "static_baseline": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "train",
+    "num_scenes": 18,
+    "status": {
+      "icp_baseline": "ok",
+      "static_baseline": "ok"
+    }
+  }
+}

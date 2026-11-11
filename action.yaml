@@ -5,4 +5,4 @@ action: submit
 gpus: 2
 test: false
 milestone: core_claim_plus
-notes: "Hardening run: generate train/hidden-test scenes, baselines, reference SPLART (all stages), seed replicates, better/weaker variants, paper ablations, brute-force ICP, shortcuts, hidden-test evaluation and analysis."
+notes: "Final hardening run: reference SPLART with paper schedule (train+test), seeds 1-2, better (colour-aware Chamfer) / heavier-search / short variants, four paper ablations, paper lambda_geom check, shortcuts, hidden-test evaluation and analysis."

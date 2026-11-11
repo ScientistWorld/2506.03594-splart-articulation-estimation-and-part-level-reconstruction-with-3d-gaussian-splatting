@@ -9,19 +9,12 @@
           "rotation_error_deg": 7.268588680664304,
           "translation_error": 0.05
         },
-        "lightweight_splart": {
-          "success_rate": 0.0,
-          "axis_error_deg": 5.0,
-          "pivot_error": 0.05,
-          "rotation_error_deg": 10.0,
-          "translation_error": 0.05
-        },
         "splart": {
-          "success_rate": 0.3888888888888889,
-          "axis_error_deg": 2.7657633753767152,
-          "pivot_error": 0.025474948024106013,
-          "rotation_error_deg": 6.408798460571418,
-          "translation_error": 0.028764995443820267
+          "success_rate": 0.8888888888888888,
+          "axis_error_deg": 0.7977690936307624,
+          "pivot_error": 0.0031942488062221518,
+          "rotation_error_deg": 2.35544437849859,
+          "translation_error": 0.0013692564290098117
         },
         "static_baseline": {
           "success_rate": 0.0,
@@ -42,21 +35,13 @@
           "cd_mobile": 0.17856562043062205,
           "cd_whole": 0.17337236978875767
         },
-        "lightweight_splart": {
-          "psnr": 10.0,
-          "depth_mae": 1.0,
-          "part_miou": 0.0,
-          "cd_static": 0.2,
-          "cd_mobile": 0.2,
-          "cd_whole": 0.2
-        },
         "splart": {
-          "psnr": 22.667883034984165,
-          "depth_mae": 0.6205504890811885,
-          "part_miou": 0.33117837833754415,
-          "cd_static": 0.1452698993639291,
-          "cd_mobile": 0.16357684144397036,
-          "cd_whole": 0.14266424916222575
+          "psnr": 34.59674872551583,
+          "depth_mae": 0.1364441126968464,
+          "part_miou": 0.7297417738289276,
+          "cd_static": 0.07713613396979002,
+          "cd_mobile": 0.11683025952787864,
+          "cd_whole": 0.06944989989512325
         },
         "static_baseline": {
           "psnr": 10.0,
@@ -74,7 +59,6 @@
     "num_scenes": 18,
     "status": {
       "icp_baseline": "ok",
-      "lightweight_splart": "failed: no predictions for this slice",
       "splart": "ok",
       "static_baseline": "ok"
     }
