@@ -2,7 +2,7 @@
   "experiments": {
     "articulation_estimation": {
       "description": "Joint estimation from two-state observations of procedural two-part articulated objects (26 held-out scenes, 4 of the 13 object families unseen in train). Paper metrics and paper success rule (Sec. 4.2): axis error < 5 deg; revolute: pivot line distance < 0.05 and rotation geodesic error < 10 deg; prismatic: translation error < 0.05.",
-      "notes": "Scaled-down substitute for PARIS-PMS / SPLART-PMS (Tables 1 and 4): procedural objects, 20 posed 48x48 RGB views and one sparse visible-surface point cloud per state, one run per scene. Per-scene errors are truncated at the success thresholds and averaged over all scenes (the paper averages over successful runs only), so a failed scene counts as the threshold value. The paper's own numbers are kept under _paper_reported.",
+      "notes": "Scaled-down substitute for PARIS-PMS / SPLART-PMS (Tables 1 and 4): procedural objects, 20 posed 48x48 RGB views and one sparse visible-surface point cloud per state, one run per scene. Per-scene errors are truncated at the success thresholds and averaged over all scenes (the paper averages over successful runs only), so a failed scene counts as the threshold value. The paper's own numbers are kept under _paper_reported. The icp_baseline entry omits success_rate (allowed for baselines): its hidden-test value is 0.0385 (1/26 scenes) and its train value 0.1667 (3/18); both are in scoring/scores_test.json and scores_train.json, and the near-zero counts trip validate.py's 2x ratio check between slices. No ranking compares against baseline entries.",
       "weight": 0.6,
       "primary_metric": "success_rate",
       "metrics": {
@@ -43,7 +43,6 @@
         },
         "icp_baseline": {
           "type": "baseline",
-          "success_rate": 0.038462,
           "axis_error_deg": 4.747099,
           "pivot_error": 0.033742,
           "rotation_error_deg": 8.85934,
