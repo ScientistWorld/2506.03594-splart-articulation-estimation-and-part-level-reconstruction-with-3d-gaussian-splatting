@@ -21,18 +21,21 @@ TRAIN = "data/scenes/train/inputs"
 TEST = "data/scenes/test/inputs"
 VAR = "tmp/hardening/variants"
 
-# (name, output dir, inputs, extra args) in priority order
+# (name, output dir, inputs, extra args) in priority order.  The reference
+# defaults of method/splart.py are the paper schedule (1 view/step, 10000 /
+# 5000 / 10000 photometric steps) with 6 + 6 randomised tries.
 TASKS = [
     ("splart", "checkpoints/splart", [TRAIN, TEST], []),
     ("splart_seed1", f"{VAR}/splart_seed1", [TEST], ["--seed", "1"]),
     ("better_color_geom", f"{VAR}/better_color_geom", [TEST], ["--color-weight", "0.1"]),
-    ("weaker_short", f"{VAR}/weaker_short", [TEST], ["--s1-iters", "300", "--s2b-iters", "150", "--s3b-iters", "300", "--k-m", "1", "--k-cm", "1"]),
+    ("search_more", f"{VAR}/search_more", [TEST], ["--k-m", "12", "--k-cm", "12", "--s1-iters", "7500", "--s2b-iters", "7500", "--s3b-iters", "15000", "--geom-max-iters", "6000"]),
     ("splart_seed2", f"{VAR}/splart_seed2", [TEST], ["--seed", "2"]),
+    ("weaker_short", f"{VAR}/weaker_short", [TEST], ["--s1-iters", "500", "--s2b-iters", "500", "--s3b-iters", "1000", "--k-m", "1", "--k-cm", "1"]),
     ("ablation_no3a", f"{VAR}/ablation_no3a", [TEST], ["--skip-3a"]),
-    ("ablation_no3b", f"{VAR}/ablation_no3b", [TEST], ["--skip-3b"]),
-    ("search_more", f"{VAR}/search_more", [TEST], ["--k-m", "8", "--k-cm", "8", "--s1-iters", "4000", "--s2b-iters", "2000", "--s3b-iters", "4000", "--geom-max-iters", "6000"]),
     ("ablation_no2a", f"{VAR}/ablation_no2a", [TEST], ["--skip-2a"]),
+    ("ablation_no3b", f"{VAR}/ablation_no3b", [TEST], ["--skip-3b"]),
     ("ablation_no2b", f"{VAR}/ablation_no2b", [TEST], ["--skip-2b"]),
+    ("paper_lambda_geom", f"{VAR}/paper_lambda_geom", [TEST], ["--lambda-geom", "1e-4"]),
     ("better_color_geom_train", f"{VAR}/better_color_geom", [TRAIN], ["--color-weight", "0.1"]),
 ]
 
@@ -48,9 +51,9 @@ def gpu_count() -> int:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--per-gpu", type=int, default=6)
-    ap.add_argument("--chunk", type=int, default=2)
-    ap.add_argument("--launch-deadline", type=float, default=4.3 * 3600)
-    ap.add_argument("--kill-deadline", type=float, default=5.1 * 3600)
+    ap.add_argument("--chunk", type=int, default=1)
+    ap.add_argument("--launch-deadline", type=float, default=4.6 * 3600)
+    ap.add_argument("--kill-deadline", type=float, default=5.3 * 3600)
     ap.add_argument("--only", nargs="*", default=None)
     args = ap.parse_args()
     os.chdir(ROOT)

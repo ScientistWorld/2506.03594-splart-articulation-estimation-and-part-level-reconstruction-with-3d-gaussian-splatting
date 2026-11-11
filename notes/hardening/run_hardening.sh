@@ -32,14 +32,17 @@ if [ "$n_smoke" -ne 2 ]; then echo "smoke test produced $n_smoke predictions"; e
 python eval/train/evaluate.py --root tmp/hardening/smoke_root --output tmp/hardening/eval/smoke_train.json || exit 1
 cat tmp/hardening/smoke_root/smoke/logs/train_000.json | head -c 1500; echo
 
-echo "=== brute-force ICP (background)"
-python baseline/icp_articulation.py --inputs data/scenes/test/inputs --out tmp/hardening/variants/icp_bruteforce \
-  --restarts 512 > tmp/hardening/logs/icp_bruteforce.log 2>&1 &
-ICP_PID=$!
+echo "=== brute-force ICP (background, skipped if already complete)"
+ICP_PID=""
+if [ "$(ls tmp/hardening/variants/icp_bruteforce/predictions/*.npz 2>/dev/null | wc -l)" -lt 26 ]; then
+  python baseline/icp_articulation.py --inputs data/scenes/test/inputs --out tmp/hardening/variants/icp_bruteforce \
+    --restarts 512 > tmp/hardening/logs/icp_bruteforce.log 2>&1 &
+  ICP_PID=$!
+fi
 
 echo "=== reference and variants"
 python notes/hardening/driver.py
-wait $ICP_PID
+[ -n "$ICP_PID" ] && wait $ICP_PID
 
 echo "=== evaluation"
 bash scripts/evaluate.sh

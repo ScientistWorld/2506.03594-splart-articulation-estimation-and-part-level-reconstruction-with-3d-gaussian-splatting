@@ -18,12 +18,16 @@ Stage 3b  cross-mobile rendering (Eq. 14): joint optimisation of Gaussians,
           mobilities and articulation with the photometric loss.
 Stage 3c  mobility correction with the cross-mobile geometric consistency (Eq. 15).
 
-Constants follow the official implementation (method/splart_upstream): Chamfer
-targets restricted to weights > 0.1, lambda_geom = 1e-4, lambda_photo = 5e-3,
-K_m = K_cm = 3, articulation randomisation and learning rates, and the
-convergence rule of the geometric stages.  Reduced-scale choices: isotropic
-Gaussians with view-independent colour, no densification (pruning only), and
-fewer photometric iterations (images are 48x48).
+Settings follow the official implementation (method/splart_upstream) and paper:
+Chamfer targets restricted to weights > 0.1, lambda_photo = 5e-3, L1 + 0.2
+D-SSIM photometric loss, one view per photometric step with 10000 / 5000 /
+10000 steps for Stages 1 / 2b / 3b, articulation randomisation, the
+learning rates of every stage and the convergence rule of the geometric
+stages.  Reduced-scale choices: isotropic Gaussians with view-independent
+colour and no densification (pruning only) on 48x48 images; lambda_geom scaled
+from 1e-4 to 2e-3 for the ~200x sparser reconstructions (see LAMBDA_M_GEOM);
+mobility logits bounded to [-8, 8]; 6 instead of 3 randomised tries per
+geometric formulation (a resource, not a procedural change).
 
 Inputs: ``data/scenes/<split>/inputs/<scene>.npz``.  Output per scene:
 ``<out>/predictions/<scene>.npz`` in the artifact format of briefing/evaluation.md.
@@ -44,7 +48,16 @@ import torch
 import torch.nn.functional as F
 
 CULL_ALPHA = 0.1
-LAMBDA_M_GEOM = 1e-4
+# The official lambda_geom = 1e-4 is set for dense reconstructions (~1e5
+# Gaussians, nearest-neighbour spacing ~0.003).  The cross-static term marks a
+# Gaussian mobile when its squared distance to the other state exceeds roughly
+# lambda_geom, so the value is scaled with the squared point spacing of these
+# sparse reconstructions (~500 Gaussians per state, spacing ~0.015-0.03).
+LAMBDA_M_GEOM = 2e-3
+# Mobility logits are kept in [-8, 8] (m in [3e-4, 0.9997]); this only stops
+# Adam from saturating sigmoid(logit) so that later stages can still revise
+# the Stage 2a estimate.
+MOBILITY_LOGIT_BOUND = 8.0
 LAMBDA_M_PHOTO = 5e-3
 LAMBDA_OPACITY = 1e-5
 SSIM_LAMBDA = 0.2
@@ -282,7 +295,13 @@ class GeomContext:
         )
 
 
-def run_until_converged(loss_fn, groups, r_th=1e-3, max_iters=3000, min_iters=20, window=10):
+def clamp_mobility(mlog):
+    with torch.no_grad():
+        for m in mlog:
+            m.clamp_(-MOBILITY_LOGIT_BOUND, MOBILITY_LOGIT_BOUND)
+
+
+def run_until_converged(loss_fn, groups, r_th=1e-3, max_iters=3000, min_iters=20, window=10, post_step=None):
     """Upstream SplartModel._optimize: stop when the relative change vs a running mean < r_th."""
     opt = torch.optim.Adam(groups, eps=1e-15)
     avg = None
@@ -293,6 +312,8 @@ def run_until_converged(loss_fn, groups, r_th=1e-3, max_iters=3000, min_iters=20
         loss = loss_fn()
         loss.backward()
         opt.step()
+        if post_step is not None:
+            post_step()
         value = float(loss.detach())
         if avg is None:
             r, avg = 1.0, value
@@ -376,9 +397,10 @@ def _prune(g):
 def stage2a(ctx: GeomContext, mlog, cfg, log):
     def fn():
         m0, m1 = torch.sigmoid(mlog[0]), torch.sigmoid(mlog[1])
-        return ctx.loss("cs", m0, m1) + LAMBDA_M_GEOM * torch.cat([m0, m1]).mean()
+        return ctx.loss("cs", m0, m1) + cfg["lambda_geom"] * torch.cat([m0, m1]).mean()
 
-    v, n = run_until_converged(fn, [{"params": mlog, "lr": 3.0}], r_th=1e-3, max_iters=cfg["geom_max_iters"])
+    v, n = run_until_converged(fn, [{"params": mlog, "lr": 3.0}], r_th=1e-3, max_iters=cfg["geom_max_iters"],
+                               post_step=lambda: clamp_mobility(mlog))
     log["stage2a"] = {"loss": v, "iters": n}
 
 
@@ -400,6 +422,7 @@ def stage2b(scene, render, win, gen, tgt, mlog, cfg, log):
         loss.backward()
         opt.step()
         clamp_scales(*tgt)
+        clamp_mobility(mlog)
     log["stage2b_last_loss"] = float(loss.detach())
 
 
@@ -438,7 +461,7 @@ def stage3a(ctx: GeomContext, mlog, jtype, gen, device, cfg, log):
         return ctx.loss("cm", torch.sigmoid(mlog[0]), torch.sigmoid(mlog[1]), art)
 
     groups = art_param_groups(art, jtype, GEOM_LRS, best_cm[2]) + [{"params": mlog, "lr": 1.0}]
-    v, n = run_until_converged(fn, groups, r_th=1e-4, max_iters=cfg["geom_max_iters"])
+    v, n = run_until_converged(fn, groups, r_th=1e-4, max_iters=cfg["geom_max_iters"], post_step=lambda: clamp_mobility(mlog))
     tries.append({"mode": "cm_joint", "loss": v, "iters": n})
     log["stage3a"] = tries
     return canonical_articulation(art, jtype)
@@ -473,6 +496,7 @@ def stage3b(scene, render, win, gen, tgt, mlog, art, jtype, cfg, log):
         loss.backward()
         opt.step()
         clamp_scales(*tgt)
+        clamp_mobility(mlog)
     log["stage3b_last_loss"] = float(loss.detach())
     return canonical_articulation(art, jtype)
 
@@ -483,7 +507,8 @@ def stage3c(ctx: GeomContext, mlog, art, cfg, log):
     def fn():
         return ctx.loss("cm", torch.sigmoid(mlog[0]), torch.sigmoid(mlog[1]), art)
 
-    v, n = run_until_converged(fn, [{"params": mlog, "lr": 0.3}], r_th=1e-3, max_iters=cfg["geom_max_iters"])
+    v, n = run_until_converged(fn, [{"params": mlog, "lr": 0.3}], r_th=1e-3, max_iters=cfg["geom_max_iters"],
+                               post_step=lambda: clamp_mobility(mlog))
     log["stage3c"] = {"loss": v, "iters": n}
 
 
@@ -572,13 +597,14 @@ def main():
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--num-shards", type=int, default=1)
     ap.add_argument("--scenes", nargs="*", default=None, help="optional subset of scene names")
-    ap.add_argument("--batch", type=int, default=4, help="views per photometric step")
-    ap.add_argument("--s1-iters", type=int, default=2000)
-    ap.add_argument("--s2b-iters", type=int, default=1000)
-    ap.add_argument("--s3b-iters", type=int, default=2000)
+    ap.add_argument("--batch", type=int, default=1, help="views per photometric step (paper: 1)")
+    ap.add_argument("--s1-iters", type=int, default=5000, help="Stage-1 steps per state (paper: 10000 steps over both states)")
+    ap.add_argument("--s2b-iters", type=int, default=5000, help="Stage-2b steps (paper: 5000)")
+    ap.add_argument("--s3b-iters", type=int, default=10000, help="Stage-3b steps (paper: 10000)")
     ap.add_argument("--geom-max-iters", type=int, default=3000)
-    ap.add_argument("--k-m", type=int, default=3)
-    ap.add_argument("--k-cm", type=int, default=3)
+    ap.add_argument("--k-m", type=int, default=6, help="mobile-only tries (paper default 3)")
+    ap.add_argument("--k-cm", type=int, default=6, help="cross-mobile tries (paper default 3)")
+    ap.add_argument("--lambda-geom", type=float, default=LAMBDA_M_GEOM)
     ap.add_argument("--color-weight", type=float, default=0.0, help="0 = paper (xyz-only Chamfer)")
     ap.add_argument("--skip-2a", action="store_true")
     ap.add_argument("--skip-2b", action="store_true")
@@ -597,6 +623,7 @@ def main():
         "k_m": args.k_m,
         "k_cm": args.k_cm,
         "color_weight": args.color_weight,
+        "lambda_geom": args.lambda_geom,
         "skip_2a": args.skip_2a,
         "skip_2b": args.skip_2b,
         "skip_3a": args.skip_3a,
