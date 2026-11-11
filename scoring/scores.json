@@ -11,10 +11,10 @@
         },
         "splart": {
           "success_rate": 0.8888888888888888,
-          "axis_error_deg": 0.7977690936307624,
-          "pivot_error": 0.0031942488062221518,
-          "rotation_error_deg": 2.35544437849859,
-          "translation_error": 0.0013692564290098117
+          "axis_error_deg": 0.7987986803848843,
+          "pivot_error": 0.001482755924366116,
+          "rotation_error_deg": 2.3742443148442876,
+          "translation_error": 0.002010405459544772
         },
         "static_baseline": {
           "success_rate": 0.0,
@@ -36,12 +36,12 @@
           "cd_whole": 0.17337236978875767
         },
         "splart": {
-          "psnr": 34.59674872551583,
-          "depth_mae": 0.1364441126968464,
-          "part_miou": 0.7297417738289276,
-          "cd_static": 0.07713613396979002,
-          "cd_mobile": 0.11683025952787864,
-          "cd_whole": 0.06944989989512325
+          "psnr": 34.39668316541056,
+          "depth_mae": 0.13715478272407577,
+          "part_miou": 0.7337014167591176,
+          "cd_static": 0.07742456445083039,
+          "cd_mobile": 0.11627371661821109,
+          "cd_whole": 0.06950146597319307
         },
         "static_baseline": {
           "psnr": 10.0,

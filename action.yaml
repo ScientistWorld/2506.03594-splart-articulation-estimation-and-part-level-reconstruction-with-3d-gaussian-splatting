@@ -5,4 +5,4 @@ action: submit
 gpus: 2
 test: false
 milestone: core_claim_plus
-notes: "Final hardening run: reference SPLART with paper schedule (train+test), seeds 1-2, better (colour-aware Chamfer) / heavier-search / short variants, four paper ablations, paper lambda_geom check, shortcuts, hidden-test evaluation and analysis."
+notes: "Final reference run with the paper's lambda_geom: reference SPLART (train+test), seeds 1-2, colour-aware Chamfer (better), heavier search, short run, ablations 3a/3b/2b, shortcuts, hidden-test evaluation and analysis."

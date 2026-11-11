@@ -10,11 +10,11 @@
           "translation_error": 0.0494146495489568
         },
         "splart": {
-          "success_rate": 0.7692307692307693,
-          "axis_error_deg": 1.424580572684956,
-          "pivot_error": 0.0005629845250953395,
-          "rotation_error_deg": 3.291007128882778,
-          "translation_error": 0.007268898441581447
+          "success_rate": 0.8076923076923077,
+          "axis_error_deg": 1.2593361481696257,
+          "pivot_error": 0.0005045937120105051,
+          "rotation_error_deg": 2.2970579944221243,
+          "translation_error": 0.01077798695231722
         },
         "static_baseline": {
           "success_rate": 0.0,
@@ -36,12 +36,12 @@
           "cd_whole": 0.19409418599993372
         },
         "splart": {
-          "psnr": 31.00295883097958,
-          "depth_mae": 0.2523876242621745,
-          "part_miou": 0.6543780904887957,
-          "cd_static": 0.09689045987417304,
-          "cd_mobile": 0.12725426688604774,
-          "cd_whole": 0.08846260184143175
+          "psnr": 31.94041606181601,
+          "depth_mae": 0.21555642733029692,
+          "part_miou": 0.6901823991627296,
+          "cd_static": 0.09229181814606956,
+          "cd_mobile": 0.12392097350480348,
+          "cd_whole": 0.0829685272414549
         },
         "static_baseline": {
           "psnr": 10.0,
