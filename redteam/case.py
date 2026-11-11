@@ -2,7 +2,7 @@
 
 Install only the original hidden evaluator and test shell after preparation.
 Every final invocation is `bash scripts/evaluate_test.sh` with no arguments,
-in a new subprocess. No evaluator imports, Python path changes, or processes
+in a new subprocess. No evaluator imports, evaluator hooks, or processes
 persisting from training are used. Workspaces are disposable and gitignored.
 """
 from __future__ import annotations
@@ -229,6 +229,10 @@ def run(name):
     if before.exists():
         shutil.copy2(before, folder/'forged_scores_before_test.json')
     test_rc = command(['bash', 'scripts/evaluate_test.sh'], work, folder/'test.log')
+    if test_rc:
+        # Preserve concise failure evidence even though verbose logs are ignored.
+        tail = (folder/'test.log').read_text().splitlines()[-14:]
+        (folder/'failure.txt').write_text('\n'.join(tail) + '\n')
     for file in ['scores_test.json', 'per_scene_test.json']:
         path = work/'scoring'/file
         if path.exists():

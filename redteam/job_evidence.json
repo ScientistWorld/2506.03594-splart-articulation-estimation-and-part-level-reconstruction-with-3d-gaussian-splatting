@@ -1,0 +1,24 @@
+[
+  {
+    "run_id": "30fc141a-080",
+    "command": "bash /home/user/scripts/run.sh",
+    "status": "completed",
+    "returncode": 0,
+    "duration": 2467.652877807617,
+    "submitted_at": 1794375518.2648218,
+    "started_at": 1794375544.3566077,
+    "completed_at": 1794378012.0094855,
+    "stdout_tail": "shortcut_nonfinite_mobility: train=1 test=1 seconds=6.0\nshortcut_impossible_mobility: train=0 test=0 seconds=4.6\nshortcut_missing_scene: train=1 test=1 seconds=5.8\nshortcut_hidden_failed_method: train=1 test=0 seconds=7.2\nshortcut_baseline_replacement: train=0 test=0 seconds=6.3\nshortcut_replace_fixed_data: train=0 test=0 seconds=4.5\nshortcut_fail_success_gate: train=0 test=0 seconds=7.7\nbetter_annealed quality= 0.685555 success= 0.5 rank= -1.570176\nreference_original quality= 0.87929 success= 1.0 rank= 0.0\nreference_seed0 quality= 0.879233 success= 1.0 rank= -0.000117\nreference_seed1 quality= 0.877251 success= 1.0 rank= -0.006155\nreference_seed2 quality= 0.878588 success= 1.0 rank= -0.030004\nshortcut_all_mobile quality= 0.573215 success= 0.0 rank= -4.730817\nshortcut_all_static quality= 0.608974 success= 0.0 rank= -4.234137\nshortcut_baseline_replacement quality= 0.87929 success= 1.0 rank= 0.0\nshortcut_brute_force quality= 0.974915 success= 1.0 rank= 0.451376\nshortcut_correspondence_baseline quality= 0.974915 success= 1.0 rank= 0.451376\nshortcut_duplicate_scenes quality= 0.969196 success= 1.0 rank= 0.278277\nshortcut_fail_success_gate quality= 0.894641 success= 0.0 rank= -1.02628\nshortcut_generator_answers quality= 0.996891 success= 1.0 rank= 0.512672\nshortcut_hidden_failed_method quality= 0.87929 success= 1.0 rank= 0.0\nshortcut_impossible_mobility quality= 0.883939 success= 1.0 rank= 0.166255\nshortcut_nonfinite_axis quality= nan success= 0.0 rank= NONFINITE\nshortcut_npz_answers quality= 0.996891 success= 1.0 rank= 0.512672\nshortcut_replace_fixed_data quality= 1.0 success= 1.0 rank= 0.530397\nshortcut_self_reported_scores quality= 0.230576 success= 0.0 rank= -6.936448\nstatic_baseline quality= 0.230576 success= 0.0 rank= -6.936448\nweaker_short_training quality= 0.835361 success= 1.0 rank= -0.1732\nSeed quality range: 0.0019812395498822744 Seed illustrative rank range: 0.029887586999907064"
+  },
+  {
+    "run_id": "13826c05-cce",
+    "command": "bash /home/user/scripts/run.sh",
+    "status": "completed",
+    "returncode": 0,
+    "duration": 962.9852833747864,
+    "submitted_at": 1794378306.223232,
+    "started_at": 1794378315.4238575,
+    "completed_at": 1794379278.4091408,
+    "stdout_tail": "static_baseline quality= 0.230576 success= 0.0 rank= -7.288231\nweaker_short_training quality= 0.835361 success= 1.0 rank= -0.193883\nSeed quality range: 0.0019812395498822744 Seed illustrative rank range: 0.02564106650989316\nbetter_continued_training: train=0 test=0 seconds=832.4\nbetter_annealed quality= 0.685555 success= 0.5 rank= -1.547153\nbetter_continued_training quality= 0.946994 success= 1.0 rank= 0.241258\nbetter_mobility_correction quality= 0.884845 success= 0.0 rank= -1.26971\nreference_original quality= 0.87929 success= 1.0 rank= 0.0\nreference_seed0 quality= 0.879233 success= 1.0 rank= -0.000224\nreference_seed1 quality= 0.877251 success= 1.0 rank= -0.010267\nreference_seed2 quality= 0.878588 success= 1.0 rank= -0.02624\nshortcut_all_mobile quality= 0.573215 success= 0.0 rank= -5.071123\nshortcut_all_static quality= 0.608974 success= 0.0 rank= -4.548086\nshortcut_baseline_replacement quality= 0.87929 success= 1.0 rank= 0.0\nshortcut_brute_force quality= 0.974915 success= 1.0 rank= 0.335433\nshortcut_correspondence_baseline quality= 0.974915 success= 1.0 rank= 0.335433\nshortcut_duplicate_failed_scene quality= 0.962769 success= 0.9900990099009901 rank= 0.211491\nshortcut_duplicate_scenes quality= 0.969196 success= 1.0 rank= 0.29911\nshortcut_fail_success_gate quality= 0.894641 success= 0.0 rank= -1.165542\nshortcut_generator_answers quality= 0.996891 success= 1.0 rank= 0.399903\nshortcut_hidden_failed_method quality= 0.87929 success= 1.0 rank= 0.0\nshortcut_impossible_mobility quality= 0.883939 success= 1.0 rank= 0.035592\nshortcut_nonfinite_axis quality= nan success= 0.0 rank= NONFINITE\nshortcut_npz_answers quality= 0.996891 success= 1.0 rank= 0.399903\nshortcut_replace_fixed_data quality= 1.0 success= 1.0 rank= 0.418498\nshortcut_self_reported_scores quality= 0.230576 success= 0.0 rank= -7.409194\nstatic_baseline quality= 0.230576 success= 0.0 rank= -7.409194\nweaker_short_training quality= 0.835361 success= 1.0 rank= -0.196994\nSeed quality range: 0.0019812395498822744 Seed illustrative rank range: 0.026016756577610607"
+  }
+]

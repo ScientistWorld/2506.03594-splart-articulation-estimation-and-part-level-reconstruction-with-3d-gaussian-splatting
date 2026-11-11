@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/user/redteam/shortcut_null_axis/_state/workspace/eval/test/evaluate.py", line 301, in <module>
+    main()
+  File "/home/user/redteam/shortcut_null_axis/_state/workspace/eval/test/evaluate.py", line 292, in main
+    scores, per_scene = aggregate(artifacts, Path(args.data_dir))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_null_axis/_state/workspace/eval/test/evaluate.py", line 260, in aggregate
+    score = _score_scene(prediction, data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_null_axis/_state/workspace/eval/test/evaluate.py", line 131, in _score_scene
+    if float(np.dot(axis, gt_axis)) < 0.0:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: only 0-dimensional arrays can be converted to Python scalars

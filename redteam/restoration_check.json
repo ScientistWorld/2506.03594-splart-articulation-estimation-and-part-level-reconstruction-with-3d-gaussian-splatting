@@ -1,0 +1,26 @@
+{
+  "base_commit": "408d3376b519959df3bcae1d804af1e85cdbcbdc",
+  "original_paths_checked": [
+    "baseline",
+    "briefing",
+    "data",
+    "environment",
+    "eval",
+    "method",
+    "scoring",
+    "scripts",
+    "MILESTONES.md",
+    "PROGRESS.md",
+    ".gitignore",
+    "jobs"
+  ],
+  "differences": [],
+  "entrypoint_sha256": {
+    "scripts/evaluate_test.sh": "53085f75ccef2f6e5d28a7d3c8f85a16129ddcbfce31c3d694417b6672b79935",
+    "eval/test/evaluate.py": "976c4642c8d9467f113a07b3df130c1ee215cb04bf63611783415740e350caa2",
+    "scripts/evaluate_train.sh": "cb289ce6497e2e9c9ceebecee9b4836d3d16a77912ea4e9300e32951fc5d1190",
+    "eval/train/evaluate.py": "05e9a17ae52e0aa653b2c9d7ac81aa01dc6b5256b1bc452e414ba3b91962f3fd",
+    "scripts/run.sh": "7e6c4ff9da6820c3135c44a7a0515c5eeb2a077014d2c5aaffb203655c3c904b"
+  },
+  "note": "Original gym files and job script restored with git; automatic job records removed after saving audit evidence. Initial system-owned README/manifest/trajectory differences are preserved; action.yaml is completion protocol."
+}

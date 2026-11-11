@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/user/redteam/shortcut_empty_results/_state/workspace/eval/test/evaluate.py", line 301, in <module>
+    main()
+  File "/home/user/redteam/shortcut_empty_results/_state/workspace/eval/test/evaluate.py", line 292, in main
+    scores, per_scene = aggregate(artifacts, Path(args.data_dir))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_empty_results/_state/workspace/eval/test/evaluate.py", line 268, in aggregate
+    raise KeyError(f"Artifact set for method '{method}' is missing {SLICE} scenes: {missing}")
+KeyError: "Artifact set for method 'shortcut_empty_results' is missing test scenes: ['prismatic_slider', 'revolute_tilted_axis']"

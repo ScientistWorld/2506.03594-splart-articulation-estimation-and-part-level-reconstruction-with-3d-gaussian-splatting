@@ -1,0 +1,14 @@
+  File "/home/user/redteam/shortcut_nonfinite_mobility/_state/workspace/eval/test/evaluate.py", line 301, in <module>
+    main()
+  File "/home/user/redteam/shortcut_nonfinite_mobility/_state/workspace/eval/test/evaluate.py", line 292, in main
+    scores, per_scene = aggregate(artifacts, Path(args.data_dir))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_nonfinite_mobility/_state/workspace/eval/test/evaluate.py", line 260, in aggregate
+    score = _score_scene(prediction, data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_nonfinite_mobility/_state/workspace/eval/test/evaluate.py", line 147, in _score_scene
+    m0 = _mobility_scores(prediction["mobility_state0"], len(labels), "mobility_state0")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/redteam/shortcut_nonfinite_mobility/_state/workspace/eval/test/evaluate.py", line 103, in _mobility_scores
+    raise ValueError(f"{name} contains non-finite values")
+ValueError: mobility_state0 contains non-finite values
