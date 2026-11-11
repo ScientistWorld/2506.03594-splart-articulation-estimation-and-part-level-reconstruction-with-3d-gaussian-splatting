@@ -89,6 +89,16 @@ def prepare(name, work):
         if rc:
             raise RuntimeError(f'training returned {rc}')
         artifact = json.loads(artifact_path.read_text())
+    elif name in ['better_continued_training', 'better_mobility_correction']:
+        shutil.copy2(AUDIT/'refine_method.py', work/'method/refine.py')
+        save(work/'method/initial_outputs.json', artifact_from_reference())
+        mode='continued' if name=='better_continued_training' else 'mobility_correction'
+        cmd=[sys.executable, 'method/refine.py', '--mode', mode,
+             '--input', 'method/initial_outputs.json', '--output', str(artifact_path)]
+        save(folder/'training_command.json', cmd)
+        if command(cmd, work, folder/'prepare.log'):
+            raise RuntimeError('refinement failed')
+        artifact=json.loads(artifact_path.read_text())
     elif name == 'static_baseline' or name == 'shortcut_self_reported_scores':
         rc = command([sys.executable, 'baseline/static_alignment.py', '--output', str(artifact_path)],
                      work, folder/'prepare.log')
@@ -114,6 +124,16 @@ def prepare(name, work):
         artifact = artifact_from_reference()
         if name == 'reference_original':
             pass
+        elif name == 'shortcut_duplicate_failed_scene':
+            # Completely fail every revolute scene, then underweight that failure
+            # by repeating prismatic scenes; joint type is scientist-visible.
+            for row in artifact['results']:
+                if row['articulation_type']=='revolute':
+                    row.update(axis=[1.,0.,0.],pivot=[0.,0.,0.],amount=0.)
+                    row['mobility_state0']=[0.]*len(row['mobility_state0'])
+                    row['mobility_state1']=list(row['mobility_state0'])
+            artifact['results']=[r for r in artifact['results'] if r['articulation_type']=='revolute']+[
+                copy.deepcopy(r) for r in artifact['results'] if r['articulation_type']=='prismatic' for _ in range(100)]
         elif name == 'shortcut_duplicate_scenes':
             # Public joint types only. Repeat every prismatic result 100 times;
             # the evaluator counts rows, rather than unique scenes.

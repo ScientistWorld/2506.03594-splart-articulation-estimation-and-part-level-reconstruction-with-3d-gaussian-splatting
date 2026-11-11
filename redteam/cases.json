@@ -23,5 +23,8 @@
   "shortcut_hidden_failed_method",
   "shortcut_baseline_replacement",
   "shortcut_replace_fixed_data",
-  "shortcut_fail_success_gate"
+  "shortcut_fail_success_gate",
+  "better_continued_training",
+  "better_mobility_correction",
+  "shortcut_duplicate_failed_scene"
 ]
