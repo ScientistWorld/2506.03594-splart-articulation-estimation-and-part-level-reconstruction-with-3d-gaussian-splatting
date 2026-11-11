@@ -45,7 +45,7 @@ def rigid_fit(x, y):
     return rotation, translation
 
 
-def brute_force_predictions():
+def brute_force_predictions(enumerate_triples=True):
     """Shortcut: exhaust every observed moving-point triple, then rigid refit.
 
     Only state0/state1 and known joint type are read. Corresponding row order
@@ -72,6 +72,14 @@ def brute_force_predictions():
             amount = np.linalg.norm(shift)
             axis, pivot = shift/amount, np.zeros(3)
             candidates = len(shifts)
+        elif not enumerate_triples:
+            rotation, translation = rigid_fit(xm, ym)
+            r = rotation.T
+            amount = np.arccos(np.clip((np.trace(r)-1)/2, -1, 1))
+            axis = np.array([r[2,1]-r[1,2], r[0,2]-r[2,0], r[1,0]-r[0,1]])
+            axis /= np.linalg.norm(axis)
+            pivot = np.linalg.lstsq(np.eye(3)-r, translation, rcond=1e-8)[0]
+            candidates = 1
         else:
             best_error, best = float('inf'), None
             iterator = itertools.combinations(range(len(xm)), 3)
@@ -106,8 +114,9 @@ def brute_force_predictions():
 
 if __name__ == '__main__':
     name, output = sys.argv[1:3]
-    if name == 'shortcut_brute_force':
-        rows, diagnostic = brute_force_predictions()
+    Path(output).parent.mkdir(parents=True, exist_ok=True)
+    if name in ['shortcut_brute_force', 'shortcut_correspondence_baseline']:
+        rows, diagnostic = brute_force_predictions(name == 'shortcut_brute_force')
         Path(output).with_name('brute_force_diagnostics.json').write_text(json.dumps(diagnostic, indent=2))
     else:
         rows = leaked_predictions(name == 'shortcut_generator_answers')
