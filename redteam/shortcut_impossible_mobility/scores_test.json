@@ -1,0 +1,22 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "shortcut_impossible_mobility": {
+          "amount_error": 0.018239006472101475,
+          "axis_error_deg": 0.7875075567430396,
+          "mean_part_iou": 1.0,
+          "mobile_iou": 1.0,
+          "mobility_brier": 0.0,
+          "pivot_error": 0.00953278080706815,
+          "quality_score": 0.8839386753822469,
+          "reconstruction_chamfer": 0.00022002148276728615,
+          "state_mobility_disagreement": 0.0,
+          "static_iou": 1.0,
+          "success": 1.0,
+          "worst_part_iou": 1.0
+        }
+      }
+    }
+  }
+}

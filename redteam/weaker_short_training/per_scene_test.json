@@ -1,0 +1,41 @@
+{
+  "slice": "test",
+  "scenes": [
+    "revolute_tilted_axis",
+    "prismatic_slider"
+  ],
+  "synthetic_articulated_gaussians": {
+    "weaker_short_training": {
+      "prismatic_slider": {
+        "slice": "test",
+        "axis_error_deg": 0.13125551649811884,
+        "amount_error": 0.0029631834825483623,
+        "pivot_error": 0.0,
+        "mobile_iou": 0.9666666666666667,
+        "static_iou": 0.975609756097561,
+        "mean_part_iou": 0.9711382113821139,
+        "worst_part_iou": 0.9666666666666667,
+        "mobility_brier": 0.012135195115261437,
+        "quality_score": 0.9613033434507587,
+        "state_mobility_disagreement": 0.007699257567791002,
+        "reconstruction_chamfer": 0.0009427751180444164,
+        "success": 1.0
+      },
+      "revolute_tilted_axis": {
+        "slice": "test",
+        "axis_error_deg": 3.2987792584289517,
+        "amount_error": 0.04004049301147461,
+        "pivot_error": 0.01780797030419217,
+        "mobile_iou": 1.0,
+        "static_iou": 1.0,
+        "mean_part_iou": 1.0,
+        "worst_part_iou": 1.0,
+        "mobility_brier": 0.002486196941502195,
+        "quality_score": 0.7094193489882188,
+        "state_mobility_disagreement": 0.010261260232489024,
+        "reconstruction_chamfer": 0.0010293549223038224,
+        "success": 1.0
+      }
+    }
+  }
+}

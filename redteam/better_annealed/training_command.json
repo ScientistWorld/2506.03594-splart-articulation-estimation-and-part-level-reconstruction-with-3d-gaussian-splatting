@@ -1,0 +1,18 @@
+[
+  "/usr/local/bin/python",
+  "method/lightweight_splart.py",
+  "--seed",
+  "0",
+  "--output",
+  "/home/user/redteam/better_annealed/_state/workspace/checkpoints/candidate/results.json",
+  "--mobility-steps",
+  "160",
+  "--render-steps",
+  "80",
+  "--tries",
+  "8",
+  "--coarse-steps",
+  "220",
+  "--refine-steps",
+  "840"
+]

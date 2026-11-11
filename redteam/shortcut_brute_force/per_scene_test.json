@@ -1,0 +1,41 @@
+{
+  "slice": "test",
+  "scenes": [
+    "revolute_tilted_axis",
+    "prismatic_slider"
+  ],
+  "synthetic_articulated_gaussians": {
+    "shortcut_brute_force": {
+      "prismatic_slider": {
+        "slice": "test",
+        "axis_error_deg": 0.3307396437129208,
+        "amount_error": 0.0023613230587640507,
+        "pivot_error": 0.0,
+        "mobile_iou": 1.0,
+        "static_iou": 1.0,
+        "mean_part_iou": 1.0,
+        "worst_part_iou": 1.0,
+        "mobility_brier": 0.0,
+        "quality_score": 0.9718749505937306,
+        "state_mobility_disagreement": 0.0,
+        "reconstruction_chamfer": 0.00019505124387993305,
+        "success": 1.0
+      },
+      "revolute_tilted_axis": {
+        "slice": "test",
+        "axis_error_deg": 0.15593909262925953,
+        "amount_error": 0.0017174896256226813,
+        "pivot_error": 0.0014674365908961798,
+        "mobile_iou": 1.0,
+        "static_iou": 1.0,
+        "mean_part_iou": 1.0,
+        "worst_part_iou": 1.0,
+        "mobility_brier": 0.0,
+        "quality_score": 0.9779546597348725,
+        "state_mobility_disagreement": 0.0,
+        "reconstruction_chamfer": 0.00022089337947095406,
+        "success": 1.0
+      }
+    }
+  }
+}

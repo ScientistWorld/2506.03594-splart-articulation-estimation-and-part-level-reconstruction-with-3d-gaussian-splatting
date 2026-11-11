@@ -1,0 +1,13 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "shortcut_self_reported_scores": {
+          "quality_score": 1,
+          "success": 1,
+          "axis_error_deg": 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+[
+  "/usr/local/bin/python",
+  "method/lightweight_splart.py",
+  "--seed",
+  "0",
+  "--output",
+  "/home/user/redteam/weaker_short_training/_state/workspace/checkpoints/candidate/results.json",
+  "--mobility-steps",
+  "16",
+  "--render-steps",
+  "8",
+  "--tries",
+  "1",
+  "--coarse-steps",
+  "22",
+  "--refine-steps",
+  "42"
+]

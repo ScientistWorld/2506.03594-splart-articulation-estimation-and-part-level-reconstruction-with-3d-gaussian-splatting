@@ -1,0 +1,826 @@
+{
+  "reference": {
+    "amount_error": 0.018239006472101475,
+    "axis_error_deg": 0.7875075567430396,
+    "mean_part_iou": 1.0,
+    "mobile_iou": 1.0,
+    "mobility_brier": 0.0007389038427598604,
+    "pivot_error": 0.00953278080706815,
+    "quality_score": 0.8792895284440538,
+    "reconstruction_chamfer": 0.0005419713810377173,
+    "state_mobility_disagreement": 0.010030579099215434,
+    "static_iou": 1.0,
+    "success": 1.0,
+    "worst_part_iou": 1.0
+  },
+  "scores": {
+    "better_annealed": {
+      "amount_error": 0.09848636779388727,
+      "axis_error_deg": 3.991317822728421,
+      "mean_part_iou": 0.971875,
+      "mobile_iou": 0.96875,
+      "mobility_brier": 0.0285388071995649,
+      "pivot_error": 0.06374914652339699,
+      "quality_score": 0.6855547063359487,
+      "reconstruction_chamfer": 0.0019526714868352147,
+      "state_mobility_disagreement": 0.01577591046142126,
+      "static_iou": 0.975,
+      "success": 0.5,
+      "worst_part_iou": 0.96875
+    },
+    "reference_original": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007389038427598604,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.8792895284440538,
+      "reconstruction_chamfer": 0.0005419713810377173,
+      "state_mobility_disagreement": 0.010030579099215434,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "reference_seed0": {
+      "amount_error": 0.01824341203775414,
+      "axis_error_deg": 0.7879168830686807,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007400435885898104,
+      "pivot_error": 0.009532614108984766,
+      "quality_score": 0.8792326968879369,
+      "reconstruction_chamfer": 0.0005434479414080885,
+      "state_mobility_disagreement": 0.010023292455090475,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "reference_seed1": {
+      "amount_error": 0.018393714800193334,
+      "axis_error_deg": 0.7878545761004612,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.000761941566497501,
+      "pivot_error": 0.010341343382411288,
+      "quality_score": 0.8772514573380547,
+      "reconstruction_chamfer": 0.0005502640191946352,
+      "state_mobility_disagreement": 0.009756697229957874,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "reference_seed2": {
+      "amount_error": 0.016039086210133953,
+      "axis_error_deg": 0.7011046804361075,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007371412802224006,
+      "pivot_error": 0.014368960740903342,
+      "quality_score": 0.878587990598866,
+      "reconstruction_chamfer": 0.0005212497267080578,
+      "state_mobility_disagreement": 0.010410552752520223,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_all_mobile": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 0.21428571428571427,
+      "mobile_iou": 0.42857142857142855,
+      "mobility_brier": 0.5714285714285714,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.573215342644385,
+      "reconstruction_chamfer": 0.015312828610372836,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 0.0,
+      "success": 0.0,
+      "worst_part_iou": 0.0
+    },
+    "shortcut_all_static": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 0.2857142857142857,
+      "mobile_iou": 0.0,
+      "mobility_brier": 0.42857142857142855,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.6089742203663719,
+      "reconstruction_chamfer": 0.011092144919482076,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 0.5714285714285714,
+      "success": 0.0,
+      "worst_part_iou": 0.0
+    },
+    "shortcut_baseline_replacement": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007389038427598604,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.8792895284440538,
+      "reconstruction_chamfer": 0.0005419713810377173,
+      "state_mobility_disagreement": 0.010030579099215434,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_brute_force": {
+      "amount_error": 0.002039406342193366,
+      "axis_error_deg": 0.24333936817109017,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.0007337182954480899,
+      "quality_score": 0.9749148051643015,
+      "reconstruction_chamfer": 0.00020797231167544354,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_correspondence_baseline": {
+      "amount_error": 0.002039406342193366,
+      "axis_error_deg": 0.24333936817109017,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.0007337182954480899,
+      "quality_score": 0.9749148051643015,
+      "reconstruction_chamfer": 0.00020797231167544354,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_duplicate_scenes": {
+      "amount_error": 0.0022547311367191185,
+      "axis_error_deg": 0.29258289640259094,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007746827939501561,
+      "pivot_error": 0.00018876793677362672,
+      "quality_score": 0.9691956239613372,
+      "reconstruction_chamfer": 0.0005252656925732932,
+      "state_mobility_disagreement": 0.010497531538833841,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_fail_success_gate": {
+      "amount_error": 0.002039406342193366,
+      "axis_error_deg": 0.24333936817109017,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.08410000000000001,
+      "pivot_error": 0.0007337182954480899,
+      "quality_score": 0.8946411703604582,
+      "reconstruction_chamfer": 0.008153555527810299,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 0.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_generator_answers": {
+      "amount_error": 0.0,
+      "axis_error_deg": 1.166276489861346e-06,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.0,
+      "quality_score": 0.9968914980845534,
+      "reconstruction_chamfer": 0.0002094147343630632,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_hidden_failed_method": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007389038427598604,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.8792895284440538,
+      "reconstruction_chamfer": 0.0005419713810377173,
+      "state_mobility_disagreement": 0.010030579099215434,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_impossible_mobility": {
+      "amount_error": 0.018239006472101475,
+      "axis_error_deg": 0.7875075567430396,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": 0.8839386753822469,
+      "reconstruction_chamfer": 0.00022002148276728615,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_nonfinite_axis": {
+      "amount_error": NaN,
+      "axis_error_deg": NaN,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0007389038427598604,
+      "pivot_error": 0.00953278080706815,
+      "quality_score": NaN,
+      "reconstruction_chamfer": NaN,
+      "state_mobility_disagreement": 0.010030579099215434,
+      "static_iou": 1.0,
+      "success": 0.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_npz_answers": {
+      "amount_error": 0.0,
+      "axis_error_deg": 1.166276489861346e-06,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.0,
+      "quality_score": 0.9968914980845534,
+      "reconstruction_chamfer": 0.0002094147343630632,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_replace_fixed_data": {
+      "amount_error": 0.0,
+      "axis_error_deg": 0.0,
+      "mean_part_iou": 1.0,
+      "mobile_iou": 1.0,
+      "mobility_brier": 0.0,
+      "pivot_error": 0.0,
+      "quality_score": 1.0,
+      "reconstruction_chamfer": 0.0,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 1.0,
+      "success": 1.0,
+      "worst_part_iou": 1.0
+    },
+    "shortcut_self_reported_scores": {
+      "amount_error": 0.669965535402298,
+      "axis_error_deg": 40.74057153300614,
+      "mean_part_iou": 0.2857142857142857,
+      "mobile_iou": 0.0,
+      "mobility_brier": 0.42857142857142855,
+      "pivot_error": 0.04375736990194021,
+      "quality_score": 0.23057596432495547,
+      "reconstruction_chamfer": 0.011092144893862333,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 0.5714285714285714,
+      "success": 0.0,
+      "worst_part_iou": 0.0
+    },
+    "static_baseline": {
+      "amount_error": 0.669965535402298,
+      "axis_error_deg": 40.74057153300614,
+      "mean_part_iou": 0.2857142857142857,
+      "mobile_iou": 0.0,
+      "mobility_brier": 0.42857142857142855,
+      "pivot_error": 0.04375736990194021,
+      "quality_score": 0.23057596432495547,
+      "reconstruction_chamfer": 0.011092144893862333,
+      "state_mobility_disagreement": 0.0,
+      "static_iou": 0.5714285714285714,
+      "success": 0.0,
+      "worst_part_iou": 0.0
+    },
+    "weaker_short_training": {
+      "amount_error": 0.021501838247011486,
+      "axis_error_deg": 1.7150173874635353,
+      "mean_part_iou": 0.9855691056910569,
+      "mobile_iou": 0.9833333333333334,
+      "mobility_brier": 0.007310696028381816,
+      "pivot_error": 0.008903985152096085,
+      "quality_score": 0.8353613462194888,
+      "reconstruction_chamfer": 0.0009860650201741195,
+      "state_mobility_disagreement": 0.008980258900140013,
+      "static_iou": 0.9878048780487805,
+      "success": 1.0,
+      "worst_part_iou": 0.9833333333333334
+    }
+  },
+  "illustrative_rank": {
+    "better_annealed": -1.5701759359678755,
+    "reference_original": 0.0,
+    "reference_seed0": -0.00011672128995303025,
+    "reference_seed1": -0.006154685183707006,
+    "reference_seed2": -0.030004308289860095,
+    "shortcut_all_mobile": -4.730816706434021,
+    "shortcut_all_static": -4.234137341109125,
+    "shortcut_baseline_replacement": 0.0,
+    "shortcut_brute_force": 0.4513760313993068,
+    "shortcut_correspondence_baseline": 0.4513760313993068,
+    "shortcut_duplicate_scenes": 0.2782768579116437,
+    "shortcut_fail_success_gate": -1.0262796509381902,
+    "shortcut_generator_answers": 0.5126724137155448,
+    "shortcut_hidden_failed_method": 0.0,
+    "shortcut_impossible_mobility": 0.16625500403676394,
+    "shortcut_npz_answers": 0.5126724137155448,
+    "shortcut_replace_fixed_data": 0.5303971987199219,
+    "shortcut_self_reported_scores": -6.93644848085581,
+    "static_baseline": -6.93644848085581,
+    "weaker_short_training": -0.17320016158301774
+  },
+  "cohort": [
+    "better_annealed",
+    "reference_original",
+    "reference_seed0",
+    "reference_seed1",
+    "reference_seed2",
+    "shortcut_all_mobile",
+    "shortcut_all_static",
+    "shortcut_baseline_replacement",
+    "shortcut_brute_force",
+    "shortcut_correspondence_baseline",
+    "shortcut_duplicate_scenes",
+    "shortcut_fail_success_gate",
+    "shortcut_generator_answers",
+    "shortcut_hidden_failed_method",
+    "shortcut_impossible_mobility",
+    "shortcut_npz_answers",
+    "shortcut_replace_fixed_data",
+    "shortcut_self_reported_scores",
+    "static_baseline",
+    "weaker_short_training"
+  ],
+  "normalization_sd": {
+    "quality_score": 0.22478499766544952,
+    "success": 0.43229041164476456,
+    "axis_error_deg": 12.02271037470979,
+    "amount_error": 0.19721826124723685,
+    "pivot_error": 0.016879115571790747,
+    "mean_part_iou": 0.29219672923996864,
+    "mobile_iou": 0.36556818480938286,
+    "static_iou": 0.25317965196196407,
+    "reconstruction_chamfer": 0.004842914674257274,
+    "worst_part_iou": 0.39887171329036913,
+    "mobility_brier": 0.18560919287787664,
+    "state_mobility_disagreement": 0.005427905128573793
+  },
+  "metric_seed_range": {
+    "quality_score": 0.0019812395498822744,
+    "success": 0.0,
+    "axis_error_deg": 0.08681220263257317,
+    "amount_error": 0.002354628590059381,
+    "pivot_error": 0.0048363466319185765,
+    "mean_part_iou": 0.0,
+    "mobile_iou": 0.0,
+    "static_iou": 0.0,
+    "reconstruction_chamfer": 2.9014292486577442e-05,
+    "worst_part_iou": 0.0,
+    "mobility_brier": 2.4800286275100366e-05,
+    "state_mobility_disagreement": 0.0006538555225623494
+  },
+  "rank_seed_range": 0.029887586999907064,
+  "statuses": {
+    "better_annealed": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 1278.873644013991,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "better_annealed",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "reference_original": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 5.896665734006092,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "reference_original",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "reference_seed0": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 869.1760271439998,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "reference_seed0",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "reference_seed1": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 940.7498101830133,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "reference_seed1",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "reference_seed2": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 691.8579457070009,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "reference_seed2",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_all_mobile": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 6.360203461998026,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_all_mobile",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_all_static": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 6.736858921998646,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_all_static",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_baseline_replacement": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 6.319168871996226,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_baseline_replacement",
+          "rows": 4
+        },
+        {
+          "artifact": "checkpoints/replaced_baseline/results.json",
+          "method": "static_baseline",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_brute_force": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 13.359808239998529,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_brute_force",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_correspondence_baseline": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 11.559103876003064,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_correspondence_baseline",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_duplicate_scenes": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 10.885881880007219,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_duplicate_scenes",
+          "rows": 202
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_empty_results": {
+      "train_exit": 1,
+      "test_exit": 1,
+      "elapsed_seconds": 7.429691723998985,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_empty_results",
+          "rows": 0
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": false
+    },
+    "shortcut_fail_success_gate": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 7.686289144010516,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_fail_success_gate",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_generator_answers": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 10.695814865001012,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_generator_answers",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_hidden_failed_method": {
+      "train_exit": 1,
+      "test_exit": 0,
+      "elapsed_seconds": 7.1570694529946195,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_hidden_failed_method",
+          "rows": 4
+        },
+        {
+          "artifact": "checkpoints/failed/results.json",
+          "method": "shortcut_failing_method_on_disk",
+          "rows": 0
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_impossible_mobility": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 4.557271011013654,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_impossible_mobility",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_missing_scene": {
+      "train_exit": 1,
+      "test_exit": 1,
+      "elapsed_seconds": 5.821267809995334,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_missing_scene",
+          "rows": 2
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": false
+    },
+    "shortcut_nonfinite_axis": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 6.4706851950031705,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_nonfinite_axis",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_nonfinite_mobility": {
+      "train_exit": 1,
+      "test_exit": 1,
+      "elapsed_seconds": 6.0351692239928525,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_nonfinite_mobility",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": false
+    },
+    "shortcut_npz_answers": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 9.486943527997937,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_npz_answers",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_null_axis": {
+      "train_exit": 1,
+      "test_exit": 1,
+      "elapsed_seconds": 3.035991729993839,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_null_axis",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": false
+    },
+    "shortcut_replace_fixed_data": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 4.478153567004483,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_replace_fixed_data",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "shortcut_self_reported_scores": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 8.473205848000362,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "shortcut_self_reported_scores",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "static_baseline": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 7.399099996997393,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "static_baseline",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    },
+    "weaker_short_training": {
+      "train_exit": 0,
+      "test_exit": 0,
+      "elapsed_seconds": 97.66142117000709,
+      "methods_on_disk": [
+        {
+          "artifact": "checkpoints/candidate/results.json",
+          "method": "weaker_short_training",
+          "rows": 4
+        }
+      ],
+      "final_command": [
+        "bash",
+        "scripts/evaluate_test.sh"
+      ],
+      "test_scores_written": true
+    }
+  },
+  "unscored_reference_experiments": [
+    "paper_paris_pms_articulation_reconstruction",
+    "paper_splart_pms_articulation"
+  ]
+}

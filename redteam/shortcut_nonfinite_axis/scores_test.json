@@ -1,0 +1,22 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "shortcut_nonfinite_axis": {
+          "amount_error": NaN,
+          "axis_error_deg": NaN,
+          "mean_part_iou": 1.0,
+          "mobile_iou": 1.0,
+          "mobility_brier": 0.0007389038427598604,
+          "pivot_error": 0.00953278080706815,
+          "quality_score": NaN,
+          "reconstruction_chamfer": NaN,
+          "state_mobility_disagreement": 0.010030579099215434,
+          "static_iou": 1.0,
+          "success": 0.0,
+          "worst_part_iou": 1.0
+        }
+      }
+    }
+  }
+}

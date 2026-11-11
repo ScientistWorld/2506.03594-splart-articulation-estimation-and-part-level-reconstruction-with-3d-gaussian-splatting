@@ -1,0 +1,17 @@
+{
+  "train_exit": 0,
+  "test_exit": 0,
+  "elapsed_seconds": 10.885881880007219,
+  "methods_on_disk": [
+    {
+      "artifact": "checkpoints/candidate/results.json",
+      "method": "shortcut_duplicate_scenes",
+      "rows": 202
+    }
+  ],
+  "final_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "test_scores_written": true
+}

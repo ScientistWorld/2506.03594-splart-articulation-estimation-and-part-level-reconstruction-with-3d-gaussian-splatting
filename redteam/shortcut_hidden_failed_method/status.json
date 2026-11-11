@@ -1,0 +1,22 @@
+{
+  "train_exit": 1,
+  "test_exit": 0,
+  "elapsed_seconds": 7.1570694529946195,
+  "methods_on_disk": [
+    {
+      "artifact": "checkpoints/candidate/results.json",
+      "method": "shortcut_hidden_failed_method",
+      "rows": 4
+    },
+    {
+      "artifact": "checkpoints/failed/results.json",
+      "method": "shortcut_failing_method_on_disk",
+      "rows": 0
+    }
+  ],
+  "final_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "test_scores_written": true
+}

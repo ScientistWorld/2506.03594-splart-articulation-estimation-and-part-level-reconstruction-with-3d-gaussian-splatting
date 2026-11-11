@@ -1,0 +1,17 @@
+{
+  "train_exit": 0,
+  "test_exit": 0,
+  "elapsed_seconds": 8.473205848000362,
+  "methods_on_disk": [
+    {
+      "artifact": "checkpoints/candidate/results.json",
+      "method": "shortcut_self_reported_scores",
+      "rows": 4
+    }
+  ],
+  "final_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "test_scores_written": true
+}

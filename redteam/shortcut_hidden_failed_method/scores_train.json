@@ -1,0 +1,9 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "shortcut_hidden_failed_method": {}
+      }
+    }
+  }
+}

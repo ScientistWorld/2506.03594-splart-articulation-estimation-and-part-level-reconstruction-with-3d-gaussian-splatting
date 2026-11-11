@@ -1,0 +1,22 @@
+{
+  "prismatic_diagonal": {
+    "candidates": 60,
+    "moving_points": 60,
+    "seconds": 0.11844416699022986
+  },
+  "prismatic_slider": {
+    "candidates": 60,
+    "moving_points": 60,
+    "seconds": 0.00076040301064495
+  },
+  "revolute_hinge": {
+    "candidates": 1,
+    "moving_points": 56,
+    "seconds": 0.004585343005601317
+  },
+  "revolute_tilted_axis": {
+    "candidates": 1,
+    "moving_points": 60,
+    "seconds": 0.0011633639951469377
+  }
+}

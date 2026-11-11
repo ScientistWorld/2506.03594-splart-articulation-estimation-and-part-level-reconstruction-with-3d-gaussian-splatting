@@ -1,0 +1,22 @@
+{
+  "train_exit": 0,
+  "test_exit": 0,
+  "elapsed_seconds": 6.319168871996226,
+  "methods_on_disk": [
+    {
+      "artifact": "checkpoints/candidate/results.json",
+      "method": "shortcut_baseline_replacement",
+      "rows": 4
+    },
+    {
+      "artifact": "checkpoints/replaced_baseline/results.json",
+      "method": "static_baseline",
+      "rows": 4
+    }
+  ],
+  "final_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "test_scores_written": true
+}
