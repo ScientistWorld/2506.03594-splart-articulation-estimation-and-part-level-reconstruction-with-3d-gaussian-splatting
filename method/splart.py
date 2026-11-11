@@ -19,15 +19,15 @@ Stage 3b  cross-mobile rendering (Eq. 14): joint optimisation of Gaussians,
 Stage 3c  mobility correction with the cross-mobile geometric consistency (Eq. 15).
 
 Settings follow the official implementation (method/splart_upstream) and paper:
-Chamfer targets restricted to weights > 0.1, lambda_photo = 5e-3, L1 + 0.2
+Chamfer targets restricted to weights > 0.1, lambda_geom = 1e-4, lambda_photo = 5e-3, L1 + 0.2
 D-SSIM photometric loss, one view per photometric step with 10000 / 5000 /
 10000 steps for Stages 1 / 2b / 3b, articulation randomisation, the
 learning rates of every stage and the convergence rule of the geometric
 stages.  Reduced-scale choices: isotropic Gaussians with view-independent
-colour and no densification (pruning only) on 48x48 images; lambda_geom scaled
-from 1e-4 to 2e-3 for the ~200x sparser reconstructions (see LAMBDA_M_GEOM);
-mobility logits bounded to [-8, 8]; 6 instead of 3 randomised tries per
-geometric formulation (a resource, not a procedural change).
+colour and no densification (pruning only) on 48x48 images; mobility logits
+bounded to [-8, 8] (with the Stage-2a learning rate of 3 the logits otherwise
+saturate and Stage 2b can no longer revise them); 6 instead of 3 randomised
+tries per geometric formulation (a resource, not a procedural change).
 
 Inputs: ``data/scenes/<split>/inputs/<scene>.npz``.  Output per scene:
 ``<out>/predictions/<scene>.npz`` in the artifact format of briefing/evaluation.md.
@@ -48,12 +48,7 @@ import torch
 import torch.nn.functional as F
 
 CULL_ALPHA = 0.1
-# The official lambda_geom = 1e-4 is set for dense reconstructions (~1e5
-# Gaussians, nearest-neighbour spacing ~0.003).  The cross-static term marks a
-# Gaussian mobile when its squared distance to the other state exceeds roughly
-# lambda_geom, so the value is scaled with the squared point spacing of these
-# sparse reconstructions (~500 Gaussians per state, spacing ~0.015-0.03).
-LAMBDA_M_GEOM = 2e-3
+LAMBDA_M_GEOM = 1e-4  # official value; a value scaled to the sparser point spacing (2e-3) did worse
 # Mobility logits are kept in [-8, 8] (m in [3e-4, 0.9997]); this only stops
 # Adam from saturating sigmoid(logit) so that later stages can still revise
 # the Stage 2a estimate.

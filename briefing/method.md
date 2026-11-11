@@ -11,13 +11,12 @@ SPLART (Lin et al., 2025, arXiv 2506.03594) reconstructs a two-part articulated 
 
 ## Reproduction (`method/splart.py`)
 
-All six stages are implemented in PyTorch with a differentiable copy of the benchmark's splatting model. Constants follow the official implementation (`method/splart_upstream`): Chamfer nearest-neighbour targets restricted to weights > 0.1, lambda_photo = 5e-3, articulation randomisation (pivot ~ N(0, 0.3^2), axis ~ uniform, angle ~ U(-pi, pi), distance ~ N(0, 0.1^2)), per-stage learning rates, the convergence rule of the geometric stages (relative change against a running mean), and one view per photometric step with 10000 / 5000 / 10000 steps for Stages 1 / 2b / 3b.
+All six stages are implemented in PyTorch with a differentiable copy of the benchmark's splatting model. Constants follow the official implementation (`method/splart_upstream`): Chamfer nearest-neighbour targets restricted to weights > 0.1, lambda_geom = 1e-4, lambda_photo = 5e-3, articulation randomisation (pivot ~ N(0, 0.3^2), axis ~ uniform, angle ~ U(-pi, pi), distance ~ N(0, 0.1^2)), per-stage learning rates, the convergence rule of the geometric stages (relative change against a running mean), and one view per photometric step with 10000 / 5000 / 10000 steps for Stages 1 / 2b / 3b.
 
 Scaled-down or adapted parts:
 
 - isotropic Gaussians with view-independent colour, 48 x 48 images, initialised from the sparse input point clouds; no densification (low-opacity pruning only);
-- lambda_geom = 2e-3 instead of 1e-4: the cross-static term labels a Gaussian mobile when its squared distance to the other state exceeds about lambda_geom, and these reconstructions are ~200x sparser than the paper's;
-- mobility logits bounded to [-8, 8] so that Stage 2b can still revise saturated Stage 2a estimates;
+- mobility logits bounded to [-8, 8] so that Stage 2b can still revise Stage 2a estimates (with the Stage-2a learning rate of 3 the logits otherwise saturate);
 - 6 + 6 randomised tries instead of 3 + 3.
 
 `bash scripts/method.sh` runs it on every scene (writes `checkpoints/splart`). Flags reproduce the paper's ablations (`--skip-2a/--skip-2b/--skip-3a/--skip-3b`).
