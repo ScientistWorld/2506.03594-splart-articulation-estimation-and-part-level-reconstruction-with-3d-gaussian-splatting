@@ -33,10 +33,32 @@
         }
       },
       "results": {
-        "splart": {"type": "proposed", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05},
-        "icp_baseline": {"type": "baseline", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05},
-        "static_baseline": {"type": "baseline", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05}
-      }
+        "splart": {
+          "type": "proposed",
+          "success_rate": 0.807692,
+          "axis_error_deg": 1.259336,
+          "pivot_error": 0.000505,
+          "rotation_error_deg": 2.297058,
+          "translation_error": 0.010778
+        },
+        "icp_baseline": {
+          "type": "baseline",
+          "success_rate": 0.038462,
+          "axis_error_deg": 4.747099,
+          "pivot_error": 0.033742,
+          "rotation_error_deg": 8.85934,
+          "translation_error": 0.049415
+        },
+        "static_baseline": {
+          "type": "baseline",
+          "success_rate": 0.0,
+          "axis_error_deg": 4.814681,
+          "pivot_error": 0.038917,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      },
+      "results_source": "Hidden test slice (26 scenes), scoring/scores_test.json of the final reference runs (seed 0)."
     },
     "part_reconstruction": {
       "description": "Part-level reconstruction of the same 26 held-out scenes: the predicted static and mobile Gaussians are rendered at 8 held-out cameras per scene at articulation fractions q in [-0.1, 1.1] (novel views and novel articulations, as in SPLART-PMS) and compared with ground truth; part geometry is compared with dense ground-truth surfaces.",
@@ -76,37 +98,153 @@
         }
       },
       "results": {
-        "splart": {"type": "proposed", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2},
-        "icp_baseline": {"type": "baseline", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2},
-        "static_baseline": {"type": "baseline", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2}
-      }
+        "splart": {
+          "type": "proposed",
+          "psnr": 31.940416,
+          "depth_mae": 0.215556,
+          "part_miou": 0.690182,
+          "cd_static": 0.092292,
+          "cd_mobile": 0.123921,
+          "cd_whole": 0.082969
+        },
+        "icp_baseline": {
+          "type": "baseline",
+          "psnr": 10.590069,
+          "depth_mae": 0.967197,
+          "part_miou": 0.028555,
+          "cd_static": 0.195434,
+          "cd_mobile": 0.196343,
+          "cd_whole": 0.194094
+        },
+        "static_baseline": {
+          "type": "baseline",
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        }
+      },
+      "results_source": "Hidden test slice (26 scenes), scoring/scores_test.json of the final reference runs (seed 0)."
     }
   },
   "_paper_reported": {
     "note": "Numbers reported in the paper (arXiv 2506.03594) on PARIS-PMS and SPLART-PMS with full-resolution 3DGS and 10 seeds per scene. Not on this benchmark's scale (different objects, image resolution, units of Chamfer); kept for context only and never compared against gym scores.",
     "table1_paris_pms_overall": {
-      "PARIS": {"success_rate": 0.42, "axis_err_x1e-2_deg": 103.12, "pivot_err_x1e-3": 5.27, "rotation_err_x1e-2_deg": 127.8, "translation_err_x1e-3": 4.28, "cd_static_x1e-3": 4.63, "cd_mobile_x1e-3": 85.11, "cd_whole_x1e-3": 12.09},
-      "DTA": {"success_rate": 0.99, "axis_err_x1e-2_deg": 13.11, "pivot_err_x1e-3": 1.86, "rotation_err_x1e-2_deg": 19.41, "translation_err_x1e-3": 1.15, "cd_static_x1e-3": 2.30, "cd_mobile_x1e-3": 4.16, "cd_whole_x1e-3": 1.83},
-      "SPLART": {"success_rate": 0.99, "axis_err_x1e-2_deg": 3.44, "pivot_err_x1e-3": 0.40, "rotation_err_x1e-2_deg": 4.85, "translation_err_x1e-3": 0.33, "cd_static_x1e-3": 4.47, "cd_mobile_x1e-3": 4.20, "cd_whole_x1e-3": 3.61}
+      "PARIS": {
+        "success_rate": 0.42,
+        "axis_err_x1e-2_deg": 103.12,
+        "pivot_err_x1e-3": 5.27,
+        "rotation_err_x1e-2_deg": 127.8,
+        "translation_err_x1e-3": 4.28,
+        "cd_static_x1e-3": 4.63,
+        "cd_mobile_x1e-3": 85.11,
+        "cd_whole_x1e-3": 12.09
+      },
+      "DTA": {
+        "success_rate": 0.99,
+        "axis_err_x1e-2_deg": 13.11,
+        "pivot_err_x1e-3": 1.86,
+        "rotation_err_x1e-2_deg": 19.41,
+        "translation_err_x1e-3": 1.15,
+        "cd_static_x1e-3": 2.3,
+        "cd_mobile_x1e-3": 4.16,
+        "cd_whole_x1e-3": 1.83
+      },
+      "SPLART": {
+        "success_rate": 0.99,
+        "axis_err_x1e-2_deg": 3.44,
+        "pivot_err_x1e-3": 0.4,
+        "rotation_err_x1e-2_deg": 4.85,
+        "translation_err_x1e-3": 0.33,
+        "cd_static_x1e-3": 4.47,
+        "cd_mobile_x1e-3": 4.2,
+        "cd_whole_x1e-3": 3.61
+      }
     },
     "table2_paris_pms_overall_nvs": {
-      "PARIS": {"psnr": 32.52, "depth_mae": 0.096, "miou": 0.942},
-      "DTA": {"depth_mae": 0.038, "miou": 0.922},
-      "SPLART": {"psnr": 43.70, "depth_mae": 0.036, "miou": 0.957}
+      "PARIS": {
+        "psnr": 32.52,
+        "depth_mae": 0.096,
+        "miou": 0.942
+      },
+      "DTA": {
+        "depth_mae": 0.038,
+        "miou": 0.922
+      },
+      "SPLART": {
+        "psnr": 43.7,
+        "depth_mae": 0.036,
+        "miou": 0.957
+      }
     },
     "table4_splart_pms_overall": {
-      "PARIS": {"success_rate": 0.277, "axis_err_x1e-2_deg": 103.88, "pivot_err_x1e-3": 9.36, "rotation_err_x1e-2_deg": 270.37, "translation_err_x1e-3": 14.96},
-      "DTA": {"success_rate": 0.591, "axis_err_x1e-2_deg": 77.76, "pivot_err_x1e-3": 1.28, "rotation_err_x1e-2_deg": 40.80, "translation_err_x1e-3": 9.25},
-      "SPLART-2a (no Stage 2a)": {"success_rate": 0.837, "axis_err_x1e-2_deg": 13.85, "pivot_err_x1e-3": 2.53, "rotation_err_x1e-2_deg": 52.06, "translation_err_x1e-3": 1.50},
-      "SPLART-2b (no Stage 2b)": {"success_rate": 0.747, "axis_err_x1e-2_deg": 9.34, "pivot_err_x1e-3": 3.92, "rotation_err_x1e-2_deg": 131.99, "translation_err_x1e-3": 0.73},
-      "SPLART-3a (no Stage 3a)": {"success_rate": 0.064, "axis_err_x1e-2_deg": 85.53, "pivot_err_x1e-3": 2.83, "rotation_err_x1e-2_deg": 427.10, "translation_err_x1e-3": 2.26},
-      "SPLART-3b (no Stage 3b)": {"success_rate": 0.809, "axis_err_x1e-2_deg": 73.62, "pivot_err_x1e-3": 5.11, "rotation_err_x1e-2_deg": 206.98, "translation_err_x1e-3": 9.43},
-      "SPLART": {"success_rate": 0.855, "axis_err_x1e-2_deg": 23.02, "pivot_err_x1e-3": 3.93, "rotation_err_x1e-2_deg": 78.31, "translation_err_x1e-3": 1.04}
+      "PARIS": {
+        "success_rate": 0.277,
+        "axis_err_x1e-2_deg": 103.88,
+        "pivot_err_x1e-3": 9.36,
+        "rotation_err_x1e-2_deg": 270.37,
+        "translation_err_x1e-3": 14.96
+      },
+      "DTA": {
+        "success_rate": 0.591,
+        "axis_err_x1e-2_deg": 77.76,
+        "pivot_err_x1e-3": 1.28,
+        "rotation_err_x1e-2_deg": 40.8,
+        "translation_err_x1e-3": 9.25
+      },
+      "SPLART-2a (no Stage 2a)": {
+        "success_rate": 0.837,
+        "axis_err_x1e-2_deg": 13.85,
+        "pivot_err_x1e-3": 2.53,
+        "rotation_err_x1e-2_deg": 52.06,
+        "translation_err_x1e-3": 1.5
+      },
+      "SPLART-2b (no Stage 2b)": {
+        "success_rate": 0.747,
+        "axis_err_x1e-2_deg": 9.34,
+        "pivot_err_x1e-3": 3.92,
+        "rotation_err_x1e-2_deg": 131.99,
+        "translation_err_x1e-3": 0.73
+      },
+      "SPLART-3a (no Stage 3a)": {
+        "success_rate": 0.064,
+        "axis_err_x1e-2_deg": 85.53,
+        "pivot_err_x1e-3": 2.83,
+        "rotation_err_x1e-2_deg": 427.1,
+        "translation_err_x1e-3": 2.26
+      },
+      "SPLART-3b (no Stage 3b)": {
+        "success_rate": 0.809,
+        "axis_err_x1e-2_deg": 73.62,
+        "pivot_err_x1e-3": 5.11,
+        "rotation_err_x1e-2_deg": 206.98,
+        "translation_err_x1e-3": 9.43
+      },
+      "SPLART": {
+        "success_rate": 0.855,
+        "axis_err_x1e-2_deg": 23.02,
+        "pivot_err_x1e-3": 3.93,
+        "rotation_err_x1e-2_deg": 78.31,
+        "translation_err_x1e-3": 1.04
+      }
     },
     "table5_splart_pms_overall_nvs": {
-      "PARIS": {"psnr": 32.51, "depth_mae": 0.125, "miou": 0.900},
-      "DTA": {"depth_mae": 0.058, "miou": 0.867},
-      "SPLART": {"psnr": 37.01, "depth_mae": 0.032, "miou": 0.916}
+      "PARIS": {
+        "psnr": 32.51,
+        "depth_mae": 0.125,
+        "miou": 0.9
+      },
+      "DTA": {
+        "depth_mae": 0.058,
+        "miou": 0.867
+      },
+      "SPLART": {
+        "psnr": 37.01,
+        "depth_mae": 0.032,
+        "miou": 0.916
+      }
     }
   }
 }

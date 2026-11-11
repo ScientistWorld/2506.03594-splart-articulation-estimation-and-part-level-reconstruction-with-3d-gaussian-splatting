@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 2
-test: false
+action: done
 milestone: core_claim_plus
-notes: "Final reference run with the paper's lambda_geom: reference SPLART (train+test), seeds 1-2, colour-aware Chamfer (better), heavier search, short run, ablations 3a/3b/2b, shortcuts, hidden-test evaluation and analysis."
+notes: "Hardened gym: rebuilt SPLART benchmark (independent two-state RGB+point clouds, 26 hidden test scenes with secret seeds and unseen families), faithful six-stage SPLART reference (test success 0.81, PSNR 31.9), strict evaluator with worst-value failures; better variant +0.50 R*, private search and all shortcuts below reference; see HARDENING.md."

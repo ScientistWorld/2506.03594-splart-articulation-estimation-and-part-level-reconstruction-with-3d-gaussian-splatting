@@ -33,5 +33,10 @@
 - Cleaned strict method-agnostic evaluation wording and final target documentation.
 - `python validate.py --compare` passes with independent artifact-based evaluation.
 
+### [2026-11-11] - core_claim_plus (hardening, final iteration)
+- Rebuilt the benchmark: independent two-state RGB + point-cloud observations of procedural articulated objects (13 families), 18 train / 26 hidden test scenes, answers only in eval/test/gt (secret seeds, 4 hidden families).
+- Reference is now the full six-stage SPLART (Stages 1, 2a, 2b, 3a, 3b, 3c) with the paper/upstream schedule and constants; test success 0.808, PSNR 31.9 dB vs ICP baseline 0.038 and static baseline 0.
+- Paper ablations reproduce in direction for Stages 3a (0.08), 3b (0.65) and 2b (0.50); skipping Stage 2a scores higher (0.885), the reverse of the paper. See HARDENING.md.
+
 ## Stop Justification
 - Completed at milestone `core_claim_plus`.

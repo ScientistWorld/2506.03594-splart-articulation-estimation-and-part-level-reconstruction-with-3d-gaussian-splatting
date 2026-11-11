@@ -1,7 +1,10 @@
 #!/bin/bash
-# Current job: hardening run (data, baselines, reference, variants, shortcuts,
-# evaluation, analysis).  See notes/hardening/run_hardening.sh.
-set -uo pipefail
+# Reproduce the reference end to end: scenes check, baselines, the reference
+# SPLART on all train and test scenes, train and test scoring, validation.
+# (The hardening experiments are in notes/hardening/run_hardening.sh.)
+set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.."
-bash notes/hardening/run_hardening.sh
+bash scripts/reproduce.sh
+bash scripts/evaluate_test.sh
+python validate.py
