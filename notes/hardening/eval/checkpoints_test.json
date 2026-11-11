@@ -1,0 +1,82 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "icp_baseline": {
+          "success_rate": 0.038461538461538464,
+          "axis_error_deg": 4.747099228712578,
+          "pivot_error": 0.03374167013942448,
+          "rotation_error_deg": 8.859340028780764,
+          "translation_error": 0.0494146495489568
+        },
+        "lightweight_splart": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "splart": {
+          "success_rate": 0.38461538461538464,
+          "axis_error_deg": 2.630694656847154,
+          "pivot_error": 0.009939592732019128,
+          "rotation_error_deg": 6.037392071125407,
+          "translation_error": 0.03667922297387433
+        },
+        "static_baseline": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.814680622088441,
+          "pivot_error": 0.03891742101772166,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05000000000000001
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "icp_baseline": {
+          "psnr": 10.590069115011433,
+          "depth_mae": 0.9671971137153694,
+          "part_miou": 0.028555024748100264,
+          "cd_static": 0.19543407809015642,
+          "cd_mobile": 0.19634275644931629,
+          "cd_whole": 0.19409418599993372
+        },
+        "lightweight_splart": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "splart": {
+          "psnr": 22.292552257164306,
+          "depth_mae": 0.6252020665901461,
+          "part_miou": 0.3472750101634582,
+          "cd_static": 0.1487583633927047,
+          "cd_mobile": 0.16202673972219714,
+          "cd_whole": 0.14464754829181714
+        },
+        "static_baseline": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "test",
+    "num_scenes": 26,
+    "status": {
+      "icp_baseline": "ok",
+      "lightweight_splart": "failed: no predictions for this slice",
+      "splart": "ok",
+      "static_baseline": "ok"
+    }
+  }
+}

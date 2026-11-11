@@ -1,0 +1,34 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "smoke": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.048996812314648586,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "smoke": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "train",
+    "num_scenes": 18,
+    "status": {
+      "smoke": "incomplete: 16 scenes missing"
+    }
+  }
+}

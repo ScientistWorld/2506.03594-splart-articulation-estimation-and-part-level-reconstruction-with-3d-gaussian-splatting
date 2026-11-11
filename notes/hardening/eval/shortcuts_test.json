@@ -1,0 +1,178 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "all_static_masks": {
+          "success_rate": 0.38461538461538464,
+          "axis_error_deg": 2.630694656847154,
+          "pivot_error": 0.009939592732019128,
+          "rotation_error_deg": 6.037392071125407,
+          "translation_error": 0.03667922297387433
+        },
+        "duplicate_files": {
+          "success_rate": 0.38461538461538464,
+          "axis_error_deg": 2.630694656847154,
+          "pivot_error": 0.009939592732019128,
+          "rotation_error_deg": 6.037392071125407,
+          "translation_error": 0.03667922297387433
+        },
+        "empty_method_dir": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "faint_gaussian_grid": {
+          "success_rate": 0.38461538461538464,
+          "axis_error_deg": 2.630694656847154,
+          "pivot_error": 0.009939592732019128,
+          "rotation_error_deg": 6.037392071125407,
+          "translation_error": 0.03667922297387433
+        },
+        "forged_score_files": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.814680622088441,
+          "pivot_error": 0.03891742101772166,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05000000000000001
+        },
+        "impossible_opacity_one_scene": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "missing_half_scenes": {
+          "success_rate": 0.15384615384615385,
+          "axis_error_deg": 4.019658912890429,
+          "pivot_error": 0.03947278087872501,
+          "rotation_error_deg": 8.710796181584703,
+          "translation_error": 0.03933056375072337
+        },
+        "nan_axis_one_scene": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "pickled_payload": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "too_many_gaussians": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "all_static_masks": {
+          "psnr": 16.883745059175194,
+          "depth_mae": 0.6859475272482831,
+          "part_miou": 0.2046898769494675,
+          "cd_static": 0.17054939805717978,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.14464754829181714
+        },
+        "duplicate_files": {
+          "psnr": 22.292552257164306,
+          "depth_mae": 0.6252020665901461,
+          "part_miou": 0.3472750101634582,
+          "cd_static": 0.1487583633927047,
+          "cd_mobile": 0.16202673972219714,
+          "cd_whole": 0.14464754829181714
+        },
+        "empty_method_dir": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "faint_gaussian_grid": {
+          "psnr": 12.998562004717847,
+          "depth_mae": 0.8115382323028063,
+          "part_miou": 0.20360621340459792,
+          "cd_static": 0.18548310065513893,
+          "cd_mobile": 0.16202673972219714,
+          "cd_whole": 0.17306545099670576
+        },
+        "forged_score_files": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        },
+        "impossible_opacity_one_scene": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "missing_half_scenes": {
+          "psnr": 14.783891691107804,
+          "depth_mae": 0.8499752707966035,
+          "part_miou": 0.13619217049656818,
+          "cd_static": 0.17990621622423783,
+          "cd_mobile": 0.1852646912104,
+          "cd_whole": 0.17794507145614064
+        },
+        "nan_axis_one_scene": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "pickled_payload": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "too_many_gaussians": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "test",
+    "num_scenes": 26,
+    "status": {
+      "all_static_masks": "ok",
+      "duplicate_files": "ok",
+      "empty_method_dir": "failed: no predictions for this slice",
+      "faint_gaussian_grid": "ok",
+      "forged_score_files": "ok",
+      "impossible_opacity_one_scene": "failed: test_000: static_opacities: non-finite values",
+      "missing_half_scenes": "incomplete: 13 scenes missing",
+      "nan_axis_one_scene": "failed: test_000: axis: non-finite values",
+      "pickled_payload": "failed: test_000: unreadable prediction file: ValueError",
+      "too_many_gaussians": "failed: test_000: 20809 Gaussians > limit 20000"
+    }
+  }
+}

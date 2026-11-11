@@ -1,0 +1,178 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "ablation_no2a": {
+          "success_rate": 0.6538461538461539,
+          "axis_error_deg": 1.334721259235196,
+          "pivot_error": 0.005298086117237068,
+          "rotation_error_deg": 4.270846589951237,
+          "translation_error": 0.013866504974848384
+        },
+        "ablation_no2b": {
+          "success_rate": 0.34615384615384615,
+          "axis_error_deg": 2.738615060815606,
+          "pivot_error": 0.009177147301070138,
+          "rotation_error_deg": 5.80731988037073,
+          "translation_error": 0.036166488721242326
+        },
+        "ablation_no3a": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.829493418998676,
+          "pivot_error": 0.05000000000000001,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05000000000000001
+        },
+        "ablation_no3b": {
+          "success_rate": 0.34615384615384615,
+          "axis_error_deg": 3.7561473064986464,
+          "pivot_error": 0.02919605393093239,
+          "rotation_error_deg": 7.224918829350194,
+          "translation_error": 0.044463807378270076
+        },
+        "better_color_geom": {
+          "success_rate": 0.5,
+          "axis_error_deg": 2.0190665066455664,
+          "pivot_error": 0.013715692856489147,
+          "rotation_error_deg": 4.631642119994527,
+          "translation_error": 0.036147316274233336
+        },
+        "icp_bruteforce": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.831125220175552,
+          "pivot_error": 0.03721586662067711,
+          "rotation_error_deg": 9.39880883037679,
+          "translation_error": 0.0494146495489568
+        },
+        "search_more": {
+          "success_rate": 0.6538461538461539,
+          "axis_error_deg": 1.8909512829039865,
+          "pivot_error": 0.0019516021553849165,
+          "rotation_error_deg": 3.639016612695394,
+          "translation_error": 0.029273278328237617
+        },
+        "splart_seed1": {
+          "success_rate": 0.46153846153846156,
+          "axis_error_deg": 2.7051092910672554,
+          "pivot_error": 0.012837391769357316,
+          "rotation_error_deg": 5.803095582887762,
+          "translation_error": 0.03445551476959059
+        },
+        "splart_seed2": {
+          "success_rate": 0.46153846153846156,
+          "axis_error_deg": 2.2024632223060268,
+          "pivot_error": 0.008338782832665067,
+          "rotation_error_deg": 4.734400945194653,
+          "translation_error": 0.035678377588364486
+        },
+        "weaker_short": {
+          "success_rate": 0.2692307692307692,
+          "axis_error_deg": 3.3115472721374135,
+          "pivot_error": 0.033372246579190856,
+          "rotation_error_deg": 8.340312806330648,
+          "translation_error": 0.03857000166565094
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "ablation_no2a": {
+          "psnr": 32.31169027286368,
+          "depth_mae": 0.3577718866918577,
+          "part_miou": 0.6191106706175785,
+          "cd_static": 0.11048964618493816,
+          "cd_mobile": 0.12941541197081083,
+          "cd_whole": 0.1040159698889889
+        },
+        "ablation_no2b": {
+          "psnr": 21.44085263801744,
+          "depth_mae": 0.6613404468645718,
+          "part_miou": 0.31979045142184764,
+          "cd_static": 0.15257722163314655,
+          "cd_mobile": 0.15956288765538526,
+          "cd_whole": 0.14908823646327765
+        },
+        "ablation_no3a": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        },
+        "ablation_no3b": {
+          "psnr": 17.006587018076104,
+          "depth_mae": 0.6815873855704061,
+          "part_miou": 0.27652644191036263,
+          "cd_static": 0.15161766141498523,
+          "cd_mobile": 0.16463227095614916,
+          "cd_whole": 0.15025256101330886
+        },
+        "better_color_geom": {
+          "psnr": 26.5858422791149,
+          "depth_mae": 0.5111607270054696,
+          "part_miou": 0.44850783531539673,
+          "cd_static": 0.13243383583131432,
+          "cd_mobile": 0.14615655904117386,
+          "cd_whole": 0.12724401358214654
+        },
+        "icp_bruteforce": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        },
+        "search_more": {
+          "psnr": 31.377646851008226,
+          "depth_mae": 0.3622329167438512,
+          "part_miou": 0.5735292010820705,
+          "cd_static": 0.11486599493065677,
+          "cd_mobile": 0.14738339883796775,
+          "cd_whole": 0.10735383987942827
+        },
+        "splart_seed1": {
+          "psnr": 25.152991086492086,
+          "depth_mae": 0.5488357124988203,
+          "part_miou": 0.4097574357999537,
+          "cd_static": 0.1378239241514431,
+          "cd_mobile": 0.1562466500481413,
+          "cd_whole": 0.13260076632861875
+        },
+        "splart_seed2": {
+          "psnr": 25.508655999449022,
+          "depth_mae": 0.5486594595996499,
+          "part_miou": 0.41589209050963427,
+          "cd_static": 0.1377972125035934,
+          "cd_mobile": 0.15280372646164608,
+          "cd_whole": 0.13255975688354316
+        },
+        "weaker_short": {
+          "psnr": 18.02639793696932,
+          "depth_mae": 0.7392477236318128,
+          "part_miou": 0.2392750551175357,
+          "cd_static": 0.1593847833784007,
+          "cd_mobile": 0.1722524436130715,
+          "cd_whole": 0.1571828705997065
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "test",
+    "num_scenes": 26,
+    "status": {
+      "ablation_no2a": "ok",
+      "ablation_no2b": "ok",
+      "ablation_no3a": "ok",
+      "ablation_no3b": "ok",
+      "better_color_geom": "ok",
+      "icp_bruteforce": "ok",
+      "search_more": "ok",
+      "splart_seed1": "ok",
+      "splart_seed2": "ok",
+      "weaker_short": "ok"
+    }
+  }
+}

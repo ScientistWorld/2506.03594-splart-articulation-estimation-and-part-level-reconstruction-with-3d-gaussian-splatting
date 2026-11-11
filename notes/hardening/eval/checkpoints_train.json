@@ -1,0 +1,82 @@
+{
+  "experiments": {
+    "articulation_estimation": {
+      "results": {
+        "icp_baseline": {
+          "success_rate": 0.16666666666666666,
+          "axis_error_deg": 4.636009753395961,
+          "pivot_error": 0.028740708862664895,
+          "rotation_error_deg": 7.268588680664304,
+          "translation_error": 0.05
+        },
+        "lightweight_splart": {
+          "success_rate": 0.0,
+          "axis_error_deg": 5.0,
+          "pivot_error": 0.05,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        },
+        "splart": {
+          "success_rate": 0.3888888888888889,
+          "axis_error_deg": 2.7657633753767152,
+          "pivot_error": 0.025474948024106013,
+          "rotation_error_deg": 6.408798460571418,
+          "translation_error": 0.028764995443820267
+        },
+        "static_baseline": {
+          "success_rate": 0.0,
+          "axis_error_deg": 4.832136784545318,
+          "pivot_error": 0.031681897514801244,
+          "rotation_error_deg": 10.0,
+          "translation_error": 0.05
+        }
+      }
+    },
+    "part_reconstruction": {
+      "results": {
+        "icp_baseline": {
+          "psnr": 12.61840322721004,
+          "depth_mae": 0.86769089346821,
+          "part_miou": 0.12030088736158502,
+          "cd_static": 0.1771566018825023,
+          "cd_mobile": 0.17856562043062205,
+          "cd_whole": 0.17337236978875767
+        },
+        "lightweight_splart": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.2,
+          "cd_mobile": 0.2,
+          "cd_whole": 0.2
+        },
+        "splart": {
+          "psnr": 22.667883034984165,
+          "depth_mae": 0.6205504890811885,
+          "part_miou": 0.33117837833754415,
+          "cd_static": 0.1452698993639291,
+          "cd_mobile": 0.16357684144397036,
+          "cd_whole": 0.14266424916222575
+        },
+        "static_baseline": {
+          "psnr": 10.0,
+          "depth_mae": 1.0,
+          "part_miou": 0.0,
+          "cd_static": 0.20000000000000004,
+          "cd_mobile": 0.20000000000000004,
+          "cd_whole": 0.20000000000000004
+        }
+      }
+    }
+  },
+  "_meta": {
+    "slice": "train",
+    "num_scenes": 18,
+    "status": {
+      "icp_baseline": "ok",
+      "lightweight_splart": "failed: no predictions for this slice",
+      "splart": "ok",
+      "static_baseline": "ok"
+    }
+  }
+}
