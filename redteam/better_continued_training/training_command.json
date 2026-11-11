@@ -1,0 +1,10 @@
+[
+  "/usr/local/bin/python",
+  "method/refine.py",
+  "--mode",
+  "continued",
+  "--input",
+  "method/initial_outputs.json",
+  "--output",
+  "/home/user/redteam/better_continued_training/_state/workspace/checkpoints/candidate/results.json"
+]

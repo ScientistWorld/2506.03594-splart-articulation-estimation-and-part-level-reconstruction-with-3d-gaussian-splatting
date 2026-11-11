@@ -1,0 +1,22 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "better_mobility_correction": {
+          "amount_error": 0.018239006472101475,
+          "axis_error_deg": 0.7875075567430396,
+          "mean_part_iou": 1.0,
+          "mobile_iou": 1.0,
+          "mobility_brier": 0.1409332970940913,
+          "pivot_error": 0.00953278080706815,
+          "quality_score": 0.8848451943397324,
+          "reconstruction_chamfer": 0.0001584295575505175,
+          "state_mobility_disagreement": 0.5659261595418099,
+          "static_iou": 1.0,
+          "success": 0.0,
+          "worst_part_iou": 1.0
+        }
+      }
+    }
+  }
+}

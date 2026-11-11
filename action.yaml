@@ -1,4 +1,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Benchmark audit: three reference seeds, annealed and weak training variants, brute force, and isolated scoring shortcuts; all final tests run with no arguments."
+notes: "Audit follow-up: restore paper Stage 3(c), continue the reference optimization with smaller learning rate, and test complete revolute failure hidden by duplicate scene weighting."

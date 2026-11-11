@@ -1,0 +1,10 @@
+[
+  "/usr/local/bin/python",
+  "method/refine.py",
+  "--mode",
+  "mobility_correction",
+  "--input",
+  "method/initial_outputs.json",
+  "--output",
+  "/home/user/redteam/better_mobility_correction/_state/workspace/checkpoints/candidate/results.json"
+]

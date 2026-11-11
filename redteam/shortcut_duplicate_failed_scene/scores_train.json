@@ -1,0 +1,22 @@
+{
+  "experiments": {
+    "synthetic_articulated_gaussians": {
+      "results": {
+        "shortcut_duplicate_failed_scene": {
+          "amount_error": 0.010646566403229788,
+          "axis_error_deg": 1.018323608858094,
+          "mean_part_iou": 0.9929278642149928,
+          "mobile_iou": 0.9900990099009901,
+          "mobility_brier": 0.005138462893615707,
+          "pivot_error": 0.0006996691232875704,
+          "quality_score": 0.9614422330034896,
+          "reconstruction_chamfer": 0.0007347374209015382,
+          "state_mobility_disagreement": 0.01183628649181617,
+          "static_iou": 0.9957567185289957,
+          "success": 0.9900990099009901,
+          "worst_part_iou": 0.9900990099009901
+        }
+      }
+    }
+  }
+}
