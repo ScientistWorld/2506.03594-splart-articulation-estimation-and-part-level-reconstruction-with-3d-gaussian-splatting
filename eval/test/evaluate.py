@@ -1,300 +1,387 @@
-"""Held-out test-slice evaluator for articulated Gaussian prediction artifacts.
+"""Held-out test-slice evaluator for two-state articulated-object reconstructions.
 
-This is intentionally self-contained inside eval/test/. It scores the hidden
-final slice only and never imports from method/ or eval/train/.
+Self-contained (numpy only).  Never imports from method/ or eval/train/.  The
+answers live in eval/test/gt/; methods only see data/scenes/test/inputs/.
+
+Every directory under the method root (default checkpoints/) is a method and is
+scored; its predictions are read from ``<root>/<method>/predictions/<scene>.npz``.
+Every number is recomputed from the raw prediction arrays:
+
+* articulation_estimation: paper metrics (axis angle error, pivot line distance,
+  rotation geodesic error, translation error) and the paper's success rule
+  (axis < 5 deg; revolute: pivot < 0.05 and rotation < 10 deg; prismatic:
+  translation < 0.05).  Errors are truncated at those thresholds per scene, so
+  a failed scene counts as the threshold value and cannot be hidden.
+* part_reconstruction: the predicted static + mobile Gaussians are rendered at
+  held-out cameras and articulation states (mobile part moved by fraction q of
+  the predicted motion) and compared with ground-truth images (PSNR), composited
+  depth (MAE) and static/mobile/background segmentation (mIoU); part geometry is
+  compared with dense ground-truth surfaces (Chamfer, static / mobile / whole).
+  A scene whose articulation fails gets the worst reconstruction values.
+
+A missing scene gets the worst value of every metric.  A run with any invalid
+prediction (unreadable file, wrong shape, non-finite number, opacity or colour
+outside [0, 1], non-positive scale, too many Gaussians, zero axis, ...) or with
+no predictions at all is a failed run: every metric of every experiment gets its
+worst value.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-from collections import defaultdict
+import math
 from pathlib import Path
 
 import numpy as np
 
-
 SLICE = "test"
-SLICE_SCENES = ("revolute_tilted_axis", "prismatic_slider")
-EXPERIMENT = "synthetic_articulated_gaussians"
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+GT_DIR = HERE / "gt"
+EXPECTED_SCENES = 26
+DEFAULT_METHOD_ROOT = ROOT / "checkpoints"
+
+MAX_GAUSSIANS = 20000
+CD_MIN_OPACITY = 0.1
+ART = "articulation_estimation"
+REC = "part_reconstruction"
+THRESH = {"axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05}
+WORST = {
+    ART: {
+        "success_rate": 0.0,
+        "axis_error_deg": THRESH["axis_error_deg"],
+        "pivot_error": THRESH["pivot_error"],
+        "rotation_error_deg": THRESH["rotation_error_deg"],
+        "translation_error": THRESH["translation_error"],
+    },
+    REC: {"psnr": 10.0, "depth_mae": 1.0, "part_miou": 0.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2},
+}
+HIGHER_IS_BETTER = {"success_rate", "psnr", "part_miou"}
+SET_KEYS = ("means", "scales", "colors", "opacities")
 
 
-def _normalize(v: np.ndarray) -> np.ndarray:
-    return v / max(float(np.linalg.norm(v)), 1e-12)
+class InvalidPrediction(Exception):
+    pass
 
 
-def _rotation_matrix(axis: np.ndarray, angle: float) -> np.ndarray:
-    axis = _normalize(axis)
-    x, y, z = axis
-    c = np.cos(angle)
-    s = np.sin(angle)
+# --------------------------------------------------------------------------- validation
+
+
+def _numeric(name: str, arr: np.ndarray, shape: tuple) -> np.ndarray:
+    if arr.dtype == object or not (np.issubdtype(arr.dtype, np.floating) or np.issubdtype(arr.dtype, np.integer)):
+        raise InvalidPrediction(f"{name}: non-numeric dtype {arr.dtype}")
+    if len(shape) != arr.ndim or any(s is not None and s != a for s, a in zip(shape, arr.shape)):
+        raise InvalidPrediction(f"{name}: shape {arr.shape}, expected {shape}")
+    out = arr.astype(np.float64)
+    if not np.isfinite(out).all():
+        raise InvalidPrediction(f"{name}: non-finite values")
+    return out
+
+
+def _unit_range(name: str, arr: np.ndarray) -> np.ndarray:
+    if arr.size and (arr.min() < -1e-6 or arr.max() > 1.0 + 1e-6):
+        raise InvalidPrediction(f"{name}: values outside [0, 1]")
+    return np.clip(arr, 0.0, 1.0)
+
+
+def load_prediction(path: Path, jtype: str) -> dict:
+    try:
+        with np.load(path, allow_pickle=False) as d:
+            raw = {k: np.asarray(d[k]) for k in d.files}
+    except Exception as exc:  # unreadable / pickled / not an npz
+        raise InvalidPrediction(f"unreadable prediction file: {type(exc).__name__}")
+    need = ["axis", "pivot", "amount"] + [f"{s}_{k}" for s in ("static", "mobile") for k in SET_KEYS]
+    missing = [k for k in need if k not in raw]
+    if missing:
+        raise InvalidPrediction(f"missing keys {missing}")
+    pred = {
+        "axis": _numeric("axis", raw["axis"], (3,)),
+        "pivot": _numeric("pivot", raw["pivot"], (3,)),
+        "amount": float(_numeric("amount", raw["amount"].reshape(-1), (1,))[0]),
+    }
+    norm = float(np.linalg.norm(pred["axis"]))
+    if norm < 1e-6:
+        raise InvalidPrediction("axis has zero length")
+    pred["axis"] = pred["axis"] / norm
+    if np.abs(pred["pivot"]).max() > 1e3:
+        raise InvalidPrediction("pivot coordinate beyond 1e3")
+    limit = 2.0 * math.pi if jtype == "revolute" else 5.0
+    if abs(pred["amount"]) > limit + 1e-9:
+        raise InvalidPrediction(f"motion amount {pred['amount']} outside [-{limit}, {limit}]")
+    total = 0
+    for s in ("static", "mobile"):
+        means = _numeric(f"{s}_means", raw[f"{s}_means"], (None, 3))
+        n = means.shape[0]
+        scales = _numeric(f"{s}_scales", raw[f"{s}_scales"], (n,))
+        colors = _unit_range(f"{s}_colors", _numeric(f"{s}_colors", raw[f"{s}_colors"], (n, 3)))
+        opac = _unit_range(f"{s}_opacities", _numeric(f"{s}_opacities", raw[f"{s}_opacities"], (n,)))
+        if n and (scales.min() <= 0.0 or scales.max() > 1.0):
+            raise InvalidPrediction(f"{s}_scales outside (0, 1]")
+        if n and np.abs(means).max() > 1e3:
+            raise InvalidPrediction(f"{s}_means coordinate beyond 1e3")
+        pred[s] = (means, scales, colors, opac)
+        total += n
+    if total == 0:
+        raise InvalidPrediction("no Gaussians")
+    if total > MAX_GAUSSIANS:
+        raise InvalidPrediction(f"{total} Gaussians > limit {MAX_GAUSSIANS}")
+    return pred
+
+
+# --------------------------------------------------------------------------- geometry
+
+
+def rotation_matrix(axis: np.ndarray, angle: float) -> np.ndarray:
+    x, y, z = axis / np.linalg.norm(axis)
+    c, s = math.cos(angle), math.sin(angle)
     C = 1.0 - c
     return np.array(
         [
             [c + x * x * C, x * y * C - z * s, x * z * C + y * s],
             [y * x * C + z * s, c + y * y * C, y * z * C - x * s],
             [z * x * C - y * s, z * y * C + x * s, c + z * z * C],
-        ],
-        dtype=np.float64,
+        ]
     )
 
 
-def _transform(points: np.ndarray, articulation_type: str, axis: np.ndarray, pivot: np.ndarray, amount: float) -> np.ndarray:
-    axis = _normalize(axis)
-    if articulation_type == "revolute":
-        return (points - pivot) @ _rotation_matrix(axis, amount).T + pivot
-    if articulation_type == "prismatic":
-        return points + axis * amount
-    raise ValueError(f"Unknown articulation_type: {articulation_type}")
+def articulate(points, jtype, axis, pivot, amount, frac):
+    if jtype == "revolute":
+        R = rotation_matrix(axis, frac * amount)
+        return (points - pivot) @ R.T + pivot
+    return points + (frac * amount) * axis
 
 
-def _weighted_chamfer(x: np.ndarray, wx: np.ndarray, y: np.ndarray, wy: np.ndarray) -> float:
-    d2 = ((x[:, None, :] - y[None, :, :]) ** 2).sum(axis=-1)
-    wx = np.clip(wx.astype(np.float64), 1e-8, None)
-    wy = np.clip(wy.astype(np.float64), 1e-8, None)
-    wx = wx / wx.sum()
-    wy = wy / wy.sum()
-    return float((wx * d2.min(axis=1)).sum() + (wy * d2.min(axis=0)).sum())
+def line_distance(p1, a1, p2, a2) -> float:
+    n = np.cross(a1, a2)
+    nn = float(np.linalg.norm(n))
+    w = p1 - p2
+    if nn < 1e-6:
+        return float(np.linalg.norm(np.cross(w, a2)))
+    return abs(float(w @ n)) / nn
 
 
-def _cross_mobile_sets(
-    x0: np.ndarray,
-    x1: np.ndarray,
-    opacity: np.ndarray,
-    m0: np.ndarray,
-    m1: np.ndarray,
-    articulation_type: str,
-    axis: np.ndarray,
-    pivot: np.ndarray,
-    amount: float,
-    state: int,
-) -> tuple[np.ndarray, np.ndarray]:
-    static_x = np.concatenate([x0, x1], axis=0)
-    static_w = np.concatenate([opacity * (1.0 - m0), opacity * (1.0 - m1)], axis=0)
-    if state == 0:
-        mobile_x = np.concatenate([x0, _transform(x1, articulation_type, axis, pivot, -amount)], axis=0)
+def articulation_errors(pred: dict, gt: dict, jtype: str) -> dict:
+    a_p, a_g = pred["axis"], gt["axis"] / np.linalg.norm(gt["axis"])
+    out = {"axis_error_deg": math.degrees(math.acos(min(1.0, abs(float(a_p @ a_g)))))}
+    if jtype == "revolute":
+        Rp = rotation_matrix(a_p, pred["amount"])
+        Rg = rotation_matrix(a_g, float(gt["amount"]))
+        cos = (np.trace(Rp.T @ Rg) - 1.0) / 2.0
+        out["rotation_error_deg"] = math.degrees(math.acos(float(np.clip(cos, -1.0, 1.0))))
+        out["pivot_error"] = line_distance(pred["pivot"], a_p, gt["pivot"], a_g)
+        ok = (
+            out["axis_error_deg"] < THRESH["axis_error_deg"]
+            and out["pivot_error"] < THRESH["pivot_error"]
+            and out["rotation_error_deg"] < THRESH["rotation_error_deg"]
+        )
     else:
-        mobile_x = np.concatenate([x1, _transform(x0, articulation_type, axis, pivot, amount)], axis=0)
-    mobile_w = np.concatenate([opacity * m0, opacity * m1], axis=0)
-    return np.concatenate([static_x, mobile_x], axis=0), np.concatenate([static_w, mobile_w], axis=0)
+        out["translation_error"] = float(np.linalg.norm(a_p * pred["amount"] - a_g * float(gt["amount"])))
+        ok = out["axis_error_deg"] < THRESH["axis_error_deg"] and out["translation_error"] < THRESH["translation_error"]
+    out["success"] = bool(ok)
+    return out
 
 
-def _part_iou(pred: np.ndarray, labels: np.ndarray) -> tuple[float, float, float]:
-    pred = pred.astype(bool)
-    labels = labels.astype(bool)
-    tp = np.logical_and(pred, labels).sum()
-    fp = np.logical_and(pred, ~labels).sum()
-    fn = np.logical_and(~pred, labels).sum()
-    mobile_iou = float(tp / max(tp + fp + fn, 1))
-    static_pred = ~pred
-    static = ~labels
-    tp_s = np.logical_and(static_pred, static).sum()
-    fp_s = np.logical_and(static_pred, ~static).sum()
-    fn_s = np.logical_and(~static_pred, static).sum()
-    static_iou = float(tp_s / max(tp_s + fp_s + fn_s, 1))
-    return mobile_iou, static_iou, (mobile_iou + static_iou) / 2.0
+# --------------------------------------------------------------------------- rendering
 
 
-def _mobility_scores(values: object, expected_len: int, name: str) -> np.ndarray:
-    scores = np.asarray(values, dtype=np.float64)
-    if scores.shape != (expected_len,):
-        raise ValueError(f"{name} must have shape ({expected_len},), got {scores.shape}")
-    if not np.isfinite(scores).all():
-        raise ValueError(f"{name} contains non-finite values")
-    return np.clip(scores, 0.0, 1.0)
+def render(means, scales, colors, opac, mobile, R, t, intr, size, depth_bg, chunk=256):
+    """Same splatting model as the observations (see data/articulated_objects.py)."""
+    pc = means @ R.T + t
+    keep = pc[:, 2] > 0.05
+    pc, scales, colors, opac, mobile = pc[keep], scales[keep], colors[keep], opac[keep], mobile[keep]
+    fx, fy, cx, cy = intr
+    z = pc[:, 2]
+    u = fx * pc[:, 0] / z + cx
+    v = fy * pc[:, 1] / z + cy
+    var = (fx * scales / z) ** 2 + 0.3
+    order = np.argsort(z, kind="stable")
+    u, v, var, colors, opac, mobile, z = u[order], v[order], var[order], colors[order], opac[order], mobile[order], z[order]
+    ys, xs = np.mgrid[0:size, 0:size]
+    pu = xs.ravel() + 0.5
+    pv = ys.ravel() + 0.5
+    P = size * size
+    rgb = np.ones((P, 3))
+    acc = np.zeros(P)
+    dep = np.full(P, depth_bg)
+    mob = np.zeros(P)
+    if len(z) == 0:
+        return rgb, acc, dep, mob
+    for s in range(0, P, chunk):
+        e = min(P, s + chunk)
+        du = pu[None, s:e] - u[:, None]
+        dv = pv[None, s:e] - v[:, None]
+        alpha = np.minimum(0.99, opac[:, None] * np.exp(-0.5 * (du * du + dv * dv) / var[:, None]))
+        T = np.cumprod(1.0 - alpha, axis=0)
+        w = alpha * np.concatenate([np.ones((1, e - s)), T[:-1]], axis=0)
+        a = w.sum(axis=0)
+        rgb[s:e] = w.T @ colors + (1.0 - a)[:, None]
+        acc[s:e] = a
+        dep[s:e] = w.T @ z + (1.0 - a) * depth_bg
+        mob[s:e] = w.T @ mobile
+    return rgb, acc, dep, mob
 
 
-def _quality_score(
-    axis_error_deg: float,
-    amount_error: float,
-    pivot_error: float,
-    mean_part_iou: float,
-    reconstruction_chamfer: float,
-) -> float:
-    return float(
-        0.25 * np.exp(-axis_error_deg / 5.0)
-        + 0.20 * np.exp(-amount_error / 0.05)
-        + 0.15 * np.exp(-pivot_error / 0.05)
-        + 0.25 * mean_part_iou
-        + 0.15 * np.exp(-reconstruction_chamfer / 0.01)
-    )
+def _nn_dist(a: np.ndarray, b: np.ndarray, chunk: int = 2048) -> np.ndarray:
+    out = np.empty(len(a))
+    bb = (b * b).sum(1)
+    for s in range(0, len(a), chunk):
+        x = a[s : s + chunk]
+        d2 = (x * x).sum(1)[:, None] + bb[None, :] - 2.0 * x @ b.T
+        out[s : s + chunk] = np.sqrt(np.maximum(d2.min(axis=1), 0.0))
+    return out
 
 
-def _score_scene(prediction: dict, data: np.lib.npyio.NpzFile) -> dict[str, float]:
-    articulation_type = str(data["articulation_type"])
-    axis = _normalize(np.asarray(prediction["axis"], dtype=np.float64))
-    pivot = np.asarray(prediction.get("pivot", [0.0, 0.0, 0.0]), dtype=np.float64)
-    amount = float(prediction["amount"])
-    gt_axis = _normalize(np.asarray(data["axis"], dtype=np.float64))
-    gt_amount = float(data["amount"])
+def chamfer(pred: np.ndarray, gt: np.ndarray, cap: float) -> float:
+    if len(pred) == 0 or len(gt) == 0:
+        return cap
+    return float(min(cap, _nn_dist(pred, gt).mean() + _nn_dist(gt, pred).mean()))
 
-    if float(np.dot(axis, gt_axis)) < 0.0:
-        axis = -axis
-        amount = -amount
 
-    axis_error_deg = float(np.degrees(np.arccos(np.clip(np.dot(axis, gt_axis), -1.0, 1.0))))
-    if articulation_type == "prismatic":
-        amount_error = float(np.linalg.norm(axis * amount - gt_axis * gt_amount))
-        pivot_error = 0.0
-    else:
-        amount_error = abs(amount - gt_amount)
-        pivot_gt = np.asarray(data["pivot"], dtype=np.float64)
-        pivot_error = float(np.linalg.norm(np.cross(pivot - pivot_gt, gt_axis)))
-
-    x0 = np.asarray(data["state0"], dtype=np.float64)
-    x1 = np.asarray(data["state1"], dtype=np.float64)
-    labels = np.asarray(data["labels"], dtype=np.int64)
-    m0 = _mobility_scores(prediction["mobility_state0"], len(labels), "mobility_state0")
-    m1 = _mobility_scores(prediction["mobility_state1"], len(labels), "mobility_state1")
-    mobility = (m0 + m1) / 2.0
-    mobile_iou, static_iou, mean_part_iou = _part_iou(mobility >= 0.5, labels)
-    worst_part_iou = min(mobile_iou, static_iou)
-    mobility_brier = float(np.mean((mobility - labels.astype(np.float64)) ** 2))
-    state_mobility_disagreement = float(np.mean(np.abs(m0 - m1)))
-
-    opacity = np.asarray(data["opacities"], dtype=np.float64)
-    cm0_x, cm0_w = _cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, axis, pivot, amount, 0)
-    cm1_x, cm1_w = _cross_mobile_sets(x0, x1, opacity, m0, m1, articulation_type, axis, pivot, amount, 1)
-    reconstruction_chamfer = _weighted_chamfer(cm0_x, cm0_w, x0, opacity)
-    reconstruction_chamfer += _weighted_chamfer(cm1_x, cm1_w, x1, opacity)
-
-    success = (
-        axis_error_deg < 5.0
-        and amount_error < 0.05
-        and pivot_error < 0.05
-        and mean_part_iou > 0.75
-        and worst_part_iou > 0.70
-        and mobility_brier < 0.08
-        and reconstruction_chamfer < 0.01
-    )
-    quality_score = _quality_score(
-        axis_error_deg,
-        amount_error,
-        pivot_error,
-        mean_part_iou,
-        reconstruction_chamfer,
-    )
+def reconstruction_metrics(pred: dict, gt: dict, jtype: str) -> dict:
+    intr = gt["intrinsics"].astype(np.float64)
+    size = int(gt["image_size"])
+    depth_bg = float(gt["depth_background"])
+    sm, ss, sc, so = pred["static"]
+    mm, ms, mc, mo = pred["mobile"]
+    flags = np.concatenate([np.zeros(len(sm)), np.ones(len(mm))])
+    psnrs, derr = [], []
+    inter, union = np.zeros(3), np.zeros(3)
+    for R, t, q, g_rgb, g_dep, g_alpha, g_seg in zip(
+        gt["heldout_R"], gt["heldout_t"], gt["heldout_q"], gt["heldout_rgb"], gt["heldout_depth"], gt["heldout_alpha"], gt["heldout_seg"]
+    ):
+        moved = articulate(mm, jtype, pred["axis"], pred["pivot"], pred["amount"], float(q))
+        rgb, acc, dep, mob = render(
+            np.concatenate([sm, moved]), np.concatenate([ss, ms]), np.concatenate([sc, mc]), np.concatenate([so, mo]),
+            flags, R.astype(np.float64), t.astype(np.float64), intr, size, depth_bg,
+        )
+        gt_rgb = g_rgb.reshape(-1, 3).astype(np.float64) / 255.0
+        mse = float(np.mean((rgb - gt_rgb) ** 2))
+        psnrs.append(-10.0 * math.log10(max(mse, 1e-10)))
+        g_alpha = g_alpha.reshape(-1)
+        fg = (g_alpha > 0.5) | (acc > 0.5)
+        derr.append(np.minimum(np.abs(dep - g_dep.reshape(-1).astype(np.float64)), WORST[REC]["depth_mae"])[fg])
+        seg = np.where(acc < 0.5, 0, np.where(mob > 0.5 * acc, 2, 1))
+        g_seg = g_seg.reshape(-1)
+        for c in range(3):
+            inter[c] += np.sum((seg == c) & (g_seg == c))
+            union[c] += np.sum((seg == c) | (g_seg == c))
+    derr = np.concatenate(derr)
+    iou = np.where(union > 0, inter / np.maximum(union, 1), 1.0)
+    cap = WORST[REC]["cd_whole"]
+    ps = sm[so >= CD_MIN_OPACITY]
+    pm = mm[mo >= CD_MIN_OPACITY]
+    gs, gm = gt["gt_static"].astype(np.float64), gt["gt_mobile0"].astype(np.float64)
     return {
-        "axis_error_deg": axis_error_deg,
-        "amount_error": amount_error,
-        "pivot_error": pivot_error,
-        "mobile_iou": mobile_iou,
-        "static_iou": static_iou,
-        "mean_part_iou": mean_part_iou,
-        "worst_part_iou": worst_part_iou,
-        "mobility_brier": mobility_brier,
-        "quality_score": quality_score,
-        "state_mobility_disagreement": state_mobility_disagreement,
-        "reconstruction_chamfer": reconstruction_chamfer,
-        "success": float(success),
+        "psnr": max(WORST[REC]["psnr"], float(np.mean(psnrs))),
+        "depth_mae": float(derr.mean()) if derr.size else WORST[REC]["depth_mae"],
+        "part_miou": float(iou.mean()),
+        "cd_static": chamfer(ps, gs, cap),
+        "cd_mobile": chamfer(pm, gm, cap),
+        "cd_whole": chamfer(np.concatenate([ps, pm]), np.concatenate([gs, gm]), cap),
     }
 
 
-def _discover_artifacts(root: Path) -> list[Path]:
-    return sorted(path for path in root.glob("*/results.json") if path.is_file())
+# --------------------------------------------------------------------------- scoring
 
 
-def _artifact_method(path: Path) -> str:
-    return str(json.loads(path.read_text())["method"])
+def load_ground_truth() -> dict:
+    files = sorted(GT_DIR.glob(f"{SLICE}_*.npz"))
+    if len(files) != EXPECTED_SCENES:
+        raise RuntimeError(f"expected {EXPECTED_SCENES} ground-truth scenes in {GT_DIR}, found {len(files)}")
+    gts = {}
+    for f in files:
+        with np.load(f, allow_pickle=False) as d:
+            gts[f.stem] = {k: np.asarray(d[k]) for k in d.files}
+    return gts
 
 
-def _train_methods(path: Path) -> set[str]:
-    if not path.exists():
-        return set()
-    scores = json.loads(path.read_text())
-    return set(scores["experiments"][EXPERIMENT]["results"])
+def score_scene(pred: dict | None, gt: dict) -> dict:
+    jtype = str(gt["articulation_type"])
+    row = {"type": jtype, "present": pred is not None}
+    if pred is None:
+        row.update({"success": False})
+        return row
+    row.update(articulation_errors(pred, gt, jtype))
+    rec = reconstruction_metrics(pred, gt, jtype)
+    row.update({f"raw_{k}": v for k, v in rec.items()})
+    return row
 
 
-def _resolve_artifacts(cli_artifacts: list[str], discover_root: Path, train_scores: Path) -> list[Path]:
-    if cli_artifacts:
-        artifacts = [Path(path) for path in cli_artifacts]
-        missing = [str(path) for path in artifacts if not path.exists()]
-        if missing:
-            raise FileNotFoundError(f"Explicit result artifacts not found: {missing}")
-        return artifacts
-
-    targets = _train_methods(train_scores)
-    discovered = _discover_artifacts(discover_root)
-
-    if targets:
-        by_method: dict[str, Path] = {}
-        for path in discovered:
-            if path.exists():
-                method = _artifact_method(path)
-                if method in targets and method not in by_method:
-                    by_method[method] = path
-        missing = sorted(targets.difference(by_method))
-        if missing:
-            raise FileNotFoundError(
-                f"Could not find result artifacts for methods listed in {train_scores}: {missing}"
-            )
-        return [by_method[method] for method in sorted(by_method)]
-
-    if not discovered:
-        raise FileNotFoundError(f"No result artifacts found under {discover_root}")
-    return discovered
+def aggregate(rows: dict) -> dict:
+    out = {ART: {}, REC: {}}
+    vals = list(rows.values())
+    out[ART]["success_rate"] = float(np.mean([1.0 if r.get("success") else 0.0 for r in vals]))
+    for key, types in (
+        ("axis_error_deg", ("revolute", "prismatic")),
+        ("pivot_error", ("revolute",)),
+        ("rotation_error_deg", ("revolute",)),
+        ("translation_error", ("prismatic",)),
+    ):
+        sel = [min(r.get(key, THRESH[key]), THRESH[key]) for r in vals if r["type"] in types]
+        out[ART][key] = float(np.mean(sel)) if sel else WORST[ART][key]
+    for key in WORST[REC]:
+        out[REC][key] = float(np.mean([r[f"raw_{key}"] if r.get("success") else WORST[REC][key] for r in vals]))
+    for exp in out:
+        for key, value in out[exp].items():
+            if not math.isfinite(value):
+                out[exp][key] = WORST[exp][key]
+    return out
 
 
-def aggregate(paths: list[Path], data_dir: Path) -> tuple[dict, dict]:
-    scene_set = set(SLICE_SCENES)
-    scenes = {path.stem: path for path in data_dir.glob("*.npz") if path.stem in scene_set}
-    missing_data = sorted(scene_set.difference(scenes))
-    if missing_data:
-        raise FileNotFoundError(f"Missing {SLICE} data scenes: {missing_data}")
+def score_method(method_dir: Path, gts: dict) -> tuple[str, dict, dict]:
+    pred_dir = method_dir / "predictions"
+    rows = {}
+    present = 0
+    try:
+        for scene, gt in gts.items():
+            path = pred_dir / f"{scene}.npz"
+            if path.is_file():
+                rows[scene] = score_scene(load_prediction(path, str(gt["articulation_type"])), gt)
+                present += 1
+            else:
+                rows[scene] = score_scene(None, gt)
+    except InvalidPrediction as exc:
+        return f"failed: {scene}: {exc}", {e: dict(v) for e, v in WORST.items()}, {}
+    except Exception as exc:  # any other malformed content counts as a failed run
+        return f"failed: {scene}: {type(exc).__name__}: {exc}", {e: dict(v) for e, v in WORST.items()}, {}
+    if present == 0:
+        return "failed: no predictions for this slice", {e: dict(v) for e, v in WORST.items()}, {}
+    status = "ok" if present == len(gts) else f"incomplete: {len(gts) - present} scenes missing"
+    return status, aggregate(rows), rows
 
-    grouped = defaultdict(list)
-    seen_scenes = defaultdict(set)
-    per_scene = defaultdict(dict)
-    for path in paths:
-        if not path.exists():
-            raise FileNotFoundError(f"Artifact not found: {path}")
-        artifact = json.loads(path.read_text())
-        method = artifact["method"]
-        if method not in seen_scenes:
-            seen_scenes[method] = set()
-        for prediction in artifact["results"]:
-            scene = prediction["scene"]
-            if scene not in scene_set:
-                continue
-            with np.load(scenes[scene]) as data:
-                score = _score_scene(prediction, data)
-                grouped[method].append(score)
-                seen_scenes[method].add(scene)
-                per_scene[method][scene] = {"slice": SLICE, **score}
 
-    for method, found in seen_scenes.items():
-        missing = sorted(scene_set.difference(found))
-        if missing:
-            raise KeyError(f"Artifact set for method '{method}' is missing {SLICE} scenes: {missing}")
-    if not grouped:
-        raise ValueError(f"No predictions matched {SLICE} scenes: {sorted(scene_set)}")
-
-    out = {"experiments": {EXPERIMENT: {"results": {}}}}
-    for method, rows in grouped.items():
-        keys = sorted(rows[0])
-        out["experiments"][EXPERIMENT]["results"][method] = {
-            key: float(sum(row[key] for row in rows) / len(rows)) for key in keys
-        }
-    return out, {"slice": SLICE, "scenes": list(SLICE_SCENES), EXPERIMENT: dict(per_scene)}
+def discover(root: Path) -> list[Path]:
+    if not root.is_dir():
+        return []
+    return sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith("."))
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("artifacts", nargs="*")
-    parser.add_argument("--data-dir", default="data/synthetic_splart")
-    parser.add_argument("--discover-root", default="checkpoints")
-    parser.add_argument("--train-scores", default="scoring/scores_train.json")
-    parser.add_argument("--output", default="scoring/scores_test.json")
-    parser.add_argument("--per-scene-output", default="scoring/per_scene_test.json")
+    parser = argparse.ArgumentParser(description="Score every method directory on the hidden test slice.")
+    parser.add_argument("--root", default=str(DEFAULT_METHOD_ROOT), help="directory holding one sub-directory per method")
+    parser.add_argument("--output", default=str(ROOT / "scoring" / "scores_test.json"))
+    parser.add_argument("--per-scene-output", default=None)
     args = parser.parse_args()
 
-    artifacts = _resolve_artifacts(args.artifacts, Path(args.discover_root), Path(args.train_scores))
-    scores, per_scene = aggregate(artifacts, Path(args.data_dir))
-    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.output).write_text(json.dumps(scores, indent=2))
-    Path(args.per_scene_output).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.per_scene_output).write_text(json.dumps(per_scene, indent=2))
-    print(json.dumps(scores, indent=2))
+    gts = load_ground_truth()
+    result = {"experiments": {ART: {"results": {}}, REC: {"results": {}}}, "_meta": {"slice": SLICE, "num_scenes": len(gts), "status": {}}}
+    per_scene = {}
+    for method_dir in discover(Path(args.root)):
+        name = method_dir.name
+        status, metrics, rows = score_method(method_dir, gts)
+        for exp in (ART, REC):
+            result["experiments"][exp]["results"][name] = metrics[exp]
+        result["_meta"]["status"][name] = status
+        per_scene[name] = rows
+        print(f"[{SLICE}] {name}: {status}", flush=True)
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result, indent=2, allow_nan=False))
+    if args.per_scene_output:
+        Path(args.per_scene_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.per_scene_output).write_text(json.dumps(per_scene, indent=1, default=float))
+    print(json.dumps(result["experiments"], indent=2))
 
 
 if __name__ == "__main__":

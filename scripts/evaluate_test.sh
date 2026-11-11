@@ -1,23 +1,13 @@
 #!/bin/bash
-# Evaluate the held-out test slice of the articulated Gaussian benchmark.
+# Score every method directory under checkpoints/ on the held-out test slice.
 #
-# Usage mirrors scripts/evaluate.sh:
 #   bash scripts/evaluate_test.sh
-#   bash scripts/evaluate_test.sh checkpoints/my_method/results.json
 #
-# With no explicit artifacts, methods are discovered from scoring/scores_train.json
-# and resolved to checkpoints/*/results.json artifacts so train/test method keys
-# match exactly.
-
+# Takes no arguments: every checkpoints/<name>/ directory is a method and is
+# scored (a directory without valid test predictions is scored as a failed
+# run).  Writes scoring/scores_test.json.
 set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_ROOT"
-
+cd "$SCRIPT_DIR/.."
 mkdir -p scoring
-
-python eval/test/evaluate.py "$@" \
-  --train-scores scoring/scores_train.json \
-  --output scoring/scores_test.json \
-  --per-scene-output scoring/per_scene_test.json
+python eval/test/evaluate.py --output scoring/scores_test.json

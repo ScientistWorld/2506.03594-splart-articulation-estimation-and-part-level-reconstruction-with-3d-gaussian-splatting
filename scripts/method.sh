@@ -1,31 +1,21 @@
 #!/bin/bash
-# Run the paper's proposed method.
+# Run the reference method (method/splart.py) on every train and test scene.
+# Scenes are split into shards run in parallel (4 per GPU, or one per CPU core).
+# Finished scenes are skipped, so the script can be re-run to resume.
 #
-# This script trains/runs the paper's method using code in method/.
-#
-# Usage:
-#   bash scripts/method.sh
-
+#   bash scripts/method.sh                 # writes checkpoints/splart/predictions
+#   OUT=checkpoints/x SEED=1 bash scripts/method.sh --color-weight 0.1
 set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_ROOT"
-
-python data/articulated_gaussians.py
-python method/lightweight_splart.py \
-  --data-dir data/synthetic_splart \
-  --output checkpoints/lightweight_splart/results.json \
-  --seed "${SEED:-0}" \
-  --device "${DEVICE:-cpu}" \
-  --mobility-steps "${MOBILITY_STEPS:-160}" \
-  --render-steps "${RENDER_STEPS:-80}" \
-  --tries "${TRIES:-8}" \
-  --coarse-steps "${COARSE_STEPS:-220}" \
-  --refine-steps "${REFINE_STEPS:-420}"
-
-if [ -e checkpoints/static_baseline/results.json ]; then
-  bash scripts/evaluate.sh checkpoints/lightweight_splart/results.json checkpoints/static_baseline/results.json
-else
-  bash scripts/evaluate.sh checkpoints/lightweight_splart/results.json
-fi
+cd "$SCRIPT_DIR/.."
+OUT="${OUT:-checkpoints/splart}"
+SEED="${SEED:-0}"
+NGPU=$(python -c "import torch; print(torch.cuda.device_count() if torch.cuda.is_available() else 0)")
+if [ "$NGPU" -gt 0 ]; then SHARDS=$((NGPU * 4)); else SHARDS=$(python -c "import os; print(max(1, min(32, os.cpu_count() or 1)))"); fi
+echo "[method.sh] gpus=$NGPU shards=$SHARDS out=$OUT seed=$SEED"
+pids=()
+for i in $(seq 0 $((SHARDS - 1))); do
+  python method/splart.py --out "$OUT" --seed "$SEED" --shard "$i" --num-shards "$SHARDS" "$@" &
+  pids+=($!)
+done
+for p in "${pids[@]}"; do wait "$p"; done

@@ -29,8 +29,10 @@ checkpoints/
 # scratch by scripts/download.sh. Everything else under data/ IS tracked.
 data/downloads/
 !data/downloads/.gitkeep
-!data/synthetic_splart/
-!data/synthetic_splart/*.npz
+# Procedural scenes are small and committed (test inputs cannot be regenerated
+# from public code); hidden test answers live in eval/test/gt.
+!data/scenes/**/*.npz
+!eval/test/gt/*.npz
 
 # Container artifacts (multi-GB)
 environment/container.sif

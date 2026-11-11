@@ -1,12 +1,7 @@
 #!/bin/bash
-set -euo pipefail
-
+# Current job: hardening run (data, baselines, reference, variants, shortcuts,
+# evaluation, analysis).  See notes/hardening/run_hardening.sh.
+set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_ROOT"
-
-bash scripts/reproduce.sh
-python validate.py --reference-only
-python validate.py --compare
-bash scripts/evaluate_train.sh
-bash scripts/evaluate_test.sh
+cd "$SCRIPT_DIR/.."
+bash notes/hardening/run_hardening.sh

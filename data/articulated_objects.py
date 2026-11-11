@@ -1,31 +1,35 @@
 """Procedural two-part articulated objects observed at two articulation states.
 
 Each scene is a small articulated object (cabinet door, drawer, laptop lid,
-scissors, telescoping tube, ...) built from textured box / cylinder surfaces.
-The object is observed at two end states of a revolute or prismatic joint.
-For each state the observations are
+scissors, telescoping tube, ...) built from textured box / cylinder surfaces
+and placed in a random pose.  The object is observed at two end states of a
+revolute or prismatic joint.  For each state the observations ("inputs") are
 
-* posed RGB images rendered with an alpha-compositing Gaussian splatting model
-  from the dense ground-truth surface, from cameras on the upper hemisphere,
+* posed RGB images (white background) rendered with the alpha-compositing
+  isotropic Gaussian splatting model ``render_gaussians`` from a dense
+  ground-truth surface, from cameras on the upper hemisphere (each state has
+  its own camera set);
 * a sparse, noisy, coloured point cloud of the *visible* surface (what an SfM /
   MVS pre-process would hand to a 3D Gaussian Splatting reconstruction),
-  sampled independently for each state (no point correspondence, different
-  point counts, a few floaters, random order).
+  sampled independently for each state: no point correspondence between the
+  states, different point counts, random order, and a few floaters.
 
-Ground truth (never part of the observations): per-point part labels, the
-articulation (axis, pivot, motion amount from state 0 to state 1) and dense
-noise-free samples of the visible static / mobile surfaces used to score
-part-level geometry.
+The ground truth ("gt", never part of the inputs) holds the articulation (axis,
+pivot, motion amount from state 0 to state 1), per-point part labels, dense
+noise-free samples of the observed static / mobile surfaces (state-0 pose), and
+held-out views: cameras at articulation fractions q in [-0.1, 1.1] (q = 0 is
+state 0, q = 1 is state 1) with the ground-truth RGB image, composited depth,
+alpha and static/mobile part segmentation.
 
-This module is the visible copy of the generator; the visible train scenes
-listed in ``TRAIN_SCENES`` are produced with it.  ``python
-data/articulated_objects.py --out DIR`` writes them (inputs and ground truth in
-separate files) for development.
+``python data/articulated_objects.py --out data/scenes/train`` writes the
+visible development (train) scenes listed in ``TRAIN_SCENES``.
 """
 
 from __future__ import annotations
 
 import argparse
+import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -36,10 +40,12 @@ TEMPLATES = TEMPLATES_REVOLUTE + TEMPLATES_PRISMATIC
 
 IMAGE_SIZE = 48
 NUM_VIEWS = 20
+NUM_HELDOUT_VIEWS = 8
 FOV_DEG = 42.0
 GT_GAUSSIAN_SCALE = 0.016
 GT_OPACITY = 0.95
 BACKGROUND = np.ones(3)
+DEPTH_BACKGROUND = 4.0
 N_DENSE = 3500
 N_CANDIDATES = 2400
 OBJECT_RADIUS = 0.62
@@ -372,7 +378,7 @@ def _t_sliding_panel(rng):
     return prims, joint, (0.0, travel)
 
 
-_BUILDERS = {
+BUILDERS = {
     "cabinet_door": _t_cabinet_door,
     "laptop": _t_laptop,
     "lidded_box": _t_lidded_box,
@@ -425,8 +431,10 @@ def render_gaussians(means, scales, colors, opacities, R, t, intr, size, backgro
     """Alpha-composited isotropic Gaussian splatting (front-to-back by depth).
 
     Pixel (i, j) has centre (u, v) = (j + 0.5, i + 0.5).  A Gaussian with world
-    standard deviation s at depth z has image variance (fx s / z)^2 + 0.3.
-    Returns rgb (H, W, 3), expected depth (H, W) and accumulated alpha (H, W).
+    standard deviation s at camera depth z has image variance (fx s / z)^2 + 0.3
+    and per-pixel alpha min(0.99, opacity * exp(-0.5 d^2 / variance)); Gaussians
+    with z <= 0.05 are dropped.  Returns rgb (H, W, 3), alpha-normalised
+    expected depth (H, W) and accumulated alpha (H, W).
     """
     pc = means @ R.T + t
     keep = pc[:, 2] > 0.05
@@ -478,6 +486,21 @@ def visible_mask(points, Rs, ts, intr, depths, accs, size, tol=VIS_TOL, min_view
     return count >= min_views
 
 
+def render_view_gt(points, colors, part, R, t, intr, size=IMAGE_SIZE):
+    """Ground-truth rgb, composited depth, alpha and part segmentation of a dense surface."""
+    n = len(points)
+    g_scales = np.full(n, GT_GAUSSIAN_SCALE)
+    g_opac = np.full(n, GT_OPACITY)
+    rgb, dep, acc = render_gaussians(points, g_scales, colors, g_opac, R, t, intr, size, BACKGROUND)
+    onehot = np.zeros((n, 3))
+    onehot[part == 0, 0] = 1.0
+    onehot[part == 1, 1] = 1.0
+    lab, _, _ = render_gaussians(points, g_scales, onehot, g_opac, R, t, intr, size, np.zeros(3))
+    seg = np.where(acc < 0.5, 0, np.where(lab[..., 1] > lab[..., 0], 2, 1)).astype(np.uint8)
+    depth_c = dep * acc + (1.0 - acc) * DEPTH_BACKGROUND
+    return rgb, depth_c, acc, seg
+
+
 # ---------------------------------------------------------------------------
 # scene generation
 # ---------------------------------------------------------------------------
@@ -499,7 +522,7 @@ def _random_pose(rng) -> np.ndarray:
 def generate_scene(seed: int, template: str) -> tuple[dict, dict]:
     """Return (inputs, ground_truth) for one scene."""
     rng = np.random.default_rng(int(seed))
-    prims, joint, (qa, qb) = _BUILDERS[template](rng)
+    prims, joint, (qa, qb) = BUILDERS[template](rng)
     if rng.random() < 0.5:
         qa, qb = qb, qa
     jtype = joint["type"]
@@ -512,10 +535,11 @@ def generate_scene(seed: int, template: str) -> tuple[dict, dict]:
             return Rm, pivot_c - Rm @ pivot_c
         return np.eye(3), q * axis_c
 
-    states_prims = []
-    for q in (qa, qb):
+    def posed_prims(q):
         Rm, tm = motion(q)
-        states_prims.append([move_prim(p, Rm, tm) if p["part"] == 1 else p for p in prims])
+        return [move_prim(p, Rm, tm) if p["part"] == 1 else p for p in prims]
+
+    states_prims = [posed_prims(qa), posed_prims(qb)]
 
     # dense ground-truth surface samples (shared local coordinates across states)
     counts = _allocate(N_DENSE, [prim_area(p) for p in prims], 24)
@@ -563,10 +587,8 @@ def generate_scene(seed: int, template: str) -> tuple[dict, dict]:
 
     noise = rng.uniform(0.003, 0.010)
     floater_frac = rng.uniform(0.0, 0.05)
-    lo = allpts.min(axis=0)
     bb_w = world(np.stack([allpts.min(axis=0), allpts.max(axis=0)]))
     bb_lo, bb_hi = bb_w.min(axis=0) - 0.1, bb_w.max(axis=0) + 0.1
-    del lo
 
     points, colors, labels = [], [], []
     ccounts = _allocate(N_CANDIDATES, [prim_area(p) for p in prims], 16)
@@ -592,6 +614,19 @@ def generate_scene(seed: int, template: str) -> tuple[dict, dict]:
         colors.append(col[perm])
         labels.append(lab[perm])
 
+    # held-out views at articulation fractions q (0 = state 0, 1 = state 1)
+    hv_R, hv_t = sample_cameras(rng, NUM_HELDOUT_VIEWS)
+    hv_q = np.concatenate([[0.0, 1.0], rng.uniform(-0.1, 1.1, size=NUM_HELDOUT_VIEWS - 2)])
+    hv_rgb, hv_depth, hv_alpha, hv_seg = [], [], [], []
+    for R, t, q in zip(hv_R, hv_t, hv_q):
+        pp = posed_prims(qa + q * (qb - qa))
+        pts_q = world(np.concatenate([to_world(sp, lc) for sp, lc in zip(pp, local)]))
+        rgb, dep, acc, seg = render_view_gt(pts_q, dense_col, dense_part, R, t, intr)
+        hv_rgb.append(rgb)
+        hv_depth.append(dep)
+        hv_alpha.append(acc)
+        hv_seg.append(seg)
+
     inputs = {
         "articulation_type": np.array(jtype),
         "points0": points[0].astype(np.float32),
@@ -616,28 +651,59 @@ def generate_scene(seed: int, template: str) -> tuple[dict, dict]:
         "axis": axis_w.astype(np.float64),
         "pivot": pivot_w.astype(np.float64),
         "amount": np.array(amount, dtype=np.float64),
-        "gt_static": gt_static.astype(np.float64),
-        "gt_mobile0": gt_mobile0.astype(np.float64),
+        "gt_static": gt_static.astype(np.float32),
+        "gt_mobile0": gt_mobile0.astype(np.float32),
+        "heldout_R": hv_R.astype(np.float32),
+        "heldout_t": hv_t.astype(np.float32),
+        "heldout_q": hv_q.astype(np.float32),
+        "heldout_rgb": np.round(np.clip(np.stack(hv_rgb), 0, 1) * 255).astype(np.uint8),
+        "heldout_depth": np.stack(hv_depth).astype(np.float32),
+        "heldout_alpha": np.stack(hv_alpha).astype(np.float32),
+        "heldout_seg": np.stack(hv_seg).astype(np.uint8),
+        "intrinsics": intr.astype(np.float32),
+        "image_size": np.array(IMAGE_SIZE),
+        "depth_background": np.array(DEPTH_BACKGROUND),
         "noise": np.array(noise),
         "floater_frac": np.array(floater_frac),
     }
     return inputs, gt
 
 
-def write_scenes(out_dir: str | Path, scenes=TRAIN_SCENES) -> None:
-    out = Path(out_dir)
-    (out / "inputs").mkdir(parents=True, exist_ok=True)
-    (out / "gt").mkdir(parents=True, exist_ok=True)
-    for i, (seed, template) in enumerate(scenes):
-        inputs, gt = generate_scene(seed, template)
-        name = f"train_{i:03d}"
-        np.savez(out / "inputs" / f"{name}.npz", **inputs)
-        np.savez(out / "gt" / f"{name}.npz", **gt)
-        print(f"wrote {name} ({template}, seed {seed})", flush=True)
+def _write_one(job) -> str:
+    out, gt_out, name, seed, template = job
+    inp_path = out / f"{name}.npz"
+    gt_path = gt_out / f"{name}.npz"
+    if inp_path.exists() and gt_path.exists():
+        return f"skip {name}"
+    inputs, gt = generate_scene(seed, template)
+    np.savez_compressed(inp_path, **inputs)
+    np.savez_compressed(gt_path, **gt)
+    return f"wrote {name} ({template})"
+
+
+def write_scenes(inputs_dir, gt_dir, scenes, prefix: str, workers: int = 1) -> None:
+    """Write ``<inputs_dir>/<prefix>_XXX.npz`` and ``<gt_dir>/<prefix>_XXX.npz``.
+
+    Templates are looked up in the module-level ``BUILDERS`` registry (extra
+    templates can be registered there before calling).  Existing files are kept.
+    """
+    out, gt_out = Path(inputs_dir), Path(gt_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    gt_out.mkdir(parents=True, exist_ok=True)
+    jobs = [(out, gt_out, f"{prefix}_{i:03d}", int(seed), template) for i, (seed, template) in enumerate(scenes)]
+    if workers <= 1:
+        for job in jobs:
+            print(_write_one(job), flush=True)
+    else:
+        ctx = multiprocessing.get_context("fork")
+        with ProcessPoolExecutor(max_workers=workers, mp_context=ctx) as ex:
+            for msg in ex.map(_write_one, jobs):
+                print(msg, flush=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", default="data/downloads/train_scenes")
+    parser.add_argument("--out", default="data/scenes/train")
+    parser.add_argument("--workers", type=int, default=1)
     args = parser.parse_args()
-    write_scenes(args.out)
+    write_scenes(Path(args.out) / "inputs", Path(args.out) / "gt", TRAIN_SCENES, "train", workers=args.workers)

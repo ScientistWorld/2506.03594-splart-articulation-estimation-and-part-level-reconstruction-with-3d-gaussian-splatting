@@ -1,20 +1,13 @@
 #!/bin/bash
-# Evaluate the visible train slice of the articulated Gaussian benchmark.
+# Score every method directory under checkpoints/ on the visible train slice.
 #
-# Usage mirrors scripts/evaluate.sh:
 #   bash scripts/evaluate_train.sh
-#   bash scripts/evaluate_train.sh checkpoints/my_method/results.json
 #
-# With no explicit artifacts, all checkpoints/*/results.json files are scored.
-
+# A method is a directory checkpoints/<name>/ holding predictions/<scene>.npz
+# (format: briefing/evaluation.md).  Writes scoring/scores_train.json (and
+# per-scene details in scoring/per_scene_train.json).
 set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-cd "$REPO_ROOT"
-
+cd "$SCRIPT_DIR/.."
 mkdir -p scoring
-
-python eval/train/evaluate.py "$@" \
-  --output scoring/scores_train.json \
-  --per-scene-output scoring/per_scene_train.json
+python eval/train/evaluate.py --output scoring/scores_train.json --per-scene-output scoring/per_scene_train.json

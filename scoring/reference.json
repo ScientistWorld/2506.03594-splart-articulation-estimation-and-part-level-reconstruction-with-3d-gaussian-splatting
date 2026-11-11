@@ -1,276 +1,112 @@
 {
   "experiments": {
-    "synthetic_articulated_gaussians": {
-      "description": "Runnable lightweight two-state articulated Gaussian benchmark for the core SPLART claim. The success gate combines paper-like articulation thresholds with additional part-decomposition and geometric-consistency constraints for this reduced benchmark.",
-      "notes": "This is the runnable reduced-scale benchmark. The proposed-method entries are target thresholds and anchors for the synthetic benchmark, not paper-reported table values; paper-reported full-scale values are preserved in separate reference-only experiments below.",
-      "weight": 0.5,
-      "primary_metric": "quality_score",
+    "articulation_estimation": {
+      "description": "Joint estimation from two-state observations of procedural two-part articulated objects (26 held-out scenes, 4 of the 13 object families unseen in train). Paper metrics and paper success rule (Sec. 4.2): axis error < 5 deg; revolute: pivot line distance < 0.05 and rotation geodesic error < 10 deg; prismatic: translation error < 0.05.",
+      "notes": "Scaled-down substitute for PARIS-PMS / SPLART-PMS (Tables 1 and 4): procedural objects, 20 posed 48x48 RGB views and one sparse visible-surface point cloud per state, one run per scene. Per-scene errors are truncated at the success thresholds and averaged over all scenes (the paper averages over successful runs only), so a failed scene counts as the threshold value. The paper's own numbers are kept under _paper_reported.",
+      "weight": 0.6,
+      "primary_metric": "success_rate",
       "metrics": {
-        "quality_score": {
+        "success_rate": {
           "higher_is_better": true,
           "coefficient": 1.0,
-          "description": "Continuous joint score combining articulation-axis error, motion-amount error, pivot error, part IoU, and reconstruction Chamfer; used as the train/test ranking metric because binary success saturates on the current reproduction."
-        },
-        "success": {
-          "higher_is_better": true,
-          "coefficient": 0.7,
-          "description": "Binary success under the runnable synthetic benchmark thresholds for articulation, part decomposition, mobility calibration, and geometry."
+          "description": "Fraction of scenes whose estimated articulation meets the paper's success criteria."
         },
         "axis_error_deg": {
           "higher_is_better": false,
-          "coefficient": -0.6,
-          "description": "Angular error between predicted and ground-truth articulation axes in degrees."
-        },
-        "amount_error": {
-          "higher_is_better": false,
-          "coefficient": -0.4,
-          "description": "Motion amount error, using translation-vector error for prismatic scenes and angle error for revolute scenes."
+          "coefficient": 0.5,
+          "description": "Angle between predicted and true joint axis (sign-invariant), degrees, truncated at 5, mean over all scenes."
         },
         "pivot_error": {
           "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Distance from the predicted revolute pivot to the ground-truth articulation axis; zero for prismatic scenes."
+          "coefficient": 0.25,
+          "description": "Closest distance between predicted and true rotation axis lines, truncated at 0.05, mean over revolute scenes."
         },
-        "mean_part_iou": {
+        "rotation_error_deg": {
+          "higher_is_better": false,
+          "coefficient": 0.25,
+          "description": "Geodesic distance between predicted and true rotations of the motion, degrees, truncated at 10, mean over revolute scenes."
+        },
+        "translation_error": {
+          "higher_is_better": false,
+          "coefficient": 0.25,
+          "description": "Distance between predicted and true translation vectors of the motion, truncated at 0.05, mean over prismatic scenes."
+        }
+      },
+      "results": {
+        "splart": {"type": "proposed", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05},
+        "icp_baseline": {"type": "baseline", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05},
+        "static_baseline": {"type": "baseline", "success_rate": 0.0, "axis_error_deg": 5.0, "pivot_error": 0.05, "rotation_error_deg": 10.0, "translation_error": 0.05}
+      }
+    },
+    "part_reconstruction": {
+      "description": "Part-level reconstruction of the same 26 held-out scenes: the predicted static and mobile Gaussians are rendered at 8 held-out cameras per scene at articulation fractions q in [-0.1, 1.1] (novel views and novel articulations, as in SPLART-PMS) and compared with ground truth; part geometry is compared with dense ground-truth surfaces.",
+      "notes": "Scaled-down substitute for Tables 1 (CD_s, CD_m, CD_w), 2 and 5 (PSNR, depth MAE, mIoU). Chamfer uses Gaussian centres with opacity >= 0.1 instead of TSDF meshes. Scenes whose articulation fails count with the worst value (the paper averages over successful runs only).",
+      "weight": 0.4,
+      "primary_metric": "psnr",
+      "metrics": {
+        "psnr": {
           "higher_is_better": true,
           "coefficient": 0.6,
-          "description": "Mean IoU over static and mobile part assignments after thresholding the predicted mobility probabilities."
+          "description": "PSNR (dB) of held-out renders at novel views and articulation states; floored at 10, 10 for failed scenes."
         },
-        "mobile_iou": {
+        "part_miou": {
           "higher_is_better": true,
-          "coefficient": 0.4,
-          "description": "IoU for the mobile part assignment, catching all-static shortcuts."
+          "coefficient": 0.5,
+          "description": "Mean IoU of background / static / mobile segmentation of the held-out renders."
         },
-        "static_iou": {
-          "higher_is_better": true,
+        "depth_mae": {
+          "higher_is_better": false,
+          "coefficient": 0.3,
+          "description": "Mean absolute error of composited depth over object pixels of the held-out views (per-pixel error capped at 1)."
+        },
+        "cd_static": {
+          "higher_is_better": false,
           "coefficient": 0.2,
-          "description": "IoU for the static part assignment, catching all-mobile shortcuts."
+          "description": "Symmetric Chamfer distance (mean nearest-neighbour distance, both directions) between the static part and the true static surface; capped at 0.2."
         },
-        "reconstruction_chamfer": {
+        "cd_mobile": {
           "higher_is_better": false,
-          "coefficient": -0.5,
-          "description": "Opacity-weighted two-state reconstruction Chamfer distance under the predicted articulation."
+          "coefficient": 0.3,
+          "description": "Same for the mobile part in the state-0 pose; capped at 0.2."
         },
-        "worst_part_iou": {
-          "higher_is_better": true,
-          "coefficient": 0.45,
-          "description": "Lower of mobile and static IoU, so a method cannot hide a failed part behind the mean."
-        },
-        "mobility_brier": {
+        "cd_whole": {
           "higher_is_better": false,
-          "coefficient": -0.35,
-          "description": "Brier score for soft mobility probabilities against ground-truth static/mobile labels."
-        },
-        "state_mobility_disagreement": {
-          "higher_is_better": false,
-          "coefficient": -0.15,
-          "description": "Mean absolute disagreement between the two state-specific mobility predictions for the same Gaussian."
+          "coefficient": 0.2,
+          "description": "Same for the whole object in the state-0 pose; capped at 0.2."
         }
       },
       "results": {
-        "static_baseline": {
-          "type": "baseline",
-          "quality_score": 0.1942,
-          "success": 0.0,
-          "axis_error_deg": 90.0,
-          "amount_error": 0.5565,
-          "pivot_error": 0.0,
-          "mean_part_iou": 0.5,
-          "mobile_iou": 0.0,
-          "static_iou": 1.0,
-          "reconstruction_chamfer": 0.0456,
-          "worst_part_iou": 0.0,
-          "mobility_brier": 0.4286,
-          "state_mobility_disagreement": 0.0
-        },
-        "splart_lightweight": {
-          "type": "proposed",
-          "quality_score": 0.8988,
-          "success": 1.0,
-          "axis_error_deg": 5.0,
-          "amount_error": 0.05,
-          "pivot_error": 0.05,
-          "mean_part_iou": 0.75,
-          "mobile_iou": 0.75,
-          "static_iou": 0.75,
-          "reconstruction_chamfer": 0.01,
-          "worst_part_iou": 0.70,
-          "mobility_brier": 0.08,
-          "state_mobility_disagreement": 0.05
-        }
+        "splart": {"type": "proposed", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2},
+        "icp_baseline": {"type": "baseline", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2},
+        "static_baseline": {"type": "baseline", "psnr": 10.0, "part_miou": 0.0, "depth_mae": 1.0, "cd_static": 0.2, "cd_mobile": 0.2, "cd_whole": 0.2}
       }
+    }
+  },
+  "_paper_reported": {
+    "note": "Numbers reported in the paper (arXiv 2506.03594) on PARIS-PMS and SPLART-PMS with full-resolution 3DGS and 10 seeds per scene. Not on this benchmark's scale (different objects, image resolution, units of Chamfer); kept for context only and never compared against gym scores.",
+    "table1_paris_pms_overall": {
+      "PARIS": {"success_rate": 0.42, "axis_err_x1e-2_deg": 103.12, "pivot_err_x1e-3": 5.27, "rotation_err_x1e-2_deg": 127.8, "translation_err_x1e-3": 4.28, "cd_static_x1e-3": 4.63, "cd_mobile_x1e-3": 85.11, "cd_whole_x1e-3": 12.09},
+      "DTA": {"success_rate": 0.99, "axis_err_x1e-2_deg": 13.11, "pivot_err_x1e-3": 1.86, "rotation_err_x1e-2_deg": 19.41, "translation_err_x1e-3": 1.15, "cd_static_x1e-3": 2.30, "cd_mobile_x1e-3": 4.16, "cd_whole_x1e-3": 1.83},
+      "SPLART": {"success_rate": 0.99, "axis_err_x1e-2_deg": 3.44, "pivot_err_x1e-3": 0.40, "rotation_err_x1e-2_deg": 4.85, "translation_err_x1e-3": 0.33, "cd_static_x1e-3": 4.47, "cd_mobile_x1e-3": 4.20, "cd_whole_x1e-3": 3.61}
     },
-    "paper_paris_pms_articulation_reconstruction": {
-      "description": "Paper Table 1, PARIS-PMS overall articulation and mesh reconstruction metrics.",
-      "weight": 0.25,
-      "primary_metric": "success",
-      "metrics": {
-        "success": {
-          "higher_is_better": true,
-          "coefficient": 1.0,
-          "description": "Paper articulation success rate: axis error below 5 degrees, plus pivot and rotation thresholds for revolute joints or translation threshold for prismatic joints."
-        },
-        "axis_error_x1e2_deg": {
-          "higher_is_better": false,
-          "coefficient": -0.5,
-          "description": "Published articulation-axis error in degrees scaled by 1e2, reported as an error to minimize."
-        },
-        "pivot_error_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Published pivot-location error scaled by 1e3, reported as an error to minimize."
-        },
-        "rotation_error_x1e2_deg": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published rotation-amount error in degrees scaled by 1e2, reported as an error to minimize."
-        },
-        "translation_error_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published translation-amount error scaled by 1e3, reported as an error to minimize."
-        },
-        "static_cd_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published static-part Chamfer distance scaled by 1e3, reported as an error to minimize."
-        },
-        "mobile_cd_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published mobile-part Chamfer distance scaled by 1e3, reported as an error to minimize."
-        },
-        "whole_cd_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published whole-object Chamfer distance scaled by 1e3, reported as an error to minimize."
-        }
-      },
-      "results": {
-        "PARIS": {
-          "type": "baseline",
-          "success": 0.42,
-          "axis_error_x1e2_deg": 103.12,
-          "pivot_error_x1e3": 5.27,
-          "rotation_error_x1e2_deg": 127.8,
-          "translation_error_x1e3": 4.28,
-          "static_cd_x1e3": 4.63,
-          "mobile_cd_x1e3": 85.11,
-          "whole_cd_x1e3": 12.09
-        },
-        "DTA": {
-          "type": "baseline",
-          "success": 0.99,
-          "axis_error_x1e2_deg": 13.11,
-          "pivot_error_x1e3": 1.86,
-          "rotation_error_x1e2_deg": 19.41,
-          "translation_error_x1e3": 1.15,
-          "static_cd_x1e3": 4.16,
-          "mobile_cd_x1e3": 1.83,
-          "whole_cd_x1e3": 1.83
-        },
-        "SPLART": {
-          "type": "proposed",
-          "success": 0.99,
-          "axis_error_x1e2_deg": 3.44,
-          "pivot_error_x1e3": 0.4,
-          "rotation_error_x1e2_deg": 4.85,
-          "translation_error_x1e3": 0.33,
-          "static_cd_x1e3": 4.47,
-          "mobile_cd_x1e3": 4.2,
-          "whole_cd_x1e3": 3.61
-        }
-      }
+    "table2_paris_pms_overall_nvs": {
+      "PARIS": {"psnr": 32.52, "depth_mae": 0.096, "miou": 0.942},
+      "DTA": {"depth_mae": 0.038, "miou": 0.922},
+      "SPLART": {"psnr": 43.70, "depth_mae": 0.036, "miou": 0.957}
     },
-    "paper_splart_pms_articulation": {
-      "description": "Paper Table 4, SPLART-PMS overall articulation metrics and ablations.",
-      "weight": 0.25,
-      "primary_metric": "success",
-      "metrics": {
-        "success": {
-          "higher_is_better": true,
-          "coefficient": 1.0,
-          "description": "Paper articulation success rate: axis error below 5 degrees, plus pivot and rotation thresholds for revolute joints or translation threshold for prismatic joints."
-        },
-        "axis_error_x1e2_deg": {
-          "higher_is_better": false,
-          "coefficient": -0.5,
-          "description": "Published articulation-axis error in degrees scaled by 1e2, reported as an error to minimize."
-        },
-        "pivot_error_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Published pivot-location error scaled by 1e3, reported as an error to minimize."
-        },
-        "rotation_error_x1e2_deg": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published rotation-amount error in degrees scaled by 1e2, reported as an error to minimize."
-        },
-        "translation_error_x1e3": {
-          "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Published translation-amount error scaled by 1e3, reported as an error to minimize."
-        }
-      },
-      "results": {
-        "PARIS": {
-          "type": "baseline",
-          "success": 0.277,
-          "axis_error_x1e2_deg": 103.88,
-          "pivot_error_x1e3": 9.36,
-          "rotation_error_x1e2_deg": 270.37,
-          "translation_error_x1e3": 14.96
-        },
-        "DTA": {
-          "type": "baseline",
-          "success": 0.591,
-          "axis_error_x1e2_deg": 77.76,
-          "pivot_error_x1e3": 1.28,
-          "rotation_error_x1e2_deg": 40.8,
-          "translation_error_x1e3": 9.25
-        },
-        "SPLART-2a": {
-          "type": "proposed",
-          "success": 0.837,
-          "axis_error_x1e2_deg": 13.85,
-          "pivot_error_x1e3": 2.53,
-          "rotation_error_x1e2_deg": 52.06,
-          "translation_error_x1e3": 1.5
-        },
-        "SPLART-2b": {
-          "type": "proposed",
-          "success": 0.747,
-          "axis_error_x1e2_deg": 9.34,
-          "pivot_error_x1e3": 3.92,
-          "rotation_error_x1e2_deg": 131.99,
-          "translation_error_x1e3": 0.73
-        },
-        "SPLART-3a": {
-          "type": "proposed",
-          "success": 0.064,
-          "axis_error_x1e2_deg": 85.53,
-          "pivot_error_x1e3": 2.83,
-          "rotation_error_x1e2_deg": 427.1,
-          "translation_error_x1e3": 2.26
-        },
-        "SPLART-3b": {
-          "type": "proposed",
-          "success": 0.809,
-          "axis_error_x1e2_deg": 73.62,
-          "pivot_error_x1e3": 5.11,
-          "rotation_error_x1e2_deg": 206.98,
-          "translation_error_x1e3": 9.43
-        },
-        "SPLART": {
-          "type": "proposed",
-          "success": 0.855,
-          "axis_error_x1e2_deg": 23.02,
-          "pivot_error_x1e3": 3.93,
-          "rotation_error_x1e2_deg": 78.31,
-          "translation_error_x1e3": 1.04
-        }
-      }
+    "table4_splart_pms_overall": {
+      "PARIS": {"success_rate": 0.277, "axis_err_x1e-2_deg": 103.88, "pivot_err_x1e-3": 9.36, "rotation_err_x1e-2_deg": 270.37, "translation_err_x1e-3": 14.96},
+      "DTA": {"success_rate": 0.591, "axis_err_x1e-2_deg": 77.76, "pivot_err_x1e-3": 1.28, "rotation_err_x1e-2_deg": 40.80, "translation_err_x1e-3": 9.25},
+      "SPLART-2a (no Stage 2a)": {"success_rate": 0.837, "axis_err_x1e-2_deg": 13.85, "pivot_err_x1e-3": 2.53, "rotation_err_x1e-2_deg": 52.06, "translation_err_x1e-3": 1.50},
+      "SPLART-2b (no Stage 2b)": {"success_rate": 0.747, "axis_err_x1e-2_deg": 9.34, "pivot_err_x1e-3": 3.92, "rotation_err_x1e-2_deg": 131.99, "translation_err_x1e-3": 0.73},
+      "SPLART-3a (no Stage 3a)": {"success_rate": 0.064, "axis_err_x1e-2_deg": 85.53, "pivot_err_x1e-3": 2.83, "rotation_err_x1e-2_deg": 427.10, "translation_err_x1e-3": 2.26},
+      "SPLART-3b (no Stage 3b)": {"success_rate": 0.809, "axis_err_x1e-2_deg": 73.62, "pivot_err_x1e-3": 5.11, "rotation_err_x1e-2_deg": 206.98, "translation_err_x1e-3": 9.43},
+      "SPLART": {"success_rate": 0.855, "axis_err_x1e-2_deg": 23.02, "pivot_err_x1e-3": 3.93, "rotation_err_x1e-2_deg": 78.31, "translation_err_x1e-3": 1.04}
+    },
+    "table5_splart_pms_overall_nvs": {
+      "PARIS": {"psnr": 32.51, "depth_mae": 0.125, "miou": 0.900},
+      "DTA": {"depth_mae": 0.058, "miou": 0.867},
+      "SPLART": {"psnr": 37.01, "depth_mae": 0.032, "miou": 0.916}
     }
   }
 }
